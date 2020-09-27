@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120.654" height="62" viewBox="0 0 120.654 62">
+  <g id="Group_782" data-name="Group 782" transform="translate(-62 -29)">
+    <g id="Group_2" data-name="Group 2" transform="translate(-70.641 -25.524)">
+      <text id="St" transform="translate(132.641 103.524)" fill="#fff" font-size="51" font-family="Montserrat-Medium, Montserrat" font-weight="500"><tspan x="0" y="0">st</tspan></text>
+      <text id="ri" transform="translate(218.295 102.524)" fill="#fff" font-size="50" font-family="Montserrat-Medium, Montserrat" font-weight="500"><tspan x="0" y="0">ri</tspan></text>
+      <g id="Group_1" data-name="Group 1" transform="translate(182.385 72.574)">
+        <path id="Path_1" data-name="Path 1" d="M76.347,8.31A17.157,17.157,0,0,1,82,9.27a7.278,7.278,0,0,0-1.646,2.3,14.343,14.343,0,0,0-16.824,7.325l-2.694-.607a17.027,17.027,0,0,1,15.5-9.975ZM92.273,19.3A17.044,17.044,0,0,1,79.182,42.126l-.74-2.606A14.348,14.348,0,0,0,90.019,21a7.15,7.15,0,0,0,2.254-1.7Zm-15.6,23.057h-.326A17.032,17.032,0,0,1,59.98,20.627l2.632.59A14.35,14.35,0,0,0,75.906,39.661Z" transform="translate(-59.32 -8.31)" fill="#3494ff" fill-rule="evenodd"/>
+        <circle id="Ellipse_1" data-name="Ellipse 1" cx="4.78" cy="4.78" r="4.78" transform="translate(22.811 1.435)" fill="#0078ff"/>
+        <path id="Path_2" data-name="Path 2" d="M84.2,25.43l-7.536-5.159a1.84,1.84,0,0,0-.986-.361c-.563,0-.916.449-.916,1.206V32.262c0,.757.352,1.206.907,1.206a1.84,1.84,0,0,0,.986-.361l7.536-5.159A1.429,1.429,0,0,0,84.2,25.43Z" transform="translate(-61.167 -9.698)" fill="#519ef4" fill-rule="evenodd"/>
+      </g>
+    </g>
+  </g>
+</svg>
