@@ -3,6 +3,7 @@
   <h1>This is the Landing Page</h1>
   <h2>You can Login or Sign Up</h2>
   <h2>Goto <router-link :to="{name: 'Home'}">Home Page</router-link></h2>
+  <h2>Goto <router-link :to="{name: 'Editor'}">The Editor</router-link></h2>
 
   <h3>Waiting for the UI Design</h3>
 </div>

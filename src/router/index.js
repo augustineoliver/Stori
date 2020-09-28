@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import LandingPage from "@/views/LandingPage";
 import Login from "@/views/auth/Login";
 import SignUp from "@/views/auth/SignUp";
+import Editor from "@/views/editor/Editor";
 
 Vue.use(VueRouter)
 
@@ -28,7 +29,11 @@ const routes = [
     name: 'Home',
     component: Home
   },
-
+  {
+    path: '/editor',
+    name: 'Editor',
+    component: Editor
+  },
   // {
   //   path: '/about',
   //   name: 'About',
