@@ -1,7 +1,7 @@
 <template>
 <div>
   <h1>This is the Landing Page</h1>
-  <h2>You can Login or Sign Up</h2>
+  <h2>You can <router-link :to="{name: 'Login'}">Login</router-link> or <router-link :to="{name: 'SignUp'}">Sign</router-link> Up</h2>
   <h2>Goto <router-link :to="{name: 'Home'}">Home Page</router-link></h2>
   <h2>Goto <router-link :to="{name: 'Editor'}">The Editor</router-link></h2>
 
