@@ -1,7 +1,9 @@
 <template>
 <div class="main">
   <div class="left">
-    <div class="loginBox">
+    <div>
+      <img class="abstractImage" src="../../assets/images/login/Ellipse 140.png" height="406" width="406" alt=""/>
+      <div class="loginBox">
       <div>
         <img src="../../assets/images/home/logo.svg" alt="Stori Logo">
       </div>
@@ -17,7 +19,7 @@
             <input type="email">
           </span>
           <span>
-            <i class="fa fa-check-circle"></i>
+            <i class="fa fa-check-circle" @click="showingPassword = true"></i>
           </span>
         </label>
 
@@ -27,11 +29,12 @@
           </span>
 
           <span class="mainInput">
-            <span>Email Address</span>
-            <input type="password">
+            <span>Password</span>
+            <input :type="showingPassword ? 'text' : 'password'">
           </span>
           <span>
-            <i class="fa fa-eye"></i>
+            <i class="fa fa-eye" v-if="showingPassword === false" @click="showingPassword = true"></i>
+            <i class="fa fa-eye-slash" v-if="showingPassword === true" @click="showingPassword = false"></i>
           </span>
         </label>
       </div>
@@ -40,34 +43,42 @@
         <div>Forget Password?</div>
         <div>
           <button class="signIn">Sign In</button>
-          <button class="signOut">Sign Up</button>
+          <router-link :to="{name: 'SignUp'}"><button class="signOut">Sign Up</button></router-link>
         </div>
       </div>
 
       <div>
-          <div>
+          <div class="or">
             <hr>
             <div>OR</div>
           </div>
-          <div>You can also join us with these apps</div>
-          <div>
+          <div class="joinWithApps">You can also join us with these apps</div>
+          <div class="socialLogin">
             <img src="../../assets/images/login/google.svg" alt="">
             <img src="../../assets/images/login/facebook.svg" alt="">
             <img src="../../assets/images/login/twitter.svg" alt="">
           </div>
         </div>
     </div>
+      <img class="abstractImage2" src="../../assets/images/login/Ellipse 139.png" height="406" width="406" alt=""/>
+    </div>
+
   </div>
 
   <div class="right">
-    <img src="../../assets/images/login/login-background.png" height="1706" width="737"/>
+    <img src="../../assets/images/login/login-background.png" height="1706" width="737" alt=""/>
   </div>
 </div>
 </template>
 
 <script>
 export default {
-name: "Login"
+  name: "Login",
+  data() {
+    return {
+      showingPassword: false
+    }
+  }
 }
 </script>
 
@@ -91,6 +102,20 @@ name: "Login"
     min-width: 50%;
     width: max-content;
 
+    .abstractImage {
+      position: absolute;
+      margin-top: -40px;
+      margin-left: 120px;
+      z-index: 0;
+    }
+
+    .abstractImage2 {
+      position: absolute;
+      margin-top: -370px;
+      margin-left: -40px;
+      z-index: 0;
+    }
+
     .loginBox {
       width: 500px;
       height: auto;
@@ -98,6 +123,9 @@ name: "Login"
       border-radius: 15px;
       border: 1px solid #519EF4;
       box-sizing: border-box;
+      background: black;
+      position: relative;
+      z-index: 2;
 
       .welcomeMessage {
         font-size: 25px;
@@ -125,6 +153,7 @@ name: "Login"
           display: flex;
           justify-content: space-between;
           align-items: center;
+          background: rgba(0,0,0,0);
           height: 55px;
           :first-child {
             width: 60px;
@@ -166,11 +195,20 @@ name: "Login"
               background: rgba(0,0,0,0);
               border: none;
               color: white;
+              &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active {
+                border: none;
+                background-color: rgba(0,0,0,0);
+                -webkit-text-fill-color: white;
+                -webkit-box-shadow: none;
+                outline: none;
+                box-shadow: none;
+                transition: background-color 5000s ease-in-out 0s;
+              }
             }
           }
           i {
             font-size: 20px;
-            &.fa-eye {
+            &.fa-eye, &.fa-eye-slash {
               cursor: pointer;
             }
           }
@@ -180,11 +218,12 @@ name: "Login"
       .signInSignOut {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         margin-top: 60px;
         padding: 5px 2px;
 
         .signIn {
-          width: 132px;
+          width: 100px;
           height: 59px;
           border: none;
           border-radius: 5px;
@@ -195,14 +234,50 @@ name: "Login"
         }
 
         .signOut {
-          width: 132px;
+          width: 100px;
           height: 59px;
           border: none;
           border-radius: 5px;
-          background: #519ef4;
+          background: rgba(81, 158, 244, 0.11);
           color: white;
           cursor: pointer;
           margin: 12px;
+        }
+      }
+
+      .or {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
+
+        hr {
+          width: 100%;
+          border: #535a61 1px solid;
+        }
+        div {
+          position: absolute;
+          background: black;
+          width: 50px;
+          height: 50px;
+          text-align: center;
+        }
+      }
+
+      .joinWithApps {
+        font-size: 12px;
+        line-height: 14px;
+        text-align: center;
+      }
+
+      .socialLogin {
+        margin: 20px;
+        display: flex;
+        justify-content: space-around;
+
+        img {
+          cursor: pointer;
+          width: 50px;
+          height: 50px;
         }
       }
     }
