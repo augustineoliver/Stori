@@ -72,6 +72,7 @@
 
 <script>
 import axios from "axios";
+import router from "@/router";
 export default {
   name: "Login",
   data() {
@@ -89,10 +90,9 @@ export default {
         email : this.email,
         password : this.password
       }
-      console.log(this.baseUrl)
-      console.log(this.baseUrl)
       axios.post(`${this.baseUrl}auth/login`, payload).then(res => {
         console.log(res.data);
+        router.push('editor')
       })
     }
   }

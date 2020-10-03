@@ -17,7 +17,7 @@
           </span>
           <span class="mainInput">
             <span>Full Name</span>
-            <input type="text">
+            <input type="text" v-model="fullName">
           </span>
           <span>
             <i class="fa fa-check-circle" style="visibility: hidden"></i>
@@ -30,7 +30,7 @@
           </span>
           <span class="mainInput">
             <span>Email Address</span>
-            <input type="email">
+            <input type="email" v-model="email">
           </span>
           <span>
             <i class="fa fa-check-circle" @click="showingPassword = true"></i>
@@ -44,7 +44,7 @@
 
           <span class="mainInput">
             <span>Password</span>
-            <input :type="showingPassword ? 'text' : 'password'">
+            <input :type="showingPassword ? 'text' : 'password'" v-model="password">
           </span>
           <span>
             <i class="fa fa-eye" v-if="showingPassword === false" @click="showingPassword = true"></i>
@@ -56,8 +56,8 @@
       <div class="signInSignOut">
         <div>Forget Password?</div>
         <div>
+          <button class="signIn" @click="register">Sign Up</button>
           <router-link :to="{name: 'Login'}"><button class="signOut">Sign In</button></router-link>
-          <button class="signIn">Sign Up</button>
         </div>
       </div>
 
@@ -86,11 +86,32 @@
 </template>
 
 <script>
+import axios from "axios";
+import router from "@/router";
+
 export default {
   name: "SignUp",
   data() {
     return {
-      showingPassword: false
+      fullName: '',
+      email: '',
+      password: '',
+      showingPassword: false,
+      baseUrl: process.env.VUE_APP_baseUrl
+    }
+  },
+
+  methods: {
+    register() {
+      const payload = {
+        username: this.fullName,
+        email : this.email,
+        password : this.password
+      }
+      axios.post(`${this.baseUrl}auth/register`, payload).then(res => {
+        console.log(res.data);
+        router.push('editor')
+      })
     }
   }
 }
@@ -241,7 +262,7 @@ export default {
           height: 59px;
           border: none;
           border-radius: 5px;
-          background: #519EF4;
+          background: rgba(81, 158, 244, 0.11);
           color: white;
           cursor: pointer;
           margin: 12px;
@@ -252,7 +273,7 @@ export default {
           height: 59px;
           border: none;
           border-radius: 5px;
-          background: rgba(81, 158, 244, 0.11);
+          background: #519EF4;
           color: white;
           cursor: pointer;
           margin: 12px;
