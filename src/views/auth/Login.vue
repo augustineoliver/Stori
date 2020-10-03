@@ -16,7 +16,7 @@
           </span>
           <span class="mainInput">
             <span>Email Address</span>
-            <input type="email">
+            <input type="email" v-model="email">
           </span>
           <span>
             <i class="fa fa-check-circle" @click="showingPassword = true"></i>
@@ -30,7 +30,7 @@
 
           <span class="mainInput">
             <span>Password</span>
-            <input :type="showingPassword ? 'text' : 'password'">
+            <input :type="showingPassword ? 'text' : 'password'" v-model="password">
           </span>
           <span>
             <i class="fa fa-eye" v-if="showingPassword === false" @click="showingPassword = true"></i>
@@ -42,7 +42,7 @@
       <div class="signInSignOut">
         <div>Forget Password?</div>
         <div>
-          <button class="signIn">Sign In</button>
+          <button type="button" class="signIn" @click="login">Sign In</button>
           <router-link :to="{name: 'SignUp'}"><button class="signOut">Sign Up</button></router-link>
         </div>
       </div>
@@ -62,7 +62,6 @@
     </div>
       <img class="abstractImage2" src="../../assets/images/login/Ellipse 139.png" height="406" width="406" alt=""/>
     </div>
-
   </div>
 
   <div class="right">
@@ -72,11 +71,29 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Login",
   data() {
     return {
-      showingPassword: false
+      email: '',
+      password: '',
+      showingPassword: false,
+      baseUrl: process.env.VUE_APP_baseUrl
+    }
+  },
+
+  methods: {
+    login() {
+      const payload = {
+        email : this.email,
+        password : this.password
+      }
+      console.log(this.baseUrl)
+      console.log(this.baseUrl)
+      axios.post(`${this.baseUrl}auth/login`, payload).then(res => {
+        console.log(res.data);
+      })
     }
   }
 }
