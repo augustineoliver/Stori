@@ -1,5 +1,5 @@
 <template>
-<div class="main">
+<div class="loginMain">
   <div class="left">
     <div>
       <img class="abstractImage" src="../../assets/images/login/Ellipse 140.png" height="406" width="406" alt=""/>
@@ -91,7 +91,6 @@ export default {
 
   methods: {
     login() {
-      console.log('QQQQQQQQQQQQQQQQQQQQ')
       const payload = {
         email : this.email,
         password : this.password
@@ -137,7 +136,7 @@ export default {
 </script>
 
 <style lang="scss">
-.main {
+.loginMain {
   background: black;
   width: 100%;
   height: 100vh;
@@ -173,7 +172,7 @@ export default {
     .loginBox {
       width: 500px;
       height: auto;
-      padding: 50px;
+      padding: 2vh 50px;
       border-radius: 15px;
       border: 1px solid #519EF4;
       box-sizing: border-box;
@@ -192,7 +191,7 @@ export default {
         border: 1px solid #CBDBEC;
         display: flex;
         flex-direction: column;
-        margin-top: 73px;
+        margin-top: 5vh;
 
         .email {
           padding: 25px 35px 15px 35px;
@@ -208,7 +207,7 @@ export default {
           justify-content: space-between;
           align-items: center;
           background: rgba(0,0,0,0);
-          height: 55px;
+          height: 50px;
           :first-child {
             width: 60px;
             text-align: center;
@@ -273,7 +272,7 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 60px;
+        margin-top: 4vh;
         padding: 5px 2px;
 
         .signIn {

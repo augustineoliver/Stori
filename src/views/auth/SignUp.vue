@@ -110,7 +110,10 @@ export default {
       }
       axios.post(`${this.baseUrl}auth/register`, payload).then(res => {
         console.log(res.data);
-        router.push('editor')
+        if (res.data.data) {
+          localStorage.setItem('authToken', res.data.data.accessToken)
+          router.push('editor')
+        }
       })
     }
   }
@@ -121,12 +124,12 @@ export default {
 .main {
   background: black;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   display: flex;
-  overflow: hidden!important;
+  overflow-y: hidden!important;
   justify-content: space-between;
   color: white;
 
@@ -135,6 +138,8 @@ export default {
     justify-content: center;
     align-items: center;
     min-width: 50%;
+    max-height: 100%;
+    overflow: hidden;
     width: max-content;
 
     .abstractImage {
@@ -154,7 +159,7 @@ export default {
     .loginBox {
       width: 500px;
       height: auto;
-      padding: 30px 50px;
+      padding: 2vh 50px;
       border-radius: 15px;
       border: 1px solid #519EF4;
       box-sizing: border-box;
@@ -173,7 +178,7 @@ export default {
         border: 1px solid #CBDBEC;
         display: flex;
         flex-direction: column;
-        margin-top: 65px;
+        margin-top: 5vh;
 
         .email {
           padding: 25px 35px 15px 35px;
@@ -189,7 +194,7 @@ export default {
           justify-content: space-between;
           align-items: center;
           background: rgba(0,0,0,0);
-          height: 55px;
+          height: 50px;
           :first-child {
             width: 60px;
             text-align: center;
@@ -254,7 +259,7 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 40px;
+        margin-top: 3vh;
         padding: 5px 2px;
 
         .signIn {
@@ -283,7 +288,7 @@ export default {
       .or {
         display: flex;
         justify-content: center;
-        margin: 30px 0;
+        margin: 2vh 0;
 
         hr {
           width: 100%;
@@ -293,7 +298,7 @@ export default {
           position: absolute;
           background: black;
           width: 50px;
-          height: 50px;
+          height: 30px;
           text-align: center;
         }
       }
@@ -305,7 +310,7 @@ export default {
       }
 
       .socialLogin {
-        margin: 20px;
+        margin: 2vh 20px;
         display: flex;
         justify-content: space-around;
 
