@@ -29,32 +29,89 @@
         <div>Menu</div>
       </nav>
       <div class="unsplashPhotos">
-        <img draggable="true" v-for="(photo, index) in unsplashPhotos" :key="index" :src="photo.urls.thumb" :alt="photo.alt_description">
+        <img draggable="true" @mousedown="drag($event)" v-for="(photo, index) in unsplashPhotos" :key="index" :src="photo.urls.thumb" :data-src="photo.urls.full" :alt="photo.alt_description">
       </div>
     </div>
-    <div class="editor"><h1>This is the Work Area</h1></div>
+    <div class="editor">
+      <div>
+        <div>
+          <div class="page" id="page" @drop="drop($event)" @dragover.prevent @dragenter.prevent></div>
+        </div>
+        <footer></footer>
+      </div>
+      <aside>Options</aside>
+    </div>
   </div>
 </main>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Editor",
 
   data () {
     return {
+      draggedElement: null,
+      nextSibling: null,
       unsplashPhotos: []
     }
   },
 
+  mounted() {
+  },
+
   methods: {
     getUnsplashPhotos() {
-      fetch('https://api.unsplash.com/photos?per_page=20&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b')
-        .then(response => response.json())
-        .then(res => {
-          this.unsplashPhotos = res;
+      axios.get('https://api.unsplash.com/photos?per_page=20&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b')
+      .then(res => {
+        this.unsplashPhotos = res.data;
+      })
+    },
+
+    allowDrop({ target, transform }) {
+      // ev.preventDefault();
+      console.log(target);
+      console.log(transform);
+    },
+
+    drag(evt) {
+      console.log(evt);
+      this.draggedElement = evt.target;
+    },
+
+    drop( evt ) {
+      evt.preventDefault();
+      if (this.draggedElement) {
+        const photo = this.draggedElement.cloneNode(true)
+
+        console.log(evt);
+        photo.addEventListener('drag', (element) => {
+          console.log('page X:',(element.pageX -document.getElementById('page').offsetLeft))
+          console.log('page Y:',(element.pageY - document.getElementById('page').offsetTop))
+          element.target.style.top = (element.pageY - document.getElementById('page').offsetTop) + 'px';
+          element.target.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
         })
-    }
+        photo.addEventListener('mousedown', () => {
+          photo.style.zIndex  = '2';
+        })
+        photo.addEventListener('mouseup', () => {
+          photo.style.zIndex  = '1';
+        })
+
+        photo.ondragstart = 'this.drag($event)';
+        photo.classList.add('inUse');
+        photo.src = photo.dataset.src;
+        photo.style.filter = 'blur(8px)';
+        photo.style = 'width: 180px; height: auto; position: absolute';
+        photo.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
+        photo.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
+
+        evt.target.appendChild(photo);
+        this.draggedElement = null;
+      }
+    },
   },
 
   created () {
@@ -79,7 +136,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #CBDBEC;
+    //border-bottom: 1px solid #CBDBEC;
     box-sizing: border-box;
 
     .rightHeader {
@@ -140,6 +197,22 @@ main {
     box-sizing: border-box;
     width: 100%;
 
+    ::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      background-color: #F5F5F5;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      background-color: #F5F5F5;
+    }
+    ::-webkit-scrollbar:horizontal {
+      height: 6px;
+      background-color: #F5F5F5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: #000000;
+    }
+
     .leftPanel {
       display: flex;
       width: 400px;
@@ -174,8 +247,47 @@ main {
     }
 
     .editor {
-      background: #F2F2F2;
+      background: #202125;
       width: calc(100% - 400px);
+      display: flex;
+
+      > div {
+        display: flex;
+        width: calc(100% - 250px);
+
+        > div {
+          display: flex;
+          justify-content: center;
+          padding: 50px;
+          width: 100%;
+          box-sizing: border-box;
+          height: calc(100% - 50px);
+          overflow: auto;
+
+          .page {
+            width: 360px;
+            height: 600px;
+            background: #eeeeee;
+            display: block;
+            margin: 100px;
+            transform: scale(1.25, 1.25);
+          }
+        }
+
+        footer {
+          width: calc(100% - 650px);
+          height: 50px;
+          background: black;
+          position: fixed;
+          bottom: 0;
+          border-top: 2px solid #2B2D32;
+        }
+      }
+
+      aside {
+        width: 250px;
+        background: #2b2d32;
+      }
     }
   }
 

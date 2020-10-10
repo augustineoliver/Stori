@@ -5,6 +5,7 @@ import LandingPage from "@/views/LandingPage";
 import Login from "@/views/auth/Login";
 import SignUp from "@/views/auth/SignUp";
 import Editor from "@/views/editor/Editor";
+import Upload from "@/views/Upload";
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,11 @@ const routes = [
     name: 'Editor',
     component: Editor
   },
+  {
+    path: '/upload',
+    name: 'Upload',
+    component: Upload
+  },
   // {
   //   path: '/about',
   //   name: 'About',
@@ -48,6 +54,15 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'Login' && to.name !== 'SignUp' && !localStorage.getItem('authToken')) {
+    next({ name: 'Login' });
+  }
+  else if ((to.name === 'Login' || to.name === 'SignUp' || to.name === 'LandingPage') && localStorage.getItem('authToken')) {
+    next({ name: 'Editor' });
+  } else next()
 })
 
 export default router

@@ -42,7 +42,7 @@
       <div class="signInSignOut">
         <div>Forget Password?</div>
         <div>
-          <button type="button" class="signIn" @click="login">Sign In</button>
+          <button type="button" class="signIn" @click="login()">Sign In</button>
           <router-link :to="{name: 'SignUp'}"><button class="signOut">Sign Up</button></router-link>
         </div>
       </div>
@@ -54,7 +54,7 @@
           </div>
           <div class="joinWithApps">You can also join us with these apps</div>
           <div class="socialLogin">
-            <img src="../../assets/images/login/google.svg" alt="">
+            <img id="google-signin-btn" src="../../assets/images/login/google.svg" alt="">
             <img src="../../assets/images/login/facebook.svg" alt="">
             <img src="../../assets/images/login/twitter.svg" alt="">
           </div>
@@ -73,6 +73,7 @@
 <script>
 import axios from "axios";
 import router from "@/router";
+
 export default {
   name: "Login",
   data() {
@@ -84,16 +85,52 @@ export default {
     }
   },
 
+  mounted() {
+    this.loginWithGoogle()
+  },
+
   methods: {
     login() {
+      console.log('QQQQQQQQQQQQQQQQQQQQ')
       const payload = {
         email : this.email,
         password : this.password
       }
       axios.post(`${this.baseUrl}auth/login`, payload).then(res => {
         console.log(res.data);
+        localStorage.setItem('authToken', res.data.data.accessToken)
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('authToken');
         router.push('editor')
       })
+    },
+
+    loginWithGoogle() {
+      setTimeout(()=> {
+        // eslint-disable-next-line no-undef
+        const Gapi = gapi
+        Gapi.load('auth2', function() {
+          const element = document.getElementById('google-signin-btn');
+          Gapi.auth2.init({
+              client_id: '252136885939-lhbtv3te5c82ffiu3iqq07spdl7rfq73.apps.googleusercontent.com',// this is the button "id"
+          }).attachClickHandler(element, {}, () => {
+            console.log('Sing in successful')
+            Gapi.signin2.render('google-signin-btn', {
+            onsuccess: (googleUser) => {
+              const profile = googleUser.getBasicProfile();
+              console.log('Full Name: ' + profile.getName());
+              console.log("Email: " + profile.getEmail());
+              console.log("Email: ", googleUser.getAuthResponse());
+              localStorage.setItem('authToken', googleUser.getAuthResponse().id_token)
+              axios.defaults.headers.common['Authorization'] = localStorage.getItem('authToken');
+              router.push('editor')
+            }
+          })
+          }, () => {
+            console.log('Sing in Failed')
+          });
+          console.log(Gapi)
+        })
+      },500);
     }
   }
 }
