@@ -81,6 +81,17 @@ export default {
       this.draggedElement = evt.target;
     },
 
+    alwaysOnTop(element) {
+      const allElement = document.getElementById('page').children;
+      let highestIndex = 0
+      allElement.forEach(ele => {
+        if (Number(ele.style.zIndex) > highestIndex) {
+          highestIndex = Number(ele.style.zIndex);
+        }
+        element.style.zIndex  = highestIndex + 1;
+      })
+    },
+
     drop( evt ) {
       evt.preventDefault();
       if (this.draggedElement) {
@@ -88,22 +99,22 @@ export default {
 
         console.log(evt);
         photo.addEventListener('drag', (element) => {
+          this.alwaysOnTop(photo);
           console.log('page X:',(element.pageX -document.getElementById('page').offsetLeft))
           console.log('page Y:',(element.pageY - document.getElementById('page').offsetTop))
           element.target.style.top = (element.pageY - document.getElementById('page').offsetTop) + 'px';
           element.target.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
         })
-        photo.addEventListener('mousedown', () => {
-          photo.style.zIndex  = '2';
-        })
-        photo.addEventListener('mouseup', () => {
-          photo.style.zIndex  = '1';
+        photo.addEventListener('click', () => {
+          this.alwaysOnTop(photo);
+          console.log(photo)
         })
 
         photo.ondragstart = 'this.drag($event)';
         photo.classList.add('inUse');
         photo.src = photo.dataset.src;
         photo.style.filter = 'blur(8px)';
+        photo.id = new Date();
         photo.style = 'width: 180px; height: auto; position: absolute';
         photo.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
         photo.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
