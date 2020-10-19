@@ -55,7 +55,7 @@
           <div class="joinWithApps">You can also join us with these apps</div>
           <div class="socialLogin">
             <img id="google-signin-btn" src="../../assets/images/login/google.svg" alt="">
-            <img src="../../assets/images/login/facebook.svg" alt="">
+            <img @click="loginWithFacebook" src="../../assets/images/login/facebook.svg" alt="">
             <img src="../../assets/images/login/twitter.svg" alt="">
           </div>
         </div>
@@ -71,6 +71,7 @@
 </template>
 
 <script>
+import facebookLogin from 'facebook-login';
 import axios from "axios";
 import router from "@/router";
 
@@ -78,6 +79,7 @@ export default {
   name: "Login",
   data() {
     return {
+      api: facebookLogin({ appId: '314165856501572' }),
       email: '',
       password: '',
       showingPassword: false,
@@ -130,6 +132,15 @@ export default {
           console.log(Gapi)
         })
       },500);
+    },
+
+    loginWithFacebook() {
+      this.api.login().then(res => {
+        console.log(res);
+        localStorage.setItem('authToken', res.authResponse.accessToken);
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('authToken');
+        router.push('editor');
+      });
     }
   }
 }
