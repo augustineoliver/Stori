@@ -10,13 +10,17 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
     "axios": "^0.20.0",
+    "buefy": "^0.9.3",
     "core-js": "^3.6.5",
+    "css-loader": "^5.0.0",
     "dotenv-webpack": "^3.0.0",
     "facebook-login": "^1.4.1",
     "interceptors": "^1.0.2",
     "jwt-decode": "^3.0.0",
+    "postcss-loader": "^4.0.4",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
+    "vue-loader": "^15.9.3",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
   },
