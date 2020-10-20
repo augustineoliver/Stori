@@ -57,7 +57,6 @@ name: "Upload",
 </script>
 
 <style lang="scss">
-@import "~animate.css/animate.css";
 .uploadMain {
   display: block;
   background: black;
