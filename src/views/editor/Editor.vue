@@ -32,7 +32,7 @@
         <img draggable="true" @mousedown="drag($event)" v-for="(photo, index) in unsplashPhotos" :key="index" :src="photo.urls.thumb" :data-src="photo.urls.full" :alt="photo.alt_description">
       </div>
       <div class="unsplashPhotos" v-if="activeMedia === 'uploadedMedia'">
-        <img draggable="true" @mousedown="drag($event)" v-for="(photo, index) in unsplashPhotos" :key="index" :src="photo.urls.thumb" :data-src="photo.urls.full" :alt="photo.alt_description">
+        <img draggable="true" @mousedown="drag($event)" v-for="(photo, index) in uploadedMedia" :key="index" :src="photo.file" :data-src="photo.file" alt="">
       </div>
     </div>
     <div class="editor">
@@ -64,7 +64,18 @@ export default {
       draggedElement: null,
       nextSibling: null,
       unsplashPhotos: [],
-      uploadedMedia: []
+      uploadedMedia: [],
+    //  data for resizing
+      element: undefined,
+      resizers: undefined,
+      currentResizer: undefined,
+      minimum_size: 20,
+      original_width: 0,
+      original_height: 0,
+      original_x: 0,
+      original_y: 0,
+      original_mouse_x: 0,
+      original_mouse_y: 0,
     }
   },
 
@@ -123,64 +134,173 @@ export default {
         })
 
         div.classList.add('inUse');
+        div.classList.add('resizable');
         div.id = new Date().toISOString();
         div.draggable = 'true';
         div.style = 'width: 180px; height: content-box; position: absolute';
         div.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
         div.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
+        div.innerHTML = `
+        <div class='resizers' id="resizers-${new Date().toTimeString()}" >
+          <div class='resizer top-left'></div>
+          <div class='resizer top-right'></div>
+          <div class='resizer bottom-left'></div>
+          <div class='resizer bottom-right'></div>
+        </div>`;
         photo.style = 'width: 100%; height: auto'
         // photo.style.filter = 'blur(8px)';
         photo.ondragstart = 'this.drag($event)';
         // photo.classList.add('inUse');
         photo.src = photo.dataset.src;
-        div.innerHTML = `
-        <div class="resizerFrame">
-          <div class="leftResizer">
-            <div class="resizer topLeftResizer" id="topLeft" draggable="true"></div>
-            <div class="resizer bottomLeftResizer"></div>
-          </div>
-          <div class="rightResizer">
-            <div class="resizer topRightResizer"></div>
-            <div class="resizer bottomRightResizer"></div>
-          </div>
-          <div style="position: absolute; top: 0; border: solid 1px dodgerblue; height: 0; width: 100%"></div>
-          <div style="position: absolute; bottom: 0; border: solid 1px dodgerblue; height: 0; width: 100%"></div>
-        </div>`;
-        setTimeout(() => {
-          document.getElementById('topLeft').addEventListener('mousedown', (element) => {
-            this.resizeElement(element, div.id);
-          })
-        }, 500)
-        div.appendChild(photo);
+        photo.onclick = this.resizeElement(div.children[0].id, '.resizers')
+
+        // setTimeout(() => {
+        //   document.getElementById('topLeft').addEventListener('mousedown', (element) => {
+        //     this.resizeElement(element, div.id);
+        //   })
+        // }, 500)
+        div.children[0].appendChild(photo);
         evt.target.appendChild(div);
         this.draggedElement = null;
       }
     },
 
-    resizeElement(event, id) {
-      console.log('This is cool', event);
-      document.getElementById('topLeft').addEventListener('drag', (moveEvent) => {
-        console.log(document.getElementById(id).offsetTop + (document.getElementById(id).getBoundingClientRect().top - moveEvent.pageY));
-        // console.log(document.getElementById(id).offsetLeft);
-        // console.log(moveEvent.pageX);
-        // console.log(document.getElementById(id).getBoundingClientRect().left);
-        console.log('QQQQQQQQQQQQQQ: ', moveEvent);
-        document.getElementById(id).style.width = document.getElementById(id).clientWidth + (document.getElementById(id).getBoundingClientRect().left - moveEvent.pageX)  + 'px';
-        document.getElementById(id).style.left = document.getElementById(id).offsetLeft + (document.getElementById(id).getBoundingClientRect().left - moveEvent.pageX)  + 'px';
-        document.getElementById(id).style.top = document.getElementById(id).offsetTop + (document.getElementById(id).getBoundingClientRect().top - moveEvent.pageY)  + 'px';
-        // document.getElementById(id).style.width = document.getElementById(id).clientWidth + (moveEvent.pageX - document.getElementById(id).getBoundingClientRect().left)  + 'px';
-      })
+    resizeElement(divElement, className) {
+      // document.getElementById('topLeft').addEventListener('drag', (moveEvent) => {
+      //   console.log(document.getElementById(id).offsetTop + (document.getElementById(id).getBoundingClientRect().top - moveEvent.pageY));
+      //   // console.log(document.getElementById(id).offsetLeft);
+      //   // console.log(moveEvent.pageX);
+      //   // console.log(document.getElementById(id).getBoundingClientRect().left);
+      //   console.log('QQQQQQQQQQQQQQ: ', moveEvent);
+      //   document.getElementById(id).style.width = document.getElementById(id).clientWidth + (document.getElementById(id).getBoundingClientRect().left - moveEvent.pageX)  + 'px';
+      //   document.getElementById(id).style.left = document.getElementById(id).offsetLeft + (document.getElementById(id).getBoundingClientRect().left - moveEvent.pageX)  + 'px';
+      //   document.getElementById(id).style.top = document.getElementById(id).offsetTop + (document.getElementById(id).getBoundingClientRect().top - moveEvent.pageY)  + 'px';
+      //   // document.getElementById(id).style.width = document.getElementById(id).clientWidth + (moveEvent.pageX - document.getElementById(id).getBoundingClientRect().left)  + 'px';
+      // })
+
+
+      setTimeout(() => {
+        this.element = document.getElementById(divElement);
+        console.log('Chyke is here: ', this.element);
+        this.resizers = document.querySelectorAll(className + ' .resizer')
+        // console.log('Chyke is here: ', this.resizers);
+        this.minimum_size = 20;
+        this.original_width = 0;
+        this.original_height = 0;
+        this.original_x = 0;
+        this.original_y = 0;
+        this.original_mouse_x = 0;
+        this.original_mouse_y = 0;
+        console.log('AAAAAAAAAAAAAA: ', this.element)
+        for (let i = 0;i < this.resizers.length; i++) {
+          this.currentResizer = this.resizers[i];
+          const element = this.element;
+          let original_width = this.original_width;
+          let original_height = this.original_height;
+          let original_x = this.original_x;
+          let original_y = this.original_y;
+          let original_mouse_x = this.original_mouse_x;
+          let original_mouse_y = this.original_mouse_y;
+          let minimum_size = this.minimum_size;
+          let currentResizer = this.currentResizer;
+          this.currentResizer.addEventListener('mousedown', function(e) {
+            e.preventDefault()
+            original_width = parseFloat(getComputedStyle(element, null).getPropertyValue('width').replace('px', ''));
+            original_height = parseFloat(getComputedStyle(element, null).getPropertyValue('height').replace('px', ''));
+            original_x = element.getBoundingClientRect().left;
+            original_y = element.getBoundingClientRect().top;
+            original_mouse_x = e.pageX;
+            original_mouse_y = e.pageY;
+            const resize = (e) => {
+              if (currentResizer.classList.contains('bottom-right')) {
+                const width = original_width + (e.pageX - original_mouse_x);
+                const height = original_height + (e.pageY - original_mouse_y)
+                if (width > minimum_size) {
+                  element.parentNode.style.width = width + 'px'
+                }
+                if (height > minimum_size) {
+                  element.parentNode.style.height = height + 'px'
+                }
+              }
+              else if (currentResizer.classList.contains('bottom-left')) {
+                const height = original_height + (e.pageY - original_mouse_y)
+                const width = original_width - (e.pageX - original_mouse_x)
+                if (height > minimum_size) {
+                  element.style.height = height + 'px'
+                }
+                if (width > minimum_size) {
+                  element.style.width = width + 'px'
+                  element.style.left = original_x + (e.pageX - original_mouse_x) + 'px'
+                }
+              }
+              else if (currentResizer.classList.contains('top-right')) {
+                const width = original_width + (e.pageX - original_mouse_x)
+                const height = original_height - (e.pageY - original_mouse_y)
+                if (width > minimum_size) {
+                  element.style.width = width + 'px'
+                }
+                if (height > minimum_size) {
+                  element.style.height = height + 'px'
+                  element.style.top = original_y + (e.pageY - original_mouse_y) + 'px'
+                }
+              }
+              else {
+                const width = original_width - (e.pageX - original_mouse_x)
+                const height = original_height - (e.pageY - original_mouse_y)
+                if (width > minimum_size) {
+                  element.style.width = width + 'px'
+                  element.style.left = original_x + (e.pageX - original_mouse_x) + 'px'
+                }
+                if (height > minimum_size) {
+                  element.style.height = height + 'px'
+                  element.style.top = original_y + (e.pageY - original_mouse_y) + 'px'
+                }
+              }
+            }
+
+            window.addEventListener('mousemove', resize)
+
+            window.addEventListener('mouseup', () => {
+              window.removeEventListener('mousemove', resize)
+              // element: undefined,
+              // resizers: undefined,
+              // currentResizer: undefined,
+              // minimum_size: 20,
+              // original_width: 0,
+              // original_height: 0,
+              // original_x: 0,
+              // original_y: 0,
+              // original_mouse_x: 0,
+              // original_mouse_y: 0,
+            })
+          })
+        }
+      }, 1000)
     },
 
     preview() {
-      // let htmlCode = document.getElementById('page').innerHTML;
-      // htmlCode = htmlCode.replace('img', `amp-img`);
-      //
-      // const startAmpCode = `<!DOCTYPE html>\r\n<html amp=\'\' lang=\'en\'>\r\n<head>\r\n  <meta charset=\'utf-8\'>\r\n  <script async=\'\' src=\'https:\/\/cdn.ampproject.org\/v0.js\'><\/script>\r\n  <script async=\'\' src=\'https:\/\/cdn.ampproject.org\/v0\/amp-story-1.0.js\' custom-element=\'amp-story\'><\/script>\r\n  <script async=\'\' src=\'https:\/\/cdn.ampproject.org\/v0\/amp-analytics-0.1.js\' custom-element=\'amp-analytics\'><\/script>\r\n  <title>Stori App<\/title>\r\n  <link rel=\'canonical\' href=\'https:\/\/www.cnn.com\/ampstories\/us\/labor-day-its-history-and-meaning\'>\r\n    <style amp-boilerplate=\'\'>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}<\/style>\r\n    <noscript>\r\n        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}<\/style>\r\n    <\/noscript>\r\n  <meta name=\'viewport\' content=\'width=device-width,minimum-scale=1,initial-scale=1\'>\r\n<\/head>\r\n<body>\r\n  <amp-story poster-portrait-src=\'https:\/\/dynaimage.cdn.cnn.com\/cnn\/w_768,h_1024,c_scale\/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg\' title=\'Labor Day: Its history and meaning\' standalone=\'\' publisher=\'CNN\' publisher-logo-src=\'https:\/\/stamp.static.cnn.io\/assets\/images\/badge.png\'>\r\n    <amp-story-page id=\'page-cover\' class=\'amp-story-page amp-story-page__full\'>\r\n      <amp-story-grid-layer template=\'fill\' class=\'layer-background align-center justify-center\'>`
-      // const endAmpCode = `<\/amp-story-grid-layer>\r\n    <\/amp-story-page>\r\n  <\/amp-story>\r\n<\/body>\r\n<\/html>\r\n`
-      //
+      let htmlCode = document.getElementById('page').innerHTML;
+      htmlCode = htmlCode.replace('img', `amp-img`);
+
+      const startAmpCode = `<!DOCTYPE html>\r\n<html amp=\'\' lang=\'en\'>\r\n<head>\r\n  <meta charset=\'utf-8\'>\r\n  <script async=\'\' src=\'https:\/\/cdn.ampproject.org\/v0.js\'><\/script>\r\n  <script async=\'\' src=\'https:\/\/cdn.ampproject.org\/v0\/amp-story-1.0.js\' custom-element=\'amp-story\'><\/script>\r\n  <script async=\'\' src=\'https:\/\/cdn.ampproject.org\/v0\/amp-analytics-0.1.js\' custom-element=\'amp-analytics\'><\/script>\r\n  <title>Stori App<\/title>\r\n  <link rel=\'canonical\' href=\'https:\/\/www.cnn.com\/ampstories\/us\/labor-day-its-history-and-meaning\'>\r\n    <style amp-boilerplate=\'\'>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}<\/style>\r\n    <noscript>\r\n        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}<\/style>\r\n    <\/noscript>\r\n  <meta name=\'viewport\' content=\'width=device-width,minimum-scale=1,initial-scale=1\'>\r\n<\/head>\r\n<body>\r\n  <amp-story poster-portrait-src=\'https:\/\/dynaimage.cdn.cnn.com\/cnn\/w_768,h_1024,c_scale\/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg\' title=\'Labor Day: Its history and meaning\' standalone=\'\' publisher=\'CNN\' publisher-logo-src=\'https:\/\/stamp.static.cnn.io\/assets\/images\/badge.png\'>\r\n    <amp-story-page id=\'page-cover\' class=\'amp-story-page amp-story-page__full\'>\r\n      <amp-story-grid-layer template=\'vertical\' class=\'layer-background align-center justify-center\'>`
+      const endAmpCode = `<\/amp-story-grid-layer>\r\n    <\/amp-story-page>\r\n  <\/amp-story>\r\n<\/body>\r\n<\/html>\r\n`
+
       // var a = document.createElement("a");
       // var file = new Blob([startAmpCode + htmlCode + endAmpCode], {type: 'html'});
+      const ampString = startAmpCode + htmlCode + endAmpCode
+
+      const payload = {
+          user_id : "1",
+          name : "great story",
+          file : "hbubibiobgiobgiovbiovbrio3biorbviorviorv",
+          amp_file : ampString
+      }
+      axios.post(`${this.baseUrl}stories/add`, payload)
+      .then(res => {
+        console.log(res)
+        window.open(res.data.data.amp_file, '_blank')
+      })
+      // var a = document.createElement("a");
       // a.id = 'a';
       // a.href = URL.createObjectURL(file);
       // a.download = 'AMP.html';
@@ -190,9 +310,9 @@ export default {
     getUploadedMedia() {
       axios.get(`${this.baseUrl}media`)
       .then(res => {
-        this.uploadedMedia = res.data;
+        this.uploadedMedia = res.data.data;
+        this.activeMedia = 'uploadedMedia';
       })
-      this.activeMedia = 'uploadedMedia';
     }
   },
 
@@ -375,64 +495,110 @@ main {
 
 }
 
-.resizerFrame {
+.resizable {
+  background: white;
+  width: auto;
+  height: auto;
   position: absolute;
-  width: 100%;
-  height: 100%;
-
-  .resizer {
-    width: 10px;
-    height: 10px;
-    background: #f2f2f2;
-    border: 1px solid #d0d0d0;
-    border-radius: 100%;
-    z-index: 2000;
-  }
-
-  .leftResizer {
-    position: absolute;
-    left: 0;
-    border: solid 1px dodgerblue;
-    height: 100%;
-    width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
-    .topLeftResizer {
-      margin-left: -7px;
-      margin-top: -5px;
-      cursor: nw-resize;
-    }
-
-    .bottomLeftResizer {
-      margin-left: -7px;
-      margin-bottom: -5px;
-      cursor: sw-resize;
-    }
-  }
-
-  .rightResizer {
-    position: absolute;
-    right: 0;
-    border: solid 1px dodgerblue;
-    height: 100%;
-    width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
-    .topRightResizer {
-      margin-left: -6px;
-      margin-top: -5px;
-      cursor: ne-resize;
-    }
-
-    .bottomRightResizer {
-      margin-left: -6px;
-      margin-bottom: -5px;
-      cursor: se-resize;
-    }
-  }
+  top: 100px;
+  left: 100px;
 }
+
+.resizable .resizers{
+  width: 100%;
+  height: content-box;
+  border: 3px solid #4286f4;
+  box-sizing: border-box;
+}
+
+.resizable .resizers .resizer{
+  width: 10px;
+  height: 10px;
+  border-radius: 50%; /*magic to turn square into circle*/
+  background: white;
+  border: 3px solid #4286f4;
+  position: absolute;
+}
+
+.resizable .resizers .resizer.top-left {
+  left: -5px;
+  top: -5px;
+  cursor: nwse-resize; /*resizer cursor*/
+}
+.resizable .resizers .resizer.top-right {
+  right: -5px;
+  top: -5px;
+  cursor: nesw-resize;
+}
+.resizable .resizers .resizer.bottom-left {
+  left: -5px;
+  bottom: -5px;
+  cursor: nesw-resize;
+}
+.resizable .resizers .resizer.bottom-right {
+  right: -5px;
+  bottom: -5px;
+  cursor: nwse-resize;
+}
+
+//.resizerFrame {
+//  position: absolute;
+//  width: 100%;
+//  height: 100%;
+//
+//  .resizer {
+//    width: 10px;
+//    height: 10px;
+//    background: #f2f2f2;
+//    border: 1px solid #d0d0d0;
+//    border-radius: 100%;
+//    z-index: 2000;
+//  }
+//
+//  .leftResizer {
+//    position: absolute;
+//    left: 0;
+//    border: solid 1px dodgerblue;
+//    height: 100%;
+//    width: 0;
+//    display: flex;
+//    flex-direction: column;
+//    justify-content: space-between;
+//
+//    .topLeftResizer {
+//      margin-left: -7px;
+//      margin-top: -5px;
+//      cursor: nw-resize;
+//    }
+//
+//    .bottomLeftResizer {
+//      margin-left: -7px;
+//      margin-bottom: -5px;
+//      cursor: sw-resize;
+//    }
+//  }
+//
+//  .rightResizer {
+//    position: absolute;
+//    right: 0;
+//    border: solid 1px dodgerblue;
+//    height: 100%;
+//    width: 0;
+//    display: flex;
+//    flex-direction: column;
+//    justify-content: space-between;
+//
+//    .topRightResizer {
+//      margin-left: -6px;
+//      margin-top: -5px;
+//      cursor: ne-resize;
+//    }
+//
+//    .bottomRightResizer {
+//      margin-left: -6px;
+//      margin-bottom: -5px;
+//      cursor: se-resize;
+//    }
+//  }
+//}
 </style>
