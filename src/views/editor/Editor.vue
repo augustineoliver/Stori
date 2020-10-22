@@ -146,6 +146,7 @@ export default {
           <div class='resizer top-right'></div>
           <div class='resizer bottom-left'></div>
           <div class='resizer bottom-right'></div>
+          <amp-img layout="responsive" content="undefined" src="${photo.dataset.src}"></amp-img>
         </div>`;
         photo.style = 'width: 100%; height: auto'
         // photo.style.filter = 'blur(8px)';
@@ -159,7 +160,7 @@ export default {
         //     this.resizeElement(element, div.id);
         //   })
         // }, 500)
-        div.children[0].appendChild(photo);
+        div.children[0].children[4].appendChild(photo);
         evt.target.appendChild(div);
         this.draggedElement = null;
       }
@@ -280,10 +281,11 @@ export default {
 
     preview() {
       let htmlCode = document.getElementById('page').innerHTML;
-      htmlCode = htmlCode.replace('img', `amp-img`);
+      // htmlCode = htmlCode.replace('img', `amp-img`);
 
-      const startAmpCode = `<!DOCTYPE html>\r\n<html amp=\'\' lang=\'en\'>\r\n<head>\r\n  <meta charset=\'utf-8\'>\r\n  <script async=\'\' src=\'https:\/\/cdn.ampproject.org\/v0.js\'><\/script>\r\n  <script async=\'\' src=\'https:\/\/cdn.ampproject.org\/v0\/amp-story-1.0.js\' custom-element=\'amp-story\'><\/script>\r\n  <script async=\'\' src=\'https:\/\/cdn.ampproject.org\/v0\/amp-analytics-0.1.js\' custom-element=\'amp-analytics\'><\/script>\r\n  <title>Stori App<\/title>\r\n  <link rel=\'canonical\' href=\'https:\/\/www.cnn.com\/ampstories\/us\/labor-day-its-history-and-meaning\'>\r\n    <style amp-boilerplate=\'\'>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}<\/style>\r\n    <noscript>\r\n        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}<\/style>\r\n    <\/noscript>\r\n  <meta name=\'viewport\' content=\'width=device-width,minimum-scale=1,initial-scale=1\'>\r\n<\/head>\r\n<body>\r\n  <amp-story poster-portrait-src=\'https:\/\/dynaimage.cdn.cnn.com\/cnn\/w_768,h_1024,c_scale\/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg\' title=\'Labor Day: Its history and meaning\' standalone=\'\' publisher=\'CNN\' publisher-logo-src=\'https:\/\/stamp.static.cnn.io\/assets\/images\/badge.png\'>\r\n    <amp-story-page id=\'page-cover\' class=\'amp-story-page amp-story-page__full\'>\r\n      <amp-story-grid-layer template=\'vertical\' class=\'layer-background align-center justify-center\'>`
-      const endAmpCode = `<\/amp-story-grid-layer>\r\n    <\/amp-story-page>\r\n  <\/amp-story>\r\n<\/body>\r\n<\/html>\r\n`
+      //eslint-disable-next-line
+      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head>  <meta charset='utf-8'> <style amp-custom>.inUse {overflow: hidden;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'> <\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>Stori App</title>  <link rel='canonical' href='https://www.cnn.com/ampstories/us/labor-day-its-history-and-meaning'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='CNN' publisher-logo-src='https://stamp.static.cnn.io/assets/images/badge.png'>    <amp-story-page id='page-cover' class='amp-story-page amp-story-page__full'>      <amp-story-grid-layer template='vertical' class='layer-background align-center justify-center'>";
+      const endAmpCode = `</amp-story-grid-layer>    </amp-story-page>  </amp-story></body></html>`
 
       // var a = document.createElement("a");
       // var file = new Blob([startAmpCode + htmlCode + endAmpCode], {type: 'html'});
@@ -298,7 +300,7 @@ export default {
       axios.post(`${this.baseUrl}stories/add`, payload)
       .then(res => {
         console.log(res)
-        window.open(res.data.data.amp_file, '_blank')
+        window.open('http://' + res.data.data.amp_file, '_blank')
       })
       // var a = document.createElement("a");
       // a.id = 'a';
@@ -601,4 +603,6 @@ main {
 //    }
 //  }
 //}
+
+.inUse {overflow: hidden;}
 </style>
