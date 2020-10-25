@@ -12,7 +12,7 @@
 
 <script>
 // @ is an alias to /src
-import axios from "axios";
+// import axios from "axios";
 
 
 export default {
@@ -21,7 +21,7 @@ export default {
 
   },
   mounted() {
-    axios.defaults.headers.common['Authorization'] = localStorage.getItem('authToken');
+    // axios.defaults.headers.common['Authorization'] = localStorage.getItem('authToken');
   }
 }
 </script>

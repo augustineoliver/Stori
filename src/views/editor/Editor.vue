@@ -24,16 +24,30 @@
     <div class="leftPanel">
       <nav>
         <div @click="getUnsplashPhotos">Photos</div>
+        <div @click="getPexelsVideos">Video</div>
+        <div @click="getTenorGifs">Gifs</div>
+        <div>Stickers</div>
+        <div @click="getEmoji">Emojis</div>
         <div @click="getUploadedMedia">Upload</div>
-        <div>Menu</div>
+        <div>Text</div>
         <div>Menu</div>
       </nav>
       <div class="unsplashPhotos" v-if="activeMedia === 'unsplashPhotos'">
         <img draggable="true" @mousedown="drag($event)" v-for="(photo, index) in unsplashPhotos" :key="index" :src="photo.urls.thumb" :data-src="photo.urls.full" :alt="photo.alt_description">
       </div>
       <div class="unsplashPhotos" v-if="activeMedia === 'uploadedMedia'">
-        <img draggable="true" @mousedown="drag($event)" v-for="(photo, index) in uploadedMedia" :key="index" :src="photo.file" :data-src="photo.file" alt="">
+        <img draggable="true" @mousedown="drag($event)" v-for="(photo, index) in uploadedMedia" :key="index" :src="'https://' + photo.file" :data-src="'https://' + photo.file" alt="cool">
       </div>
+      <div class="unsplashPhotos" v-if="activeMedia === 'tenorGifs'">
+        <img draggable="true" @mousedown="drag($event)" v-for="(gif, index) in tenorGifs" :key="index" :src="gif.tinygif.url" :data-src="gif.mediumgif.url" alt="">
+      </div>
+      <div class="unsplashPhotos" v-if="activeMedia === 'pexelsVideo'">
+        <img draggable="true" @mousedown="drag($event)" v-for="(video, index) in pexelsVideo" :key="index" :src="video.video_pictures[0].picture" :data-src="video.video_files[0].link" alt="">
+      </div>
+      <div class="unsplashPhotos emojiPanel" v-if="activeMedia === 'emojis'">
+        <span draggable="true" @mousedown="drag($event)"  style="font-size: 3em; height: 100px" v-for="(emoji, index) in emojis" :key="index">{{ emoji.character }}</span>
+      </div>
+
     </div>
     <div class="editor">
       <div>
@@ -42,6 +56,9 @@
         </div>
         <footer>
           <button @click="preview()">Preview</button>
+<!--          <select name="" id="">-->
+
+<!--          </select>-->
         </footer>
       </div>
       <aside>Options</aside>
@@ -58,6 +75,7 @@ export default {
 
   data () {
     return {
+      authToken: `Bearer ${localStorage.getItem('authToken')}`,
       baseUrl: process.env.VUE_APP_baseUrl,
       activeMedia: 'unsplashPhotos',
       dataState: {},
@@ -65,7 +83,11 @@ export default {
       nextSibling: null,
       unsplashPhotos: [],
       uploadedMedia: [],
-    //  data for resizing
+      tenorGifs: [],
+      tenorNextPage: '',
+      pexelsVideo: [],
+      emojis: [],
+      //  data for resizing
       element: undefined,
       resizers: undefined,
       currentResizer: undefined,
@@ -91,6 +113,57 @@ export default {
       this.activeMedia = 'unsplashPhotos';
     },
 
+    getTenorGifs() {
+      axios.get(`https://api.tenor.com/v1/trending?key=LIVDSRZULELA&pos=${this.tenorNextPage}`)
+      .then(res => {
+        this.tenorGifs = res.data;
+        this.tenorNextPage = this.tenorGifs.next;
+        this.tenorGifs = this.tenorGifs.results.map(res => {
+          return {
+            tinygif: res.media[0].tinygif,
+            mediumgif: res.media[0].mediumgif
+          }
+        })
+        console.log(this.tenorGifs);
+      }).catch((err) => {
+        console.log(err)
+      })
+      this.activeMedia = 'tenorGifs';
+    },
+
+    getPexelsVideos() {
+      console.log('WWWWWWWWWWWWWWWWWWWWW')
+      axios.get(`https://api.pexels.com/videos/popular?per_page=20&page${1}`, {headers: {Authorization: '563492ad6f91700001000001b57dca97e28e403a847090e59abecfb9'}})
+      .then(res => {
+        console.log('FFFFFFFFFFFFFFFFFFFFFFFFF')
+        this.pexelsVideo = res.data.videos.filter(res => res.video_files.sort((a, b) => a.width - b.width).shift());
+        // this.pexelsVideo = this.pexelsVideo.filter(res => res.video_files.map(res => res.width !== null));
+        // this.tenorNextPage = this.tenorGifs.next;
+        // this.pexelsVideo = this.pexelsVideo.hits.map(res => {
+        //   return {
+        //     tinygif: res.media[0].tinygif,
+        //     mediumgif: res.media[0].mediumgif
+        //   }
+        // })
+        console.log(this.pexelsVideo);
+      }).catch((err) => {
+        console.log('There was an err: ', err)
+      })
+      this.activeMedia = 'pexelsVideo';
+    },
+
+    getEmoji() {
+      console.log('WWWWWWWWWWWWWWWWWWWWW')
+      axios.get(`https://emoji-api.com/emojis?access_key=be35c1e42b1b97499a7c1897042c9230c7ceb03d`)
+      .then(res => {
+        console.log('FFFFFFFFFFFFFFFFFFFFFFFFF', res.data)
+        this.emojis = res.data;
+      }).catch((err) => {
+        console.log('There was an err: ', err)
+      })
+      this.activeMedia = 'emojis';
+    },
+
     allowDrop({ target, transform }) {
       // ev.preventDefault();
       console.log(target);
@@ -109,7 +182,7 @@ export default {
         if (Number(ele.style.zIndex) > highestIndex) {
           highestIndex = Number(ele.style.zIndex);
         }
-        element.style.zIndex  = highestIndex + 1;
+        element.parentNode.parentNode.parentNode.style.zIndex  = highestIndex + 1;
       })
     },
 
@@ -117,22 +190,7 @@ export default {
       evt.preventDefault();
       if (this.draggedElement) {
         const div = document.createElement('div')
-        const photo = this.draggedElement.cloneNode(true)
-
         console.log(evt);
-        photo.addEventListener('drag', (element) => {
-          this.alwaysOnTop(photo);
-          console.log(element)
-          // console.log('page X:',(element.pageX -document.getElementById('page').offsetLeft))
-          // console.log('page Y:',(element.pageY - document.getElementById('page').offsetTop))
-          element.target.parentNode.style.top = (element.pageY - document.getElementById('page').offsetTop) + 'px';
-          element.target.parentNode.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
-        })
-        div.addEventListener('click', () => {
-          this.alwaysOnTop(photo);
-          console.log(photo)
-        })
-
         div.classList.add('inUse');
         div.classList.add('resizable');
         div.id = new Date().toISOString();
@@ -140,27 +198,86 @@ export default {
         div.style = 'width: 180px; height: content-box; position: absolute';
         div.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
         div.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
-        div.innerHTML = `
-        <div class='resizers' id="resizers-${new Date().toTimeString()}" >
-          <div class='resizer top-left'></div>
-          <div class='resizer top-right'></div>
-          <div class='resizer bottom-left'></div>
-          <div class='resizer bottom-right'></div>
-          <amp-img layout="responsive" content="undefined" src="${photo.dataset.src}"></amp-img>
-        </div>`;
-        photo.style = 'width: 100%; height: auto'
-        // photo.style.filter = 'blur(8px)';
-        photo.ondragstart = 'this.drag($event)';
-        // photo.classList.add('inUse');
-        photo.src = photo.dataset.src;
-        photo.onclick = this.resizeElement(div.children[0].id, '.resizers')
 
-        // setTimeout(() => {
-        //   document.getElementById('topLeft').addEventListener('mousedown', (element) => {
-        //     this.resizeElement(element, div.id);
-        //   })
-        // }, 500)
-        div.children[0].children[4].appendChild(photo);
+        div.addEventListener('drag', (element) => {
+            this.alwaysOnTop(div);
+            console.log(element)
+            // console.log('page X:',(element.pageX -document.getElementById('page').offsetLeft))
+            // console.log('page Y:',(element.pageY - document.getElementById('page').offsetTop))
+            element.target.parentNode.parentNode.parentNode.style.top = (element.pageY - document.getElementById('page').offsetTop) + 'px';
+            element.target.parentNode.parentNode.parentNode.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
+          })
+
+        if (this.activeMedia !== 'pexelsVideo') {
+          const photo = this.draggedElement.cloneNode(true)
+          // photo.addEventListener('drag', (element) => {
+          //   this.alwaysOnTop(photo);
+          //   console.log(element)
+          //   // console.log('page X:',(element.pageX -document.getElementById('page').offsetLeft))
+          //   // console.log('page Y:',(element.pageY - document.getElementById('page').offsetTop))
+          //   element.target.parentNode.parentNode.parentNode.style.top = (element.pageY - document.getElementById('page').offsetTop) + 'px';
+          //   element.target.parentNode.parentNode.parentNode.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
+          // })
+          photo.addEventListener('click', () => {
+            this.alwaysOnTop(photo);
+            console.log(photo)
+          })
+          div.innerHTML = `
+          <div class='resizers' id="resizers-${new Date().toTimeString()}" >
+            <div class='resizer top-left'></div>
+            <div class='resizer top-right'></div>
+            <div class='resizer bottom-left'></div>
+            <div class='resizer bottom-right'></div>
+            <amp-img layout="responsive" content="undefined" width="1" height="1" style="width: 100%; height: auto" src="${photo.dataset.src}"></amp-img>
+          </div>`;
+          photo.style = 'width: 100%; height: auto'
+          // photo.style.filter = 'blur(8px)';
+          photo.ondragstart = 'this.drag($event)';
+          // photo.classList.add('inUse');
+          photo.src = photo.dataset.src;
+          photo.onclick = this.resizeElement(div.children[0].id, '.resizers')
+          div.children[0].children[4].appendChild(photo);
+        } else {
+          const video = document.createElement('video')
+          video.addEventListener('click', () => {
+            this.alwaysOnTop(video);
+            console.log(video)
+          })
+          let width = 0;
+          let height = 0;
+
+          setTimeout(() => {
+            width = getComputedStyle(video, null).getPropertyValue('width').replace('px', '');
+            height = getComputedStyle(video, null).getPropertyValue('height').replace('px', '');
+            console.log('+++++++++++++++++++++', width)
+            console.log('+++++++++++++++++++++', height)
+          }, 200)
+          video.addEventListener("resize", (resize) => {
+            console.log('WWWWWWWWWWWW', resize);
+            // width = getComputedStyle(video, null).getPropertyValue('width').replace('px', '');
+            // height = getComputedStyle(video, null).getPropertyValue('height').replace('px', '');
+          })
+          div.innerHTML = `
+          <div class='resizers' id="resizers-${new Date().toTimeString()}" >
+            <div class='resizer top-left'></div>
+            <div class='resizer top-right'></div>
+            <div class='resizer bottom-left'></div>
+            <div class='resizer bottom-right'></div>
+            <amp-video autoplay layout="responsive" width="1" height="1" style="width: 100%; height: auto" poster="${this.draggedElement.src}">
+                <source src="${this.draggedElement.dataset.src}" type="video/mp4" />
+            </amp-video>
+          </div>`;
+          video.style = 'width: 100%'
+          video.ondragstart = 'this.drag($event)';
+          video.draggable = true;
+          video.controls = true;
+          video.onclick = this.resizeElement(div.children[0].id, '.resizers')
+          const source = document.createElement('source');
+          source.src = this.draggedElement.dataset.src
+          video.appendChild(source);
+          div.children[0].appendChild(video);
+        }
+
         evt.target.appendChild(div);
         this.draggedElement = null;
       }
@@ -224,7 +341,7 @@ export default {
                 }
               }
               else if (currentResizer.classList.contains('bottom-left')) {
-                const height = original_height + (e.pageY - original_mouse_y)
+                const height = original_height - (e.pageY + original_mouse_y)
                 const width = original_width - (e.pageX - original_mouse_x)
                 if (height > minimum_size) {
                   element.style.height = height + 'px'
@@ -236,7 +353,7 @@ export default {
               }
               else if (currentResizer.classList.contains('top-right')) {
                 const width = original_width + (e.pageX - original_mouse_x)
-                const height = original_height - (e.pageY - original_mouse_y)
+                const height = original_height - (e.pageY + original_mouse_y)
                 if (width > minimum_size) {
                   element.style.width = width + 'px'
                 }
@@ -247,7 +364,7 @@ export default {
               }
               else {
                 const width = original_width - (e.pageX - original_mouse_x)
-                const height = original_height - (e.pageY - original_mouse_y)
+                const height = original_height - (e.pageY + original_mouse_y)
                 if (width > minimum_size) {
                   element.style.width = width + 'px'
                   element.style.left = original_x + (e.pageX - original_mouse_x) + 'px'
@@ -281,10 +398,15 @@ export default {
 
     preview() {
       let htmlCode = document.getElementById('page').innerHTML;
+      htmlCode = htmlCode.replaceAll(/<video.+<\/video>/gi, '');
+      htmlCode = htmlCode.replaceAll(/<img.+\/>/gi, '');
+      htmlCode = htmlCode.replaceAll(/<img.+>/gi, '');
+      htmlCode = htmlCode.replaceAll(/<div class="resizer .+"><\/div>/gi, '')
+      // htmlCode = htmlCode.replaceAll(new RegExp('height: ([0-9]|\\.)+px;">'), 'height: fit-content;">') // remove height from main div because of video
       // htmlCode = htmlCode.replace('img', `amp-img`);
 
       //eslint-disable-next-line
-      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head>  <meta charset='utf-8'> <style amp-custom>.inUse {overflow: hidden;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'> <\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>Stori App</title>  <link rel='canonical' href='https://www.cnn.com/ampstories/us/labor-day-its-history-and-meaning'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='CNN' publisher-logo-src='https://stamp.static.cnn.io/assets/images/badge.png'>    <amp-story-page id='page-cover' class='amp-story-page amp-story-page__full'>      <amp-story-grid-layer template='vertical' class='layer-background align-center justify-center'>";
+      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head>  <meta charset='utf-8'> <script async=\"\" custom-element=\"amp-video\" src=\"https://cdn.ampproject.org/v0/amp-video-0.1.js\"><\/script> <style amp-custom>.inUse {overflow: hidden;} amp-video > :first-child {padding-top: 56%!important;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>Stori App</title>  <link rel='canonical' href='https://www.cnn.com/ampstories/us/labor-day-its-history-and-meaning'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='CNN' publisher-logo-src='https://stamp.static.cnn.io/assets/images/badge.png'>    <amp-story-page id='page-cover' class='amp-story-page amp-story-page__full'>      <amp-story-grid-layer template='vertical' class='layer-background align-center justify-center'>";
       const endAmpCode = `</amp-story-grid-layer>    </amp-story-page>  </amp-story></body></html>`
 
       // var a = document.createElement("a");
@@ -297,10 +419,10 @@ export default {
           file : "hbubibiobgiobgiovbiovbrio3biorbviorviorv",
           amp_file : ampString
       }
-      axios.post(`${this.baseUrl}stories/add`, payload)
+      axios.post(`${this.baseUrl}stories/add`, payload, {headers: {Authorization: this.authToken}})
       .then(res => {
         console.log(res)
-        window.open('http://' + res.data.data.amp_file, '_blank')
+        window.open('https://' + res.data.data.amp_file, '_blank')
       })
       // var a = document.createElement("a");
       // a.id = 'a';
@@ -310,9 +432,10 @@ export default {
     },
 
     getUploadedMedia() {
-      axios.get(`${this.baseUrl}media`)
+      axios.post(`${this.baseUrl}media/get`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
       .then(res => {
         this.uploadedMedia = res.data.data;
+        console.log(this.uploadedMedia)
         this.activeMedia = 'uploadedMedia';
       })
     }
@@ -440,6 +563,20 @@ main {
         justify-content: flex-start;
         box-sizing: border-box;
 
+        &.emojiPanel {
+          flex-direction: row;
+          justify-content: space-between;
+
+          span {
+            justify-content: center;
+            display: flex;
+            align-items: center;
+
+            &:hover {
+              background: black;
+            }
+          }
+        }
         img {
           max-width: 95px;
           width: auto;

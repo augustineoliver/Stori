@@ -100,6 +100,7 @@ export default {
       axios.post(`${this.baseUrl}auth/login`, payload).then(res => {
         console.log(res.data);
         localStorage.setItem('authToken', res.data.data.accessToken)
+        localStorage.setItem('userId', res.data.data.user.id)
         axios.defaults.headers.common['Authorization'] = localStorage.getItem('authToken');
         router.push('editor')
       })
