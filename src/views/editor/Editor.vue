@@ -1,8 +1,11 @@
 <template>
 <main>
   <header>
-    <div>
+    <div class="leftHeader">
       <img src="../../assets/images/home/logo.svg" alt="Stori" />
+      <label class="title">
+        <input type="text" id="title" placeholder="Untitled Story">
+      </label>
     </div>
     <div class="rightHeader">
         <div class="workspaceName">
@@ -23,12 +26,36 @@
   <div class="main">
     <div class="leftPanel">
       <nav>
-        <div @click="getUnsplashPhotos">Photos</div>
-        <div @click="getPexelsVideos">Video</div>
-        <div @click="getTenorGifs">Gifs</div>
-        <div>Stickers</div>
-        <div @click="getEmoji">Emojis</div>
-        <div @click="getUploadedMedia">Upload</div>
+        <div :class="{active: activeMedia === 'uploadedMedia'}" @click="getUploadedMedia">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <span>Uploads</span>
+        </div>
+        <div :class="{active: activeMedia === 'unsplashPhotos'}" @click="getUnsplashPhotos">
+          <i class="far fa-image"></i>
+          <span>Photos</span>
+        </div>
+        <div :class="{active: activeMedia === 'tenorGifs'}" @click="getTenorGifs">
+          <i class="fas fa-hand-sparkles"></i>
+          <span>Gifs</span>
+        </div>
+        <div :class="{active: activeMedia === 'emojis'}" @click="getEmoji">
+          <i class="far fa-smile-beam"></i>
+          <span>Emojis</span>
+        </div>
+        <div :class="{active: activeMedia === 'pexelsVideo'}" @click="getPexelsVideos">
+          <i class="fas fa-film"></i>
+          <span>Video</span>
+        </div>
+        <div :class="{active: activeMedia === 'pexelsVideo'}" @click="getPexelsVideos">
+          <i class="fas fa-film"></i>
+          <span>Video</span>
+        </div>
+        <div :class="{active: activeMedia === 'background'}" @click="activeMedia = 'background'">
+          <i class="fas fa-film"></i>
+          <span>Background</span>
+        </div>
+
+<!--        <div>Stickers</div>-->
         <div>Text</div>
         <div>Menu</div>
       </nav>
@@ -47,6 +74,27 @@
       <div class="unsplashPhotos emojiPanel" v-if="activeMedia === 'emojis'">
         <span draggable="true" @mousedown="drag($event)"  style="font-size: 3em; height: 100px" v-for="(emoji, index) in emojis" :key="index">{{ emoji.character }}</span>
       </div>
+      <div class="background" v-if="activeMedia === 'background'">
+        <div>Colour</div>
+        <div>Default Colours</div>
+        <div class="colourBox">
+            <span style="background: #000000"></span>
+            <span style="background: #545454"></span>
+            <span style="background: #737373"></span>
+            <span style="background: #A6A6A6"></span>
+            <span style="background: #D9D9D9"></span>
+            <span style="background: #FFFFFF"></span>
+
+            <span style="background: red"></span>
+            <span style="background: red"></span>
+            <span style="background: red"></span>
+            <span style="background: red"></span>
+            <span style="background: red"></span>
+            <span style="background: red"></span>
+            <span style="background: red"></span>
+            <span style="background: red"></span>
+      </div>
+      </div>
 
     </div>
     <div class="editor">
@@ -64,11 +112,16 @@
       <aside>Options</aside>
     </div>
   </div>
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.0/interact.min.js"></script>-->
 </main>
 </template>
 
 <script>
 import axios from "axios";
+// import * as interact from 'https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.0/interact.min.js'
+// import interact from '@interactjs/interact'
+// require('https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.0/interact.min.js')()
+// import interact from 'https://cdn.interactjs.io/v1.9.20/interactjs/index.js'
 
 export default {
   name: "Editor",
@@ -102,6 +155,79 @@ export default {
   },
 
   mounted() {
+    let position = { x: 0, y: 0 }
+
+    // eslint-disable-next-line no-undef
+    interact('.resize-drag')
+    .resizable({
+      // resize from all edges and corners
+      edges: { left: true, right: true, bottom: true, top: true },
+
+      listeners: {
+        move (event) {
+          var target = event.target
+          var x = (parseFloat(target.getAttribute('data-x')) || 0)
+          var y = (parseFloat(target.getAttribute('data-y')) || 0)
+
+          // update the element's style
+          target.style.width = event.rect.width + 'px'
+          target.style.height = event.rect.height + 'px'
+
+          // translate when resizing from top or left edges
+          x += event.deltaRect.left
+          y += event.deltaRect.top
+
+          target.style.webkitTransform = target.style.transform =
+            'translate(' + x + 'px,' + y + 'px)'
+
+          target.setAttribute('data-x', x)
+          target.setAttribute('data-y', y)
+          target.width = target.getBoundingClientRect().width
+          target.height = target.getBoundingClientRect().height
+          // target.textContent = Math.round(event.rect.width) + '\u00D7' + Math.round(event.rect.height)
+        }
+      },
+      modifiers: [
+        // keep the edges inside the parent
+        // eslint-disable-next-line no-undef
+        interact.modifiers.restrictEdges({
+          outer: 'parent'
+        }),
+
+        // minimum size
+        // eslint-disable-next-line no-undef
+        interact.modifiers.restrictSize({
+          min: { width: 100, height: 50 }
+        })
+      ],
+
+      inertia: true
+    })
+    .draggable({
+      listeners: {
+        start (event) {
+          if (event.target.getAttribute('data-x')) {
+            console.log('WWWWWWWWWWW', event.target.getAttribute('data-x'));
+            position = {x: Number(event.target.getAttribute('data-x')), y: Number(event.target.getAttribute('data-y'))}
+          }
+        },
+        end (event) {
+          console.log('QQQQQQQQQQQQQQQQ', event);
+          // position = { x: 0, y: 0 }
+        },
+        move (event) {
+          position.x += event.dx
+          position.y += event.dy
+
+          event.target.dataset.x = position.x
+          event.target.dataset.y = position.y
+
+          event.target.style.transform =
+          `translate(${position.x}px, ${position.y}px)`
+
+        },
+      }
+    })
   },
 
   methods: {
@@ -189,24 +315,24 @@ export default {
     drop( evt ) {
       evt.preventDefault();
       if (this.draggedElement) {
-        const div = document.createElement('div')
+        let div = document.createElement('div')
         console.log(evt);
-        div.classList.add('inUse');
+        div.classList.add('resize-drag');
         div.classList.add('resizable');
-        div.id = new Date().toISOString();
-        div.draggable = 'true';
-        div.style = 'width: 180px; height: content-box; position: absolute';
-        div.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
-        div.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
+        // div.id = new Date().toISOString();
+        // div.draggable = 'true';
+        // div.style = 'width: 180px; height: content-box; position: absolute';
+        // div.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
+        // div.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
 
-        div.addEventListener('drag', (element) => {
-            this.alwaysOnTop(div);
-            console.log(element)
-            // console.log('page X:',(element.pageX -document.getElementById('page').offsetLeft))
-            // console.log('page Y:',(element.pageY - document.getElementById('page').offsetTop))
-            element.target.parentNode.parentNode.parentNode.style.top = (element.pageY - document.getElementById('page').offsetTop) + 'px';
-            element.target.parentNode.parentNode.parentNode.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
-          })
+        // div.addEventListener('drag', (element) => {
+        //     this.alwaysOnTop(div);
+        //     console.log(element)
+        //     // console.log('page X:',(element.pageX -document.getElementById('page').offsetLeft))
+        //     // console.log('page Y:',(element.pageY - document.getElementById('page').offsetTop))
+        //     element.target.parentNode.parentNode.parentNode.style.top = (element.pageY - document.getElementById('page').offsetTop) + 'px';
+        //     element.target.parentNode.parentNode.parentNode.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
+        //   })
 
         if (this.activeMedia !== 'pexelsVideo') {
           const photo = this.draggedElement.cloneNode(true)
@@ -230,13 +356,26 @@ export default {
             <div class='resizer bottom-right'></div>
             <amp-img layout="responsive" content="undefined" width="1" height="1" style="width: 100%; height: auto" src="${photo.dataset.src}"></amp-img>
           </div>`;
-          photo.style = 'width: 100%; height: auto'
+          // photo.style = 'width: 100%; height: auto'
           // photo.style.filter = 'blur(8px)';
-          photo.ondragstart = 'this.drag($event)';
+          // photo.ondragstart = 'this.drag($event)';
           // photo.classList.add('inUse');
+          photo.style = 'width: 180px; height: auto; position: absolute';
+          photo.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
+          photo.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
           photo.src = photo.dataset.src;
-          photo.onclick = this.resizeElement(div.children[0].id, '.resizers')
-          div.children[0].children[4].appendChild(photo);
+          photo.classList.add('resize-drag')
+          setTimeout(()=> {
+            photo.width = photo.getBoundingClientRect().width
+            photo.height = photo.getBoundingClientRect().height
+            photo.setAttribute('data-img', '');
+          }, 100)
+
+          photo.setAttribute('data-x', '');
+          photo.setAttribute('data-y', '');
+
+          // photo.onclick = this.resizeElement(div.children[0].id, '.resizers')
+          div = photo
         } else {
           const video = document.createElement('video')
           video.addEventListener('click', () => {
@@ -398,15 +537,21 @@ export default {
 
     preview() {
       let htmlCode = document.getElementById('page').innerHTML;
+      // const postHTMLCode = htmlCode;
       htmlCode = htmlCode.replaceAll(/<video.+<\/video>/gi, '');
-      htmlCode = htmlCode.replaceAll(/<img.+\/>/gi, '');
-      htmlCode = htmlCode.replaceAll(/<img.+>/gi, '');
+      // htmlCode = htmlCode.replaceAll(/<img.+\/>/gi, '');
+      // htmlCode = htmlCode.replaceAll(/data-src=".+"/gi, ' width="1" height="1" ');
       htmlCode = htmlCode.replaceAll(/<div class="resizer .+"><\/div>/gi, '')
       // htmlCode = htmlCode.replaceAll(new RegExp('height: ([0-9]|\\.)+px;">'), 'height: fit-content;">') // remove height from main div because of video
-      // htmlCode = htmlCode.replace('img', `amp-img`);
+      htmlCode = htmlCode.replace('draggable="true"', '');
+      htmlCode = htmlCode.replace('<img', `<amp-img`);
+      htmlCode = htmlCode.replace('data-img="">', `  width="1" height="1"></amp-img>`);
+      console.log(htmlCode)
+
+      const title = document.getElementById('title').value;
 
       //eslint-disable-next-line
-      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head>  <meta charset='utf-8'> <script async=\"\" custom-element=\"amp-video\" src=\"https://cdn.ampproject.org/v0/amp-video-0.1.js\"><\/script> <style amp-custom>.inUse {overflow: hidden;} amp-video > :first-child {padding-top: 56%!important;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>Stori App</title>  <link rel='canonical' href='https://www.cnn.com/ampstories/us/labor-day-its-history-and-meaning'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='CNN' publisher-logo-src='https://stamp.static.cnn.io/assets/images/badge.png'>    <amp-story-page id='page-cover' class='amp-story-page amp-story-page__full'>      <amp-story-grid-layer template='vertical' class='layer-background align-center justify-center'>";
+      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head>  <meta charset='utf-8'> <script async=\"\" custom-element=\"amp-video\" src=\"https://cdn.ampproject.org/v0/amp-video-0.1.js\"><\/script> <style amp-custom>.inUse {overflow: hidden;} amp-video > :first-child {padding-top: 56%!important;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>" + (title ? title : 'Untitled Story') + "</title>  <link rel='canonical' href='https://www.cnn.com/ampstories/us/labor-day-its-history-and-meaning'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='CNN' publisher-logo-src='https://stamp.static.cnn.io/assets/images/badge.png'>    <amp-story-page id='page-cover' class='amp-story-page amp-story-page__full'>      <amp-story-grid-layer template='vertical' class='layer-background align-center justify-center'>";
       const endAmpCode = `</amp-story-grid-layer>    </amp-story-page>  </amp-story></body></html>`
 
       // var a = document.createElement("a");
@@ -415,11 +560,20 @@ export default {
 
       const payload = {
           user_id : "1",
-          name : "great story",
-          file : "hbubibiobgiobgiovbiovbrio3biorbviorviorv",
+          name : title ? title : 'Untitled Story',
+          file : 'postHTMLCode',
           amp_file : ampString
       }
-      axios.post(`${this.baseUrl}stories/add`, payload, {headers: {Authorization: this.authToken}})
+
+      let config = {
+        onUploadProgress: progressEvent => {
+          let percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
+          console.log('QQQQQQQQQQQQQQQQQ: ', percentCompleted)
+          // do whatever you like with the percentage complete
+          // maybe dispatch an action that will update a progress bar or something
+        }
+      }
+      axios.post(`${this.baseUrl}stories/add`, payload, {headers: {Authorization: this.authToken}, config})
       .then(res => {
         console.log(res)
         window.open('https://' + res.data.data.amp_file, '_blank')
@@ -456,6 +610,11 @@ main {
   box-sizing: border-box;
   color: white;
 
+  * {
+    touch-action: none;
+    user-select: none;
+  }
+
   header {
     padding: 10px 20px;
     width: 100%;
@@ -465,6 +624,37 @@ main {
     justify-content: space-between;
     //border-bottom: 1px solid #CBDBEC;
     box-sizing: border-box;
+
+    .leftHeader {
+      display: flex;
+      align-items: center;
+
+      .title {
+        border: #20262D 1px solid;
+        border-radius: 5px;
+        height: 40px;
+        width: 200px;
+        margin-left: 50px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        box-sizing: border-box;
+
+        input {
+          border: none;
+          background: rgba(0, 0, 0, 0);
+          color: #5b6d81;
+          width: 100%;
+          font-size: 20px;
+
+          &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active, &:focus, :focus {
+              border: none !important;
+              transition: background-color 5000s ease-in-out 0s;
+              outline: none;
+            }
+        }
+      }
+    }
 
     .rightHeader {
       display: flex;
@@ -551,10 +741,76 @@ main {
         height: 100%;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
+
+        div {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 80px;
+          height: 80px;
+          //margin: 10px 0;
+          flex-direction: column;
+          cursor: pointer;
+          box-sizing: border-box;
+
+          &:hover {
+            color: #a9a9a9;
+
+            i {
+              color: #a9a9a9;
+            }
+          }
+
+          &.active {
+            background: #20262D;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+
+            &:first-child {
+              &::before {
+                display: none;
+              }
+            }
+
+            &::before {
+              content: '';
+              background: black;
+              width: 10px;
+              height: 10px;
+              position: absolute;
+              margin-top: -90px;
+              margin-left: 70px;
+              border-bottom-right-radius: 100%;
+              box-shadow: 3px 3px 0 0 #20262D;
+              z-index: 0;
+            }
+
+            &::after {
+              content: '';
+              background: black;
+              width: 10px;
+              height: 10px;
+              position: absolute;
+              margin-top: 90px;
+              margin-left: 70px;
+              border-top-right-radius: 100%;
+              box-shadow: 3px -3px 0 0 #20262D;
+              z-index: 0;
+            }
+
+          }
+
+          i {
+            font-size: 25px;
+            color: #eeeeee;
+            display: block;
+            margin: 5px;
+          }
+        }
       }
 
-      div {
+      > div {
         display: flex;
         height: 100%;
         width: 320px;
@@ -583,6 +839,17 @@ main {
           height: auto;
           margin: 3px;
           box-sizing: border-box;
+        }
+
+        &.background {
+          background: green;
+          .colourBox {
+            display: flex;
+            span {
+              width: 50px;
+              height: 60px;
+            }
+          }
         }
       }
     }
