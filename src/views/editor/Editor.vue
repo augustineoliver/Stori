@@ -56,7 +56,10 @@
           </div>
 
           <!--        <div>Stickers</div>-->
-          <div>Text</div>
+          <div :class="{active: activeMedia === 'text'}" @click="activeMedia = 'text'">
+            <i class="fas fa-text-height"></i>
+            <span>Text</span>
+          </div>
           <div>Menu</div>
         </nav>
         <div class="unsplashPhotos" v-if="activeMedia === 'unsplashPhotos'">
@@ -263,6 +266,13 @@
             </div>
           </div>
 
+        </div>
+        <div class="unsplashPhotos" v-if="activeMedia === 'text'">
+          <div class="normalText">
+            <div draggable="true" data-type="heading" @mousedown="drag($event)" style="height: 50px">Add a heading</div>
+            <div draggable="true" data-type="subheading" @mousedown="drag($event)" style="height: 40px">Add a subheading</div>
+            <div draggable="true" data-type="normal" @mousedown="drag($event)" style="height: 30px">Normal text</div>
+          </div>
         </div>
 
       </div>
@@ -525,7 +535,49 @@ export default {
         //     element.target.parentNode.parentNode.parentNode.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
         //   })
 
-        if (this.activeMedia !== 'pexelsVideo') {
+        if (this.activeMedia === 'text') {
+          console.log('I am here');
+          console.log('I am here', this.draggedElement);
+          const text = this.draggedElement.cloneNode(true);
+          text.style = 'color: white; text-align: right; position: absolute; border: 1px solid rgba(0, 0, 0, 0)';
+          text.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
+          text.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
+          text.classList.add('resize-drag')
+          text.ondblclick = () => {
+            text.contentEditable = true
+          }
+          text.onblur = () => {
+            text.contentEditable = false
+          }
+
+          console.log('QQQQQQQQQQQQQQ:', text.getAttribute('data-type'))
+
+          switch (text.getAttribute('data-type')) {
+            case 'heading': {
+              text.style.fontWeight = '600'
+              text.style.fontSize = '50px'
+              text.style.lineHeight = '1.4'
+            } break;
+            case 'subheading': {
+              text.style.fontWeight = '500'
+              text.style.fontSize = '23px'
+              text.style.lineHeight = '1.4'
+            } break;
+            case 'normal': {
+              text.style.fontSize = '11px'
+              text.style.lineHeight = '1.4'
+            } break;
+
+          }
+
+          setTimeout(() => {
+            text.width = text.getBoundingClientRect().width
+            text.height = text.getBoundingClientRect().height
+          }, 100)
+          text.classList.add('resize-drag')
+          div = text;
+        }
+        else if (this.activeMedia !== 'pexelsVideo') {
           const photo = this.draggedElement.cloneNode(true)
           // photo.addEventListener('drag', (element) => {
           //   this.alwaysOnTop(photo);
@@ -539,14 +591,17 @@ export default {
             this.alwaysOnTop(photo);
             console.log(photo)
           })
-          div.innerHTML = `
-          <div class='resizers' id="resizers-${new Date().toTimeString()}" >
-            <div class='resizer top-left'></div>
-            <div class='resizer top-right'></div>
-            <div class='resizer bottom-left'></div>
-            <div class='resizer bottom-right'></div>
-            <amp-img layout="responsive" content="undefined" width="1" height="1" style="width: 100%; height: auto" src="${photo.dataset.src}"></amp-img>
-          </div>`;
+
+          // div.innerHTML = `
+          // <div class='resizers' id="resizers-${new Date().toTimeString()}" >
+          //   <div class='resizer top-left'></div>
+          //   <div class='resizer top-right'></div>
+          //   <div class='resizer bottom-left'></div>
+          //   <div class='resizer bottom-right'></div>
+          //   <amp-img layout="responsive" content="undefined" width="1" height="1" style="width: 100%; height: auto" src="${photo.dataset.src}"></amp-img>
+          // </div>`;
+
+
           // photo.style = 'width: 100%; height: auto'
           // photo.style.filter = 'blur(8px)';
           // photo.ondragstart = 'this.drag($event)';
@@ -567,7 +622,8 @@ export default {
 
           // photo.onclick = this.resizeElement(div.children[0].id, '.resizers')
           div = photo
-        } else {
+        }
+        else {
           const video = document.createElement('video')
           video.addEventListener('click', () => {
             this.alwaysOnTop(video);
@@ -1173,6 +1229,27 @@ main {
             }
           }
         }
+
+        .normalText {
+          padding: 20px;
+          box-sizing: border-box;
+          width: 100%;
+
+          div {
+            width: 100%;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            cursor: pointer;
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.1);
+            }
+          }
+        }
       }
     }
 
@@ -1332,7 +1409,12 @@ main {
 //    }
 //  }
 //}
-
+.resize-drag {
+  &:hover {
+    border: 1px solid blue;
+    box-sizing: border-box;
+  }
+}
 .inUse {
   overflow: hidden;
 }
