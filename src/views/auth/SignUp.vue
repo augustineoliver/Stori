@@ -113,6 +113,8 @@ export default {
         if (res.data.data) {
           localStorage.setItem('authToken', res.data.data.accessToken)
           router.push('editor')
+        } else {
+          console.log(res.data.message)
         }
       })
     }

@@ -269,7 +269,7 @@
         </div>
         <div class="unsplashPhotos" v-if="activeMedia === 'text'">
           <div class="normalText">
-            <div draggable="true" data-type="heading" @mousedown="drag($event)" style="height: 50px">Add a heading</div>
+            <div draggable="true" data-type="heading" @mousedown="drag($event)" style="height: 35px">Add a heading</div>
             <div draggable="true" data-type="subheading" @mousedown="drag($event)" style="height: 40px">Add a subheading</div>
             <div draggable="true" data-type="normal" @mousedown="drag($event)" style="height: 30px">Normal text</div>
           </div>
@@ -288,7 +288,23 @@
             <!--          </select>-->
           </footer>
         </div>
-        <aside>Options</aside>
+        <aside>
+          <div v-if="selectedElement.type === 'text'">
+            <div>
+              <span>Font Size:</span>
+              <div>
+                <label>
+                  <input @change="setFontSize" type="range" min="6" max="144" v-model="fontSize">
+                </label>
+                <label>
+                  <input @change="setFontSize" type="number" v-model="fontSize">
+                </label>
+
+              </div>
+            </div>
+          </div>
+          <div>Options</div>
+        </aside>
       </div>
     </div>
     <!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.0/interact.min.js"></script>-->
@@ -319,6 +335,8 @@ export default {
       tenorNextPage: '',
       pexelsVideo: [],
       emojis: [],
+      clipboard: null,
+      selectedElement: {type: undefined, id: undefined},
       pageBackground: '#ffffff',
       activeBackgroundType: 'colour',
       backgroundTexture: [],
@@ -340,12 +358,14 @@ export default {
       original_y: 0,
       original_mouse_x: 0,
       original_mouse_y: 0,
+
+      // Text formating Variables
+      fontSize: undefined
     }
   },
 
   mounted() {
     let position = {x: 0, y: 0}
-
     // eslint-disable-next-line no-undef
     interact('.resize-drag')
         .resizable({
@@ -420,9 +440,46 @@ export default {
             },
           }
         })
+
+    document.getElementById('page').addEventListener('contextmenu', e => {
+      e.preventDefault()
+      if (document.getElementById('contextmenu')) {
+        document.getElementById('contextmenu').remove()
+      }
+      window.addEventListener('click', (event) => {
+        document.getElementById('contextmenu').remove()
+        event.stopImmediatePropagation()
+      })
+
+      const menu = document.createElement('div');
+      const menuHTMLCode = `<div>
+                                <div>Copy</div>
+                                <div>Past</div>
+                                <div>Delete</div>
+                                <div>Send to Back</div>
+                                <div>Send Backward</div>
+                                <div>Bring Farword</div>
+                                <div>Bring to Front</div>
+                            </div>`
+      menu.classList.add('contextmenu')
+      menu.id = 'contextmenu';
+      menu.style.left = e.offsetX + 'px';
+      menu.style.top = e.offsetY + 'px';
+      menu.innerHTML = menuHTMLCode;
+
+      document.getElementById('page').appendChild(menu);
+
+      console.log('QQQQQQQQQQQQ: ', e)
+
+    })
   },
 
   methods: {
+    setFontSize() {
+      const text = document.getElementById(this.selectedElement.id)
+      text.style.fontSize = this.fontSize + 'px';
+      console.log(this.fontSize)
+    },
     getUnsplashPhotos() {
       axios.get('https://api.unsplash.com/photos?per_page=20&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b')
           .then(res => {
@@ -513,6 +570,10 @@ export default {
       })
     },
 
+    selectElement(type, id) {
+      this.selectedElement = {type, id}
+    },
+
     drop(evt) {
       evt.preventDefault();
       if (this.draggedElement) {
@@ -539,10 +600,12 @@ export default {
           console.log('I am here');
           console.log('I am here', this.draggedElement);
           const text = this.draggedElement.cloneNode(true);
-          text.style = 'color: white; text-align: right; position: absolute; border: 1px solid rgba(0, 0, 0, 0)';
+          text.style = 'color: #202125; position: absolute; border: 1px solid blue';
           text.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
           text.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
           text.classList.add('resize-drag')
+          text.id = new Date().toISOString();
+          text.onclick = this.selectElement('text', text.id)
           text.ondblclick = () => {
             text.contentEditable = true
           }
@@ -555,7 +618,7 @@ export default {
           switch (text.getAttribute('data-type')) {
             case 'heading': {
               text.style.fontWeight = '600'
-              text.style.fontSize = '50px'
+              text.style.fontSize = '35px'
               text.style.lineHeight = '1.4'
             } break;
             case 'subheading': {
@@ -575,6 +638,9 @@ export default {
             text.height = text.getBoundingClientRect().height
           }, 100)
           text.classList.add('resize-drag')
+
+          // Update Editing Values
+          this.fontSize = text.style.fontSize
           div = text;
         }
         else if (this.activeMedia !== 'pexelsVideo') {
@@ -1411,11 +1477,36 @@ main {
 //}
 .resize-drag {
   &:hover {
-    border: 1px solid blue;
-    box-sizing: border-box;
+    //border: 1px solid blue;
+    //box-sizing: border-box;
   }
 }
 .inUse {
   overflow: hidden;
+}
+
+.contextmenu {
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  height: 200px;
+  position: absolute;
+  background: white;
+  box-shadow: 0 0 5px 2px gray;
+  div {
+    width: 100%;
+    div {
+      width: 100%;
+      height: 25px;
+      padding: 5px;
+      box-sizing: border-box;
+      font-size: 13px;
+      color: #404040;
+      &:hover {
+        background: #e2e2e2;
+        cursor: pointer;
+      }
+    }
+  }
 }
 </style>
