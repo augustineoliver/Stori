@@ -289,20 +289,11 @@
           </footer>
         </div>
         <aside>
-          <div v-if="selectedElement.type === 'text'">
-            <div>
-              <span>Font Size:</span>
-              <div>
-                <label>
-                  <input @change="setFontSize" type="range" min="6" max="144" v-model="fontSize">
-                </label>
-                <label>
-                  <input @change="setFontSize" type="number" v-model="fontSize">
-                </label>
-
-              </div>
-            </div>
-          </div>
+          <text-editor
+              v-if="selectedElement.type === 'text'"
+              v-bind:selectedElement="selectedElement"
+              v-bind:textSize="fontSize"
+          ></text-editor>
           <div>Options</div>
         </aside>
       </div>
@@ -313,6 +304,8 @@
 
 <script>
 import axios from "axios";
+import TextEditor from '../../components/TextEditor';
+
 // import * as interact from 'https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.0/interact.min.js'
 // import interact from '@interactjs/interact'
 // require('https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.0/interact.min.js')()
@@ -359,7 +352,7 @@ export default {
       original_mouse_x: 0,
       original_mouse_y: 0,
 
-      // Text formating Variables
+      // Font Variables
       fontSize: undefined
     }
   },
@@ -475,11 +468,74 @@ export default {
   },
 
   methods: {
-    setFontSize() {
-      const text = document.getElementById(this.selectedElement.id)
-      text.style.fontSize = this.fontSize + 'px';
-      console.log(this.fontSize)
-    },
+    // setFontSize() {
+    //   const text = document.getElementById(this.selectedElement.id)
+    //   text.style.fontSize = this.fontSize + 'px';
+    // },
+    // setBold() {
+    //   const text = document.getElementById(this.selectedElement.id)
+    //   if (this.bold) {
+    //     text.style.fontWeight = '700';
+    //   } else {
+    //     text.style.fontWeight = '400';
+    //   }
+    // },
+    // setItalic() {
+    //   const text = document.getElementById(this.selectedElement.id)
+    //   if (this.italic) {
+    //     text.style.fontStyle = 'oblique';
+    //   } else {
+    //     text.style.fontStyle = 'normal';
+    //   }
+    // },
+    // setUnderline() {
+    //   const text = document.getElementById(this.selectedElement.id)
+    //   if (this.underline) {
+    //     text.style.textDecoration = 'underline';
+    //   } else {
+    //     text.style.textDecoration = 'none';
+    //   }
+    // },
+    //
+    // setCapitalize() {
+    //   const text = document.getElementById(this.selectedElement.id)
+    //   switch (this.fontCase) {
+    //     case 'lowercase': text.style.textTransform = 'lowercase'; break;
+    //     case 'capitalize': text.style.textTransform = 'capitalize'; break;
+    //     case 'uppercase': text.style.textTransform = 'uppercase'; break;
+    //   }
+    // },
+    // setTextAlignment() {
+    //   const text = document.getElementById(this.selectedElement.id)
+    //   switch (this.textAlign) {
+    //     case 'left': text.style.textAlign = 'left'; break;
+    //     case 'center': text.style.textAlign = 'center'; break;
+    //     case 'right': text.style.textAlign = 'right'; break;
+    //   }
+    // },
+    //
+    // setFontFamily() {
+    //   const text = document.getElementById(this.selectedElement.id)
+    //   switch (this.fontFamily) {
+    //     case 'Georgia, serif': text.style.fontFamily = 'Georgia, serif'; break;
+    //     case 'sans': text.style.fontFamily = 'sans'; break;
+    //     case 'Arial, Helvetica, sans-serif': text.style.fontFamily = 'Arial, Helvetica, sans-serif'; break;
+    //     case "'Arial Black', Gadget, sans-serif": text.style.fontFamily = "'Arial Black', Gadget, sans-serif"; break;
+    //     case "'Comic Sans MS', cursive, sans-serif": text.style.fontFamily = "'Comic Sans MS', cursive, sans-serif"; break;
+    //     case 'Impact, Charcoal, sans-serif': text.style.fontFamily = 'Impact, Charcoal, sans-serif'; break;
+    //     case "'Lucida Sans Unicode', 'Lucida Grande', sans-serif": text.style.fontFamily = "'Lucida Sans Unicode', 'Lucida Grande', sans-serif"; break;
+    //     case 'Tahoma, Geneva, sans-serif': text.style.fontFamily = 'Tahoma, Geneva, sans-serif'; break;
+    //     case "'Trebuchet MS', Helvetica, sans-serif": text.style.fontFamily = "'Trebuchet MS', Helvetica, sans-serif"; break;
+    //     case 'Verdana, Geneva, sans-serif': text.style.fontFamily = 'Verdana, Geneva, sans-serif'; break;
+    //     case 'sans-serif': text.style.fontFamily = 'sans-serif'; break;
+    //     case 'serif': text.style.fontFamily = 'serif'; break;
+    //     case 'cursive': text.style.fontFamily = 'cursive'; break;
+    //     case 'system-ui': text.style.fontFamily = 'system-ui'; break;
+    //   }
+    // },
+
+
+
     getUnsplashPhotos() {
       axios.get('https://api.unsplash.com/photos?per_page=20&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b')
           .then(res => {
@@ -605,7 +661,10 @@ export default {
           text.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
           text.classList.add('resize-drag')
           text.id = new Date().toISOString();
-          text.onclick = this.selectElement('text', text.id)
+          text.ref = new Date().toISOString();
+          text.addEventListener('click', () => {
+            this.selectElement('text', text.id)
+          })
           text.ondblclick = () => {
             text.contentEditable = true
           }
@@ -640,7 +699,8 @@ export default {
           text.classList.add('resize-drag')
 
           // Update Editing Values
-          this.fontSize = text.style.fontSize
+          this.fontSize = text.style.fontSize.replace('px', '')
+          console.log('QQQQQQQQQQQQQQQ: ', text.style.fontSize.replace('px', ''))
           div = text;
         }
         else if (this.activeMedia !== 'pexelsVideo') {
@@ -920,593 +980,13 @@ export default {
   created() {
     this.getUnsplashPhotos()
   },
+
+  components: {
+    'text-editor': TextEditor
+  }
 }
 </script>
 
 <style lang="scss">
-main {
-  display: block;
-  width: 100%;
-  height: 100vh;
-  background: #000000;
-  box-sizing: border-box;
-  color: white;
-
-  * {
-    touch-action: none;
-    user-select: none;
-  }
-
-  header {
-    padding: 10px 20px;
-    width: 100%;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    //border-bottom: 1px solid #CBDBEC;
-    box-sizing: border-box;
-
-    .leftHeader {
-      display: flex;
-      align-items: center;
-
-      .title {
-        border: #20262D 1px solid;
-        border-radius: 5px;
-        height: 40px;
-        width: 200px;
-        margin-left: 50px;
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        box-sizing: border-box;
-
-        input {
-          border: none;
-          background: rgba(0, 0, 0, 0);
-          color: #5b6d81;
-          width: 100%;
-          font-size: 20px;
-
-          &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active, &:focus, :focus {
-            border: none !important;
-            transition: background-color 5000s ease-in-out 0s;
-            outline: none;
-          }
-        }
-      }
-    }
-
-    .rightHeader {
-      display: flex;
-      align-items: center;
-
-      .workspaceName {
-        display: flex;
-        justify-content: space-evenly;
-        background: #373E48;
-        border: #707070;
-        color: #FFFFFF;
-        width: 212px;
-        height: 27px;
-        border-radius: 35px;
-        font-family: 'Apple SD Gothic Neo', sans-serif;
-        font-size: 18px;
-        font-weight: 500;
-        padding: 15px 15px;
-        cursor: pointer;
-
-        .workIcon {
-          width: 17px;
-          height: 17px;
-          margin: 5px;
-        }
-
-        div {
-          font-family: Rubik, sans-serif;
-          font-weight: lighter;
-
-          &:first-child {
-            font-size: 10px;
-          }
-
-          &:last-child {
-            font-size: 15px;
-          }
-        }
-
-        .downIcon {
-          width: 24px;
-          height: 24px;
-          margin: 3px;
-        }
-      }
-
-      img {
-        height: 30px;
-        width: auto;
-        padding: 5px;
-        margin: 5px;
-      }
-    }
-  }
-
-  .main {
-    display: flex;
-    height: calc(100vh - 70px);
-    box-sizing: border-box;
-    width: 100%;
-
-    ::-webkit-scrollbar-track {
-      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-      background-color: #F5F5F5;
-    }
-
-    ::-webkit-scrollbar {
-      width: 6px;
-      background-color: #F5F5F5;
-    }
-
-    ::-webkit-scrollbar:horizontal {
-      height: 6px;
-      background-color: #F5F5F5;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: #000000;
-    }
-
-    .leftPanel {
-      display: flex;
-      width: 400px;
-      background: #20262d;
-
-      nav {
-        background: #000000;
-        width: 80px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-
-        div {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 80px;
-          height: 80px;
-          //margin: 10px 0;
-          flex-direction: column;
-          cursor: pointer;
-          box-sizing: border-box;
-
-          &:hover {
-            color: #a9a9a9;
-
-            i {
-              color: #a9a9a9;
-            }
-          }
-
-          &.active {
-            background: #20262D;
-            border-top-left-radius: 10px;
-            border-bottom-left-radius: 10px;
-
-            &:first-child {
-              &::before {
-                display: none;
-              }
-            }
-
-            &::before {
-              content: '';
-              background: black;
-              width: 10px;
-              height: 10px;
-              position: absolute;
-              margin-top: -90px;
-              margin-left: 70px;
-              border-bottom-right-radius: 100%;
-              box-shadow: 3px 3px 0 0 #20262D;
-              z-index: 0;
-            }
-
-            &::after {
-              content: '';
-              background: black;
-              width: 10px;
-              height: 10px;
-              position: absolute;
-              margin-top: 90px;
-              margin-left: 70px;
-              border-top-right-radius: 100%;
-              box-shadow: 3px -3px 0 0 #20262D;
-              z-index: 0;
-            }
-
-          }
-
-          i {
-            font-size: 25px;
-            color: #eeeeee;
-            display: block;
-            margin: 5px;
-          }
-        }
-      }
-
-      > div {
-        display: flex;
-        height: 100%;
-        width: 320px;
-        flex-wrap: wrap;
-        overflow-y: auto;
-        justify-content: flex-start;
-        box-sizing: border-box;
-
-        &.emojiPanel {
-          flex-direction: row;
-          justify-content: space-between;
-
-          span {
-            justify-content: center;
-            display: flex;
-            align-items: center;
-
-            &:hover {
-              background: black;
-            }
-          }
-        }
-
-        img {
-          max-width: 95px;
-          width: auto;
-          height: auto;
-          margin: 3px;
-          box-sizing: border-box;
-        }
-
-        &.background {
-          //background: green;
-          display: block;
-
-          .backgroundType {
-            display: flex;
-            width: 100%;
-            height: 50px;
-            align-items: center;
-            justify-content: flex-start;
-            background: #020202;
-            padding: 0;
-
-            div {
-              display: flex;
-              align-items: center;
-              height: 100%;
-              padding: 10px 26px;
-              cursor: pointer;
-              box-sizing: border-box;
-              &:hover {
-                background: #161a1f;
-              }
-              &.active {
-                background: #20262D;
-                cursor: default;
-              }
-            }
-          }
-
-          .colourBox {
-            display: flex;
-            flex-wrap: wrap;
-
-            span {
-              width: 45px;
-              height: 50px;
-              margin: 4px;
-              border-radius: 4px;
-              cursor: pointer;
-              box-sizing: border-box;
-
-              &:hover {
-                border: white solid 2px;
-                box-shadow: 0 0 10px white;
-              }
-            }
-          }
-
-          .colourPickerBox {
-            padding: 10px;
-            display: flex;
-            flex-flow: column;
-            div {
-              display: flex;
-              align-items: center;
-            }
-            .colourText {
-              input {
-                width: 100px;
-                height: 25px;
-                border-radius: 4px;
-                border: none;
-              }
-            }
-
-            .colourPicker {
-              input {
-                border: 0 solid white;
-                width: 25px;
-                height: 25px;
-                border-radius: 5px;
-              }
-            }
-          }
-
-          .selectColours {
-            padding: 0 10px;
-            .selectColoursTitle {
-              display: block;
-            }
-            div {
-              display: flex;
-              justify-content: space-between;
-
-              input[type=text] {
-                width: 50px;
-                height: 25px;
-                border-radius: 4px;
-                border: none;
-              }
-              input[type=color] {
-                width: 25px;
-                height: 25px;
-                border-radius: 4px;
-                border: none;
-              }
-            }
-          }
-
-          .colourType {
-            display: flex;
-            justify-content: space-around;
-            padding: 30px;
-            label {
-              display: flex;
-              flex-direction: column;
-              input, select {
-                width: 100px;
-                height: 25px;
-                border-radius: 4px;
-                border: none;
-              }
-            }
-          }
-
-          .texture {
-            .textureList {
-              height: calc(100vh - 250px);
-              overflow-y: auto;
-            }
-            .backgroundSettings {
-
-            }
-          }
-        }
-
-        .normalText {
-          padding: 20px;
-          box-sizing: border-box;
-          width: 100%;
-
-          div {
-            width: 100%;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 10px;
-            cursor: pointer;
-
-            &:hover {
-              background: rgba(255, 255, 255, 0.1);
-            }
-          }
-        }
-      }
-    }
-
-    .editor {
-      background: #202125;
-      width: calc(100% - 400px);
-      display: flex;
-
-      > div {
-        display: flex;
-        width: calc(100% - 250px);
-
-        > div {
-          display: flex;
-          justify-content: center;
-          padding: 50px;
-          width: 100%;
-          box-sizing: border-box;
-          height: calc(100% - 50px);
-          overflow: auto;
-
-          .page {
-            width: 360px;
-            height: 600px;
-            background: #eeeeee;
-            display: block;
-            margin: 100px;
-            transform: scale(1.25, 1.25);
-          }
-        }
-
-        footer {
-          width: calc(100% - 650px);
-          height: 50px;
-          background: black;
-          position: fixed;
-          bottom: 0;
-          border-top: 2px solid #2B2D32;
-        }
-      }
-
-      aside {
-        width: 250px;
-        background: #2b2d32;
-      }
-    }
-  }
-
-}
-
-.resizable {
-  background: white;
-  width: auto;
-  height: auto;
-  position: absolute;
-  top: 100px;
-  left: 100px;
-}
-
-.resizable .resizers {
-  width: 100%;
-  height: content-box;
-  border: 3px solid #4286f4;
-  box-sizing: border-box;
-}
-
-.resizable .resizers .resizer {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%; /*magic to turn square into circle*/
-  background: white;
-  border: 3px solid #4286f4;
-  position: absolute;
-}
-
-.resizable .resizers .resizer.top-left {
-  left: -5px;
-  top: -5px;
-  cursor: nwse-resize; /*resizer cursor*/
-}
-
-.resizable .resizers .resizer.top-right {
-  right: -5px;
-  top: -5px;
-  cursor: nesw-resize;
-}
-
-.resizable .resizers .resizer.bottom-left {
-  left: -5px;
-  bottom: -5px;
-  cursor: nesw-resize;
-}
-
-.resizable .resizers .resizer.bottom-right {
-  right: -5px;
-  bottom: -5px;
-  cursor: nwse-resize;
-}
-
-//.resizerFrame {
-//  position: absolute;
-//  width: 100%;
-//  height: 100%;
-//
-//  .resizer {
-//    width: 10px;
-//    height: 10px;
-//    background: #f2f2f2;
-//    border: 1px solid #d0d0d0;
-//    border-radius: 100%;
-//    z-index: 2000;
-//  }
-//
-//  .leftResizer {
-//    position: absolute;
-//    left: 0;
-//    border: solid 1px dodgerblue;
-//    height: 100%;
-//    width: 0;
-//    display: flex;
-//    flex-direction: column;
-//    justify-content: space-between;
-//
-//    .topLeftResizer {
-//      margin-left: -7px;
-//      margin-top: -5px;
-//      cursor: nw-resize;
-//    }
-//
-//    .bottomLeftResizer {
-//      margin-left: -7px;
-//      margin-bottom: -5px;
-//      cursor: sw-resize;
-//    }
-//  }
-//
-//  .rightResizer {
-//    position: absolute;
-//    right: 0;
-//    border: solid 1px dodgerblue;
-//    height: 100%;
-//    width: 0;
-//    display: flex;
-//    flex-direction: column;
-//    justify-content: space-between;
-//
-//    .topRightResizer {
-//      margin-left: -6px;
-//      margin-top: -5px;
-//      cursor: ne-resize;
-//    }
-//
-//    .bottomRightResizer {
-//      margin-left: -6px;
-//      margin-bottom: -5px;
-//      cursor: se-resize;
-//    }
-//  }
-//}
-.resize-drag {
-  &:hover {
-    //border: 1px solid blue;
-    //box-sizing: border-box;
-  }
-}
-.inUse {
-  overflow: hidden;
-}
-
-.contextmenu {
-  display: flex;
-  flex-direction: column;
-  width: 150px;
-  height: 200px;
-  position: absolute;
-  background: white;
-  box-shadow: 0 0 5px 2px gray;
-  div {
-    width: 100%;
-    div {
-      width: 100%;
-      height: 25px;
-      padding: 5px;
-      box-sizing: border-box;
-      font-size: 13px;
-      color: #404040;
-      &:hover {
-        background: #e2e2e2;
-        cursor: pointer;
-      }
-    }
-  }
-}
+  @import 'editor';
 </style>
