@@ -1,73 +1,118 @@
 <template>
 <div class="textSetting">
-  <div class="basicFormatter">
-    <label class="buttonControl" :style="{background: bold ? '#202125' : 'none'}">
-      <i class="fa fa-bold"></i>
-      <input type="checkbox" @change="setBold" id="bold" v-model="bold">
-    </label>
-    <label class="buttonControl" :style="{background: italic ? '#202125' : 'none'}">
-      <i class="fa fa-italic"></i>
-      <input type="checkbox" @change="setItalic" id="italic" v-model="italic">
-    </label>
-    <label class="buttonControl" :style="{background: underline ? '#202125' : 'none'}">
-      <i class="fa fa-underline"></i>
-      <input type="checkbox" @change="setUnderline" id="underline" v-model="underline">
-    </label>
+  <div style="margin: 10px; display: flex; flex-direction: column; justify-content: center">
+    <div style="display: flex; justify-content: center">
+      <v-btn-toggle
+      v-model="textAlign"
+      @change="setTextAlignment"
+      mandatory
+      >
+        <v-btn>
+          <v-icon>mdi-format-align-left</v-icon>
+        </v-btn>
+        <v-btn>
+          <v-icon>mdi-format-align-center</v-icon>
+        </v-btn>
+        <v-btn>
+          <v-icon>mdi-format-align-right</v-icon>
+        </v-btn>
+        <v-btn>
+          <v-icon>mdi-format-align-justify</v-icon>
+        </v-btn>
+      </v-btn-toggle>
+    </div>
+
+    <div style="display: flex; justify-content: center">
+      <v-btn-toggle
+        v-model="textFormatting"
+        @change="formatText"
+        multiple
+      >
+
+        <v-btn>
+          <v-icon>mdi-format-bold</v-icon>
+        </v-btn>
+
+        <v-btn>
+          <v-icon>mdi-format-italic</v-icon>
+        </v-btn>
+
+        <v-btn>
+          <v-icon>mdi-format-underline</v-icon>
+        </v-btn>
+      </v-btn-toggle>
+    </div>
+  </div>
+
+  <div>
+    <v-select
+          :items="[
+              'Arial, Helvetica, sans-serif',
+              '\'Arial Black\', Gadget, sans-serif',
+              '\'Comic Sans MS\', cursive, sans-serif',
+              'cursive',
+              'Georgia, serif',
+              'Impact, Charcoal, sans-serif',
+              '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif',
+              'sans-serif',
+              'serif',
+              'system-UI',
+              'Tahoma, Geneva, sans-serif',
+              '\'Trebuchet MS\', Helvetica, sans-serif',
+              'Verdana, Geneva, sans-serif',
+          ]"
+          @change="setFontFamily"
+          v-model="fontFamily"
+          label="Font Family"
+          outlined
+          dense
+        ></v-select>
+  </div>
+  <div>
+    <v-select
+          :items="[
+              {valueOf: 'lowercase', value: 'Lowercase'},
+              {valueOf: 'capitalize', value: 'Title Case'},
+              {valueOf: 'uppercase', value: 'Uppercase'},
+              'capitalize',
+              'uppercase',
+          ]"
+          item-text="value"
+          item-value="valueOf"
+          v-model="fontCase"
+          @change="setCapitalize"
+          label="Font Case"
+          outlined
+          dense
+        ></v-select>
 
   </div>
 
   <div>
-    <label>
-      <select class="setFontFamily" @change="setFontFamily" v-model="fontFamily">
-        <option value="">Select a Font</option>
-        <option value="Arial, Helvetica, sans-serif">Arial, Helvetica, sans-serif</option>
-        <option value="'Arial Black', Gadget, sans-serif">"Arial Black", Gadget, sans-serif</option>
-        <option value="'Comic Sans MS', cursive, sans-serif">"Comic Sans MS", cursive, sans-serif</option>
-        <option value="cursive">cursive</option>
-        <option value="Georgia, serif">Georgia, serif</option>
-        <option value="Impact, Charcoal, sans-serif">Impact, Charcoal, sans-serif</option>
-        <option value="'Lucida Sans Unicode', 'Lucida Grande', sans-serif">"Lucida Sans Unicode", "Lucida Grande", sans-serif</option>
-        <option value="sans-serif">sans-serif</option>
-        <option value="serif">serif</option>
-        <option value="system-ui">system-ui</option>
-        <option value="Tahoma, Geneva, sans-serif">Tahoma, Geneva, sans-serif</option>
-        <option value="'Trebuchet MS', Helvetica, sans-serif">"Trebuchet MS", Helvetica, sans-serif</option>
-        <option value="Verdana, Geneva, sans-serif">Verdana, Geneva, sans-serif</option>
-      </select>
-    </label>
-  </div>
-  <div class="twoColumnRow">
-    <label>
-      <span>Text Case</span>
-      <select @change="setCapitalize" v-model="fontCase">
-        <option value="">Select</option>
-        <option value="lowercase">Lowercase</option>
-        <option value="capitalize">Title Case</option>
-        <option value="uppercase">Uppercase</option>
-      </select>
-    </label>
-    <label>
-      <span>Text Align</span>
-      <select @change="setTextAlignment" v-model="textAlign">
-        <option value="">Select</option>
-        <option value="left">Left</option>
-        <option value="center">Center</option>
-        <option value="right">Right</option>
-      </select>
-    </label>
-
-  </div>
-
-  <div class="sliderControl">
     <span>Font Size:</span>
-    <div>
-      <label>
-        <input @input="setFontSize" type="range" min="6" max="144" v-model="fontSize">
-      </label>
-      <label>
-        <input class="numberInput" @input="setFontSize" type="number" v-model="fontSize">
-      </label>
-    </div>
+    <v-slider
+      v-model="fontSize"
+      thumb-label
+      min="6"
+      max="144"
+      @input="setFontSize"
+      track-fill-color="black"
+      thumb-color="black"
+    ></v-slider>
+  </div>
+
+  <div>
+    <span>Letter Spacing:</span>
+    <v-slider
+      v-model="letterSpacing"
+      thumb-label
+      min="0.0"
+      max="10.0"
+      step="0.1"
+      @input="changeLetterSpacing"
+      track-fill-color="black"
+      thumb-color="black"
+    ></v-slider>
   </div>
 
   <div class="colourPicker">
@@ -92,13 +137,12 @@ export default {
   data() {
     return {
       fontSize: this.textSize,
-      bold: undefined,
-      italic: undefined,
-      underline: undefined,
       fontCase: '',
-      textAlign: '',
+      textAlign: 0,
       fontFamily: '',
-      textColour: ''
+      textColour: '',
+      textFormatting: [],
+      letterSpacing: 1.0
     }
   },
 
@@ -107,27 +151,22 @@ export default {
       const text = document.getElementById(this.selectedElement.id)
       text.style.fontSize = this.fontSize + 'px';
     },
-    setBold() {
-      // console.log(this.$refs[this.selectedElement.id])
+
+    formatText() {
       const text = document.getElementById(this.selectedElement.id)
-      if (this.bold) {
+      if (this.textFormatting.includes(0)) {
         text.style.fontWeight = '700';
       } else {
         text.style.fontWeight = '400';
       }
-    },
-    setItalic() {
-      const text = document.getElementById(this.selectedElement.id)
-      if (this.italic) {
+
+      if (this.textFormatting.includes(1)) {
         text.style.fontStyle = 'oblique';
       } else {
         text.style.fontStyle = 'normal';
       }
-    },
 
-    setUnderline() {
-      const text = document.getElementById(this.selectedElement.id)
-      if (this.underline) {
+      if (this.textFormatting.includes(2)) {
         text.style.textDecoration = 'underline';
       } else {
         text.style.textDecoration = 'none';
@@ -145,10 +184,12 @@ export default {
 
     setTextAlignment() {
       const text = document.getElementById(this.selectedElement.id)
+      console.log(this.textAlign)
       switch (this.textAlign) {
-        case 'left': text.style.textAlign = 'left'; break;
-        case 'center': text.style.textAlign = 'center'; break;
-        case 'right': text.style.textAlign = 'right'; break;
+        case 0: text.style.textAlign = 'left'; break;
+        case 1: text.style.textAlign = 'center'; break;
+        case 2: text.style.textAlign = 'right'; break;
+        case 3: text.style.textAlign = 'justify'; break;
       }
     },
 
@@ -168,13 +209,19 @@ export default {
         case 'sans-serif': text.style.fontFamily = 'sans-serif'; break;
         case 'serif': text.style.fontFamily = 'serif'; break;
         case 'cursive': text.style.fontFamily = 'cursive'; break;
-        case 'system-ui': text.style.fontFamily = 'system-ui'; break;
+        case 'system': text.style.fontFamily = 'system'; break;
       }
     },
 
     changeTextColour() {
       const text = document.getElementById(this.selectedElement.id)
       text.style.color = this.textColour;
+    },
+
+    changeLetterSpacing() {
+      const text = document.getElementById(this.selectedElement.id)
+      console.log(this.letterSpacing)
+      text.style.letterSpacing = this.letterSpacing + 'px';
     }
 
   }

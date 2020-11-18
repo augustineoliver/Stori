@@ -434,6 +434,7 @@ main {
       aside {
         width: 250px;
         background: #2b2d32;
+        color: #d9d9d9;
       }
     }
   }
@@ -584,3 +585,9 @@ main {
     }
   }
 }
+
+
+// Vuetify Overwrite
+//.v-select__selection, .v-select__selection--comma, .v-label, .theme--light, .v-icon {
+//  color: #d7d7d7 !important;
+//}
