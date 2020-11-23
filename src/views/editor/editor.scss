@@ -432,9 +432,11 @@ main {
       }
 
       aside {
-        width: 250px;
+        width: 300px;
         background: #2b2d32;
         color: #d9d9d9;
+        max-height: 100%;
+        overflow-y: auto;
       }
     }
   }

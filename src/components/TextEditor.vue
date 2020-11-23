@@ -1,128 +1,167 @@
 <template>
-<div class="textSetting">
-  <div style="margin: 10px; display: flex; flex-direction: column; justify-content: center">
-    <div style="display: flex; justify-content: center">
-      <v-btn-toggle
-      v-model="textAlign"
-      @change="setTextAlignment"
-      mandatory
-      >
-        <v-btn>
-          <v-icon>mdi-format-align-left</v-icon>
-        </v-btn>
-        <v-btn>
-          <v-icon>mdi-format-align-center</v-icon>
-        </v-btn>
-        <v-btn>
-          <v-icon>mdi-format-align-right</v-icon>
-        </v-btn>
-        <v-btn>
-          <v-icon>mdi-format-align-justify</v-icon>
-        </v-btn>
-      </v-btn-toggle>
+<v-expansion-panel>
+  <v-expansion-panel-header color="#202125">
+    Text
+  </v-expansion-panel-header>
+  <v-expansion-panel-content color="#202125">
+  <div class="textSetting">
+    <div style="margin: 10px; display: flex; flex-direction: column; justify-content: center">
+      <div style="display: flex; justify-content: center">
+        <v-btn-toggle
+        v-model="textAlign"
+        @change="setTextAlignment"
+        mandatory
+        >
+          <v-btn>
+            <v-icon>mdi-format-align-left</v-icon>
+          </v-btn>
+          <v-btn>
+            <v-icon>mdi-format-align-center</v-icon>
+          </v-btn>
+          <v-btn>
+            <v-icon>mdi-format-align-right</v-icon>
+          </v-btn>
+          <v-btn>
+            <v-icon>mdi-format-align-justify</v-icon>
+          </v-btn>
+        </v-btn-toggle>
+      </div>
+
+      <div style="display: flex; justify-content: center">
+        <v-btn-toggle
+          v-model="textFormatting"
+          @change="formatText"
+          multiple
+        >
+
+          <v-btn>
+            <v-icon>mdi-format-bold</v-icon>
+          </v-btn>
+
+          <v-btn>
+            <v-icon>mdi-format-italic</v-icon>
+          </v-btn>
+
+          <v-btn>
+            <v-icon>mdi-format-underline</v-icon>
+          </v-btn>
+        </v-btn-toggle>
+      </div>
+    </div>
+
+    <div>
+      <v-select
+        :items="[
+            'Arial, Helvetica, sans-serif',
+            '\'Arial Black\', Gadget, sans-serif',
+            '\'Comic Sans MS\', cursive, sans-serif',
+            'cursive',
+            'Georgia, serif',
+            'Impact, Charcoal, sans-serif',
+            '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif',
+            'sans-serif',
+            'serif',
+            'system-UI',
+            'Tahoma, Geneva, sans-serif',
+            '\'Trebuchet MS\', Helvetica, sans-serif',
+            'Verdana, Geneva, sans-serif',
+        ]"
+        @change="setFontFamily"
+        v-model="fontFamily"
+        label="Font Family"
+        outlined
+        dense
+      ></v-select>
+    </div>
+
+    <div>
+      <v-select
+        :items="[
+            {valueOf: 'lowercase', value: 'Lowercase'},
+            {valueOf: 'capitalize', value: 'Title Case'},
+            {valueOf: 'uppercase', value: 'Uppercase'},
+            'capitalize',
+            'uppercase',
+        ]"
+        item-text="value"
+        item-value="valueOf"
+        v-model="fontCase"
+        @change="setCapitalize"
+        label="Font Case"
+        outlined
+        dense
+      ></v-select>
+
+    </div>
+
+    <div>
+      <span>Font Size:</span>
+      <v-slider
+        v-model="fontSize"
+        thumb-label
+        min="6"
+        max="144"
+        @input="setFontSize"
+        track-fill-color="black"
+        thumb-color="black"
+      ></v-slider>
+    </div>
+
+    <div>
+      <span>Letter Spacing:</span>
+      <v-slider
+        v-model="letterSpacing"
+        thumb-label
+        min="0.0"
+        max="10.0"
+        step="0.1"
+        @input="changeLetterSpacing"
+        track-fill-color="black"
+        thumb-color="black"
+      ></v-slider>
+    </div>
+
+    <div>
+      <span>Line Height:</span>
+      <v-slider
+        v-model="lineHeight"
+        thumb-label
+        min="0.0"
+        max="5.0"
+        step="0.1"
+        @input="changeLineHeight"
+        track-fill-color="black"
+        thumb-color="black"
+      ></v-slider>
     </div>
 
     <div style="display: flex; justify-content: center">
-      <v-btn-toggle
-        v-model="textFormatting"
-        @change="formatText"
-        multiple
-      >
-
-        <v-btn>
-          <v-icon>mdi-format-bold</v-icon>
-        </v-btn>
-
-        <v-btn>
-          <v-icon>mdi-format-italic</v-icon>
-        </v-btn>
-
-        <v-btn>
-          <v-icon>mdi-format-underline</v-icon>
-        </v-btn>
-      </v-btn-toggle>
+      <v-menu offset-y :close-on-content-click="false">
+        <template v-slot:activator="{ on }">
+          <v-btn
+            :color="textColour"
+            dark
+            small
+            v-on="on"
+            style="text-shadow: black 1px 1px"
+          >
+            Text Color
+          </v-btn>
+        </template>
+        <v-color-picker
+          dot-size="25"
+          mode="rgba"
+          v-model="textColour"
+          @input="changeTextColour"
+          swatches-max-height="250"
+        ></v-color-picker>
+      </v-menu>
     </div>
-  </div>
-
-  <div>
-    <v-select
-          :items="[
-              'Arial, Helvetica, sans-serif',
-              '\'Arial Black\', Gadget, sans-serif',
-              '\'Comic Sans MS\', cursive, sans-serif',
-              'cursive',
-              'Georgia, serif',
-              'Impact, Charcoal, sans-serif',
-              '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif',
-              'sans-serif',
-              'serif',
-              'system-UI',
-              'Tahoma, Geneva, sans-serif',
-              '\'Trebuchet MS\', Helvetica, sans-serif',
-              'Verdana, Geneva, sans-serif',
-          ]"
-          @change="setFontFamily"
-          v-model="fontFamily"
-          label="Font Family"
-          outlined
-          dense
-        ></v-select>
-  </div>
-  <div>
-    <v-select
-          :items="[
-              {valueOf: 'lowercase', value: 'Lowercase'},
-              {valueOf: 'capitalize', value: 'Title Case'},
-              {valueOf: 'uppercase', value: 'Uppercase'},
-              'capitalize',
-              'uppercase',
-          ]"
-          item-text="value"
-          item-value="valueOf"
-          v-model="fontCase"
-          @change="setCapitalize"
-          label="Font Case"
-          outlined
-          dense
-        ></v-select>
 
   </div>
+  </v-expansion-panel-content>
+</v-expansion-panel>
 
-  <div>
-    <span>Font Size:</span>
-    <v-slider
-      v-model="fontSize"
-      thumb-label
-      min="6"
-      max="144"
-      @input="setFontSize"
-      track-fill-color="black"
-      thumb-color="black"
-    ></v-slider>
-  </div>
-
-  <div>
-    <span>Letter Spacing:</span>
-    <v-slider
-      v-model="letterSpacing"
-      thumb-label
-      min="0.0"
-      max="10.0"
-      step="0.1"
-      @input="changeLetterSpacing"
-      track-fill-color="black"
-      thumb-color="black"
-    ></v-slider>
-  </div>
-
-  <div class="colourPicker">
-    <span>Colour</span>
-    <label>
-      <input @input="changeTextColour" type="text" v-model="textColour">
-      <input @input="changeTextColour" type="color" v-model="textColour">
-    </label>
-  </div>
-</div>
 </template>
 
 <script>
@@ -142,7 +181,8 @@ export default {
       fontFamily: '',
       textColour: '',
       textFormatting: [],
-      letterSpacing: 1.0
+      letterSpacing: 1.0,
+      lineHeight: 1.4,
     }
   },
 
@@ -222,6 +262,12 @@ export default {
       const text = document.getElementById(this.selectedElement.id)
       console.log(this.letterSpacing)
       text.style.letterSpacing = this.letterSpacing + 'px';
+    },
+
+    changeLineHeight() {
+      const text = document.getElementById(this.selectedElement.id)
+      console.log(this.letterSpacing)
+      text.style.lineHeight = this.lineHeight + 'em';
     }
 
   }

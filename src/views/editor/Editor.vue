@@ -289,12 +289,27 @@
           </footer>
         </div>
         <aside>
-          <text-editor
-              v-if="selectedElement.type === 'text'"
-              v-bind:selectedElement="selectedElement"
-              v-bind:textSize="fontSize"
-          ></text-editor>
-          <div>Options</div>
+          <v-expansion-panels>
+            <v-expansion-panel>
+              <v-expansion-panel-header color="#202125">
+                Item
+              </v-expansion-panel-header>
+              <v-expansion-panel-content color="#202125">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+            <image-editor
+                v-if="selectedElement.type === 'image'"
+                v-bind:selectedElement="selectedElement"
+                v-bind:selectedImageSrc="selectedImageSrc"
+            ></image-editor>
+            <text-editor
+                v-if="selectedElement.type === 'text'"
+                v-bind:selectedElement="selectedElement"
+                v-bind:textSize="fontSize"
+            ></text-editor>
+          </v-expansion-panels>
+
         </aside>
       </div>
     </div>
@@ -304,7 +319,8 @@
 
 <script>
 import axios from "axios";
-import TextEditor from '../../components/TextEditor';
+import TextEditor from '@/components/TextEditor';
+import ImageEditor from "@/components/ImageEditor";
 
 // import * as interact from 'https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.0/interact.min.js'
 // import interact from '@interactjs/interact'
@@ -353,7 +369,10 @@ export default {
       original_mouse_y: 0,
 
       // Font Variables
-      fontSize: undefined
+      fontSize: undefined,
+
+      // Image Variables
+      selectedImageSrc: undefined
     }
   },
 
@@ -468,74 +487,6 @@ export default {
   },
 
   methods: {
-    // setFontSize() {
-    //   const text = document.getElementById(this.selectedElement.id)
-    //   text.style.fontSize = this.fontSize + 'px';
-    // },
-    // setBold() {
-    //   const text = document.getElementById(this.selectedElement.id)
-    //   if (this.bold) {
-    //     text.style.fontWeight = '700';
-    //   } else {
-    //     text.style.fontWeight = '400';
-    //   }
-    // },
-    // setItalic() {
-    //   const text = document.getElementById(this.selectedElement.id)
-    //   if (this.italic) {
-    //     text.style.fontStyle = 'oblique';
-    //   } else {
-    //     text.style.fontStyle = 'normal';
-    //   }
-    // },
-    // setUnderline() {
-    //   const text = document.getElementById(this.selectedElement.id)
-    //   if (this.underline) {
-    //     text.style.textDecoration = 'underline';
-    //   } else {
-    //     text.style.textDecoration = 'none';
-    //   }
-    // },
-    //
-    // setCapitalize() {
-    //   const text = document.getElementById(this.selectedElement.id)
-    //   switch (this.fontCase) {
-    //     case 'lowercase': text.style.textTransform = 'lowercase'; break;
-    //     case 'capitalize': text.style.textTransform = 'capitalize'; break;
-    //     case 'uppercase': text.style.textTransform = 'uppercase'; break;
-    //   }
-    // },
-    // setTextAlignment() {
-    //   const text = document.getElementById(this.selectedElement.id)
-    //   switch (this.textAlign) {
-    //     case 'left': text.style.textAlign = 'left'; break;
-    //     case 'center': text.style.textAlign = 'center'; break;
-    //     case 'right': text.style.textAlign = 'right'; break;
-    //   }
-    // },
-    //
-    // setFontFamily() {
-    //   const text = document.getElementById(this.selectedElement.id)
-    //   switch (this.fontFamily) {
-    //     case 'Georgia, serif': text.style.fontFamily = 'Georgia, serif'; break;
-    //     case 'sans': text.style.fontFamily = 'sans'; break;
-    //     case 'Arial, Helvetica, sans-serif': text.style.fontFamily = 'Arial, Helvetica, sans-serif'; break;
-    //     case "'Arial Black', Gadget, sans-serif": text.style.fontFamily = "'Arial Black', Gadget, sans-serif"; break;
-    //     case "'Comic Sans MS', cursive, sans-serif": text.style.fontFamily = "'Comic Sans MS', cursive, sans-serif"; break;
-    //     case 'Impact, Charcoal, sans-serif': text.style.fontFamily = 'Impact, Charcoal, sans-serif'; break;
-    //     case "'Lucida Sans Unicode', 'Lucida Grande', sans-serif": text.style.fontFamily = "'Lucida Sans Unicode', 'Lucida Grande', sans-serif"; break;
-    //     case 'Tahoma, Geneva, sans-serif': text.style.fontFamily = 'Tahoma, Geneva, sans-serif'; break;
-    //     case "'Trebuchet MS', Helvetica, sans-serif": text.style.fontFamily = "'Trebuchet MS', Helvetica, sans-serif"; break;
-    //     case 'Verdana, Geneva, sans-serif': text.style.fontFamily = 'Verdana, Geneva, sans-serif'; break;
-    //     case 'sans-serif': text.style.fontFamily = 'sans-serif'; break;
-    //     case 'serif': text.style.fontFamily = 'serif'; break;
-    //     case 'cursive': text.style.fontFamily = 'cursive'; break;
-    //     case 'system-ui': text.style.fontFamily = 'system-ui'; break;
-    //   }
-    // },
-
-
-
     getUnsplashPhotos() {
       axios.get('https://api.unsplash.com/photos?per_page=20&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b')
           .then(res => {
@@ -713,10 +664,7 @@ export default {
           //   element.target.parentNode.parentNode.parentNode.style.top = (element.pageY - document.getElementById('page').offsetTop) + 'px';
           //   element.target.parentNode.parentNode.parentNode.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
           // })
-          photo.addEventListener('click', () => {
-            this.alwaysOnTop(photo);
-            console.log(photo)
-          })
+          photo.id = new Date().toISOString();
 
           // div.innerHTML = `
           // <div class='resizers' id="resizers-${new Date().toTimeString()}" >
@@ -735,7 +683,15 @@ export default {
           photo.style = 'width: 180px; height: auto; position: absolute';
           photo.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
           photo.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
+          const thumbnail = photo.src;
           photo.src = photo.dataset.src;
+          photo.dataset.src = thumbnail;
+          photo.addEventListener('click', () => {
+            this.selectElement('image', photo.id)
+            this.selectedImageSrc = photo.dataset.src
+            this.alwaysOnTop(photo);
+            console.log(photo)
+          })
           photo.classList.add('resize-drag')
           setTimeout(() => {
             photo.width = photo.getBoundingClientRect().width
@@ -982,7 +938,8 @@ export default {
   },
 
   components: {
-    'text-editor': TextEditor
+    'text-editor': TextEditor,
+    'image-editor': ImageEditor
   }
 }
 </script>
