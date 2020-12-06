@@ -46,9 +46,9 @@
             <i class="fas fa-film"></i>
             <span>Video</span>
           </div>
-          <div :class="{active: activeMedia === 'pexelsVideo'}" @click="getPexelsVideos">
+          <div :class="{active: activeMedia === 'callToActionButtons'}" @click="activeMedia = 'callToActionButtons'">
             <i class="fas fa-film"></i>
-            <span>Video</span>
+            <span>Buttons</span>
           </div>
           <div :class="{active: activeMedia === 'background'}" @click="activeMedia = 'background'">
             <i class="fas fa-film"></i>
@@ -77,6 +77,181 @@
         <div class="unsplashPhotos" v-if="activeMedia === 'pexelsVideo'">
           <img draggable="true" @mousedown="drag($event)" v-for="(video, index) in pexelsVideo" :key="index"
                :src="video.video_pictures[0].picture" :data-src="video.video_files[0].link" alt="">
+        </div>
+        <div class="unsplashPhotos" v-if="activeMedia === 'callToActionButtons'">
+          <div style="display: flex; justify-content: space-around; flex-wrap: wrap">
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: yellow; color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: #0035b1; color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: #81000f; color: #f1e2e2; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: #0c6d00; color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: #ff7a00; color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: #eb06f1; color: #f1e6e6; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: #001d3b; color: #e0e4ec; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: #3fa501; color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(234,30,19), rgb(244,176,0)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(234,0,120), rgb(204,139,244)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(10,0,234), rgb(155,54,244)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(10,234,22), rgb(229,244,118)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(98, 0, 234), rgb(3, 169, 244)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(234,221,9), rgb(3, 169, 244)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(234,179,181), rgb(143,244,197)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(183,234,57), rgb(233,96,244)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(54,133,34), rgb(182,244,49)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(116,234,60), rgb(51,111,244)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(231,79,234), rgb(107,133,244)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(0,0,0), rgb(255,255,255)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(0,17,150), rgb(255,255,255)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(234,0,16), rgb(255,255,255)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(0,127,3), rgb(255,255,255)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(150,0,107), rgb(255,255,255)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(234,75,88), rgb(244,238,153)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(98, 0, 234), rgb(3, 169, 244)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(206,234,228), rgb(244,121,45)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(114,173,234), rgb(195,244,84)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(234,79,214), rgb(37,244,152)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(47,60,234), rgb(103,244,50)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(232,234,82), rgb(244,167,79)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(234,0,2), rgb(0,10,244)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(87,234,149), rgb(43,60,39)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+            <div style="display: flex; margin: 5px; width: 145px; height: 145px; justify-content: center; align-items: center; background: rgba(0,0,0,0.1)">
+              <a draggable="true" @mousedown="drag($event)" style="display: flex; justify-content: center; align-items: center; text-decoration: none; background: linear-gradient(90deg, rgb(150,137,53), rgb(93,191,111)); color: black; width: max-content; padding: 10px 20px; border-radius: 10px">
+                Button
+              </a>
+            </div>
+
+          </div>
         </div>
         <div class="unsplashPhotos emojiPanel" v-if="activeMedia === 'emojis'">
           <span draggable="true" @mousedown="drag($event)" style="font-size: 3em; height: 100px"
@@ -279,6 +454,21 @@
       <div class="editor">
         <div>
           <div>
+            <div style="position: absolute; z-index: 5000; margin-left: 30px; background: red; width: 100%; height: 30px">
+              <vue-guides
+                type="horizontal" ref="guides"
+                v-on:changeGuides="onChangeGuides"
+              />
+            </div>
+
+            <div style="position: absolute; z-index: 5000; margin-top: 30px; background: red; width: 30px; height: 100%">
+              <vue-guides
+                type="vertical" ref="guidesVertical"
+                v-on:changeGuides="onChangeGuides"
+              />
+            </div>
+
+
             <div class="page" id="page" @drop="drop($event)" :style="{background: this.isCustomGradient === false ? this.pageBackground : `${this.customGradientType}(${ this.customGradientType !== 'radial-gradient' ? this.customDegree + 'deg' : radiaShape }, ${this.customColour1} ${' ' + this.colourPercentage + '%'}, ${this.customColour2} ${' ' + 100 - this.colourPercentage + '%'})`}" @dragover.prevent @dragenter.prevent></div>
           </div>
           <footer>
@@ -319,6 +509,7 @@
 
 <script>
 import axios from "axios";
+import Guides from "vue-guides";
 import TextEditor from '@/components/TextEditor';
 import ImageEditor from "@/components/ImageEditor";
 
@@ -377,6 +568,26 @@ export default {
   },
 
   mounted() {
+    // Ruler Start Here
+    const guides = this.$refs.guides;
+    const guidesVertical = this.$refs.guidesVertical;
+    // let scrollX = 0;
+    // let scrollY = 0;
+    guides.resize();
+    guidesVertical.resize();
+
+    window.addEventListener("resize", () => {
+        guides.resize();
+        guidesVertical.resize();
+    });
+    // window.addEventListener("wheel", e => {
+    //     scrollX += e.deltaX;
+    //     scrollY += e.deltaY;
+    //     guides.scroll(scrollX);
+    //     guides.scrollGuides(scrollY);
+    // });
+    // Ruler Ends Here
+
     let position = {x: 0, y: 0}
     // eslint-disable-next-line no-undef
     interact('.resize-drag')
@@ -440,14 +651,18 @@ export default {
               // position = { x: 0, y: 0 }
             },
             move(event) {
-              position.x += event.dx
-              position.y += event.dy
+              position.x += (event.dx / 421.641) * 100
+              position.y += (event.dy / 702.75) * 100
 
               event.target.dataset.x = position.x
               event.target.dataset.y = position.y
 
-              event.target.style.transform =
-                  `translate(${position.x}px, ${position.y}px)`
+              // event.target.style.transform =
+              //     `translate(${position.x}%, ${position.y}%)`
+              // const x = (position.x / 421.641) * 100;
+              // const y = (position.y / 702.75) * 100;
+              event.target.style.left = position.x + '%';
+              event.target.style.top = position.y + '%';
 
             },
           }
@@ -487,6 +702,10 @@ export default {
   },
 
   methods: {
+    onChangeGuides(e) {
+      console.log(e.guides);
+    },
+
     getUnsplashPhotos() {
       axios.get('https://api.unsplash.com/photos?per_page=20&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b')
           .then(res => {
@@ -654,7 +873,7 @@ export default {
           console.log('QQQQQQQQQQQQQQQ: ', text.style.fontSize.replace('px', ''))
           div = text;
         }
-        else if (this.activeMedia !== 'pexelsVideo') {
+        else if (this.activeMedia === 'unsplashPhotos') {
           const photo = this.draggedElement.cloneNode(true)
           // photo.addEventListener('drag', (element) => {
           //   this.alwaysOnTop(photo);
@@ -704,6 +923,59 @@ export default {
 
           // photo.onclick = this.resizeElement(div.children[0].id, '.resizers')
           div = photo
+        }
+        else if (this.activeMedia === 'callToActionButtons') {
+          console.log('I am here', evt.pageX);
+          console.log('I am here', document.getElementById('page').offsetLeft);
+          console.log('I am here', (evt.pageX - document.getElementById('page').offsetLeft));
+          console.log('I am here', (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100) + '%');
+          const button = this.draggedElement.cloneNode(true);
+          button.style.position = 'absolute';
+          button.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
+          button.style.left = (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100) + '%';
+          button.classList.add('resize-drag')
+          button.id = new Date().toISOString();
+          // button.ref = new Date().toISOString();
+          // button.addEventListener('click', () => {
+          //   this.selectElement('text', button.id)
+          // })
+          // button.ondblclick = () => {
+          //   button.contentEditable = true
+          // }
+          // button.onblur = () => {
+          //   button.contentEditable = false
+          // }
+          //
+          console.log('QQQQQQQQQQQQQQ:', button.getAttribute('data-type'))
+          //
+          // switch (button.getAttribute('data-type')) {
+          //   case 'heading': {
+          //     button.style.fontWeight = '600'
+          //     button.style.fontSize = '35px'
+          //     button.style.lineHeight = '1.4'
+          //   } break;
+          //   case 'subheading': {
+          //     button.style.fontWeight = '500'
+          //     button.style.fontSize = '23px'
+          //     button.style.lineHeight = '1.4'
+          //   } break;
+          //   case 'normal': {
+          //     button.style.fontSize = '11px'
+          //     button.style.lineHeight = '1.4'
+          //   } break;
+          //
+          // }
+          //
+          // setTimeout(() => {
+          //   button.width = button.getBoundingClientRect().width
+          //   button.height = button.getBoundingClientRect().height
+          // }, 100)
+          // button.classList.add('resize-drag')
+          //
+          // // Update Editing Values
+          // this.fontSize = button.style.fontSize.replace('px', '')
+          // console.log('QQQQQQQQQQQQQQQ: ', button.style.fontSize.replace('px', ''))
+          div = button;
         }
         else {
           const video = document.createElement('video')
@@ -939,7 +1211,8 @@ export default {
 
   components: {
     'text-editor': TextEditor,
-    'image-editor': ImageEditor
+    'image-editor': ImageEditor,
+    'vue-guides': Guides
   }
 }
 </script>

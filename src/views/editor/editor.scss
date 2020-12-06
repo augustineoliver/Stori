@@ -399,25 +399,30 @@ main {
       display: flex;
 
       > div {
-        display: flex;
+        //display: flex;
         width: calc(100% - 250px);
+        min-width: 800px;
 
         > div {
-          display: flex;
+          //display: flex;
           justify-content: center;
-          padding: 50px;
+          //padding: 50px;
           width: 100%;
           box-sizing: border-box;
           height: calc(100% - 50px);
           overflow: auto;
 
           .page {
-            width: 360px;
-            height: 600px;
+            width: 421.641px;
+            height: 702.750px;
             background: #eeeeee;
             display: block;
             margin: 100px;
-            transform: scale(1.25, 1.25);
+            transform: scale(1, 1);
+
+            div {
+              position: absolute;
+            }
           }
         }
 
