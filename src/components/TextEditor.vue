@@ -135,7 +135,7 @@
       ></v-slider>
     </div>
 
-    <div style="display: flex; justify-content: center">
+    <div style="display: flex; justify-content: space-between">
       <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn
@@ -145,7 +145,7 @@
             v-on="on"
             style="text-shadow: black 1px 1px"
           >
-            Text Color
+            Color
           </v-btn>
         </template>
         <v-color-picker
@@ -156,6 +156,27 @@
           swatches-max-height="250"
         ></v-color-picker>
       </v-menu>
+      <v-menu offset-y :close-on-content-click="false">
+        <template v-slot:activator="{ on }">
+          <v-btn
+            :color="textBackground"
+            dark
+            small
+            v-on="on"
+            style="text-shadow: black 1px 1px"
+          >
+            Background
+          </v-btn>
+        </template>
+        <v-color-picker
+          dot-size="25"
+          mode="rgba"
+          v-model="textBackground"
+          @input="changeTextBackground"
+          swatches-max-height="250"
+        ></v-color-picker>
+      </v-menu>
+
     </div>
 
   </div>
@@ -179,7 +200,8 @@ export default {
       fontCase: '',
       textAlign: 0,
       fontFamily: '',
-      textColour: '',
+      textColour: '#000000',
+      textBackground: 'rgba(0, 0, 0, 0)',
       textFormatting: [],
       letterSpacing: 1.0,
       lineHeight: 1.4,
@@ -256,6 +278,11 @@ export default {
     changeTextColour() {
       const text = document.getElementById(this.selectedElement.id)
       text.style.color = this.textColour;
+    },
+
+    changeTextBackground() {
+      const text = document.getElementById(this.selectedElement.id)
+      text.style.backgroundColor = this.textBackground;
     },
 
     changeLetterSpacing() {

@@ -402,6 +402,7 @@ main {
         //display: flex;
         width: calc(100% - 250px);
         min-width: 800px;
+        overflow: auto;
 
         > div {
           //display: flex;
@@ -593,7 +594,13 @@ main {
   }
 }
 
-
+.textEdit {
+  &:hover {
+    border: 0.5px solid #000000;
+    box-shadow: #b9b9b9 0 0 2px;
+    box-sizing: border-box!important;
+  }
+}
 // Vuetify Overwrite
 //.v-select__selection, .v-select__selection--comma, .v-label, .theme--light, .v-icon {
 //  color: #d7d7d7 !important;

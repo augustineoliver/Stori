@@ -503,7 +503,8 @@
         </aside>
       </div>
     </div>
-    <!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.0/interact.min.js"></script>-->
+
+  <stori-preview @closePreview="() => {this.previewURL = undefined}" v-if="previewURL" :previewURL="previewURL" :QRCode="QRCode"></stori-preview>
   </main>
 </template>
 
@@ -512,6 +513,7 @@ import axios from "axios";
 import Guides from "vue-guides";
 import TextEditor from '@/components/TextEditor';
 import ImageEditor from "@/components/ImageEditor";
+import Preview from "@/components/Preview";
 
 // import * as interact from 'https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.0/interact.min.js'
 // import interact from '@interactjs/interact'
@@ -558,6 +560,8 @@ export default {
       original_y: 0,
       original_mouse_x: 0,
       original_mouse_y: 0,
+      previewURL: undefined,
+      QRCode: undefined,
 
       // Font Variables
       fontSize: undefined,
@@ -594,6 +598,7 @@ export default {
         .resizable({
           // resize from all edges and corners
           edges: {left: true, right: true, bottom: true, top: true},
+          margin: 10,
 
           listeners: {
             move(event) {
@@ -602,8 +607,9 @@ export default {
               var y = (parseFloat(target.getAttribute('data-y')) || 0)
 
               // update the element's style
-              target.style.width = event.rect.width + 'px'
-              target.style.height = event.rect.height + 'px'
+              // (event.dx / 421.641) * 100
+              target.style.width = ((event.rect.width / 421.641) * 100) + '%'
+              target.style.height = ((event.rect.height / 702.75) * 100) + '%'
 
               // translate when resizing from top or left edges
               x += event.deltaRect.left
@@ -616,6 +622,18 @@ export default {
               target.setAttribute('data-y', y)
               target.width = target.getBoundingClientRect().width
               target.height = target.getBoundingClientRect().height
+
+
+              // position.x += (event.dx / 421.641) * 100
+              // position.y += (event.dy / 702.75) * 100
+
+              // event.target.dataset.x = position.x
+              // event.target.dataset.y = position.y
+
+              // event.target.style.left = position.x + '%';
+              // event.target.style.top = position.y + '%';
+              // target.translationX('-50%')
+              // target.translationY('-50%')
               // target.textContent = Math.round(event.rect.width) + '\u00D7' + Math.round(event.rect.height)
             }
           },
@@ -657,13 +675,8 @@ export default {
               event.target.dataset.x = position.x
               event.target.dataset.y = position.y
 
-              // event.target.style.transform =
-              //     `translate(${position.x}%, ${position.y}%)`
-              // const x = (position.x / 421.641) * 100;
-              // const y = (position.y / 702.75) * 100;
               event.target.style.left = position.x + '%';
               event.target.style.top = position.y + '%';
-
             },
           }
         })
@@ -826,12 +839,17 @@ export default {
           console.log('I am here');
           console.log('I am here', this.draggedElement);
           const text = this.draggedElement.cloneNode(true);
-          text.style = 'color: #202125; position: absolute; border: 1px solid blue';
+          text.style = 'color: #202125; position: absolute; min-width: 100px; min-height: 50px';
           text.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
           text.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
           text.classList.add('resize-drag')
+          text.classList.add('textEdit')
           text.id = new Date().toISOString();
           text.ref = new Date().toISOString();
+          setTimeout(() => {
+            text.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100
+            text.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
+          }, 500)
           text.addEventListener('click', () => {
             this.selectElement('text', text.id)
           })
@@ -875,33 +893,11 @@ export default {
         }
         else if (this.activeMedia === 'unsplashPhotos') {
           const photo = this.draggedElement.cloneNode(true)
-          // photo.addEventListener('drag', (element) => {
-          //   this.alwaysOnTop(photo);
-          //   console.log(element)
-          //   // console.log('page X:',(element.pageX -document.getElementById('page').offsetLeft))
-          //   // console.log('page Y:',(element.pageY - document.getElementById('page').offsetTop))
-          //   element.target.parentNode.parentNode.parentNode.style.top = (element.pageY - document.getElementById('page').offsetTop) + 'px';
-          //   element.target.parentNode.parentNode.parentNode.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
-          // })
           photo.id = new Date().toISOString();
 
-          // div.innerHTML = `
-          // <div class='resizers' id="resizers-${new Date().toTimeString()}" >
-          //   <div class='resizer top-left'></div>
-          //   <div class='resizer top-right'></div>
-          //   <div class='resizer bottom-left'></div>
-          //   <div class='resizer bottom-right'></div>
-          //   <amp-img layout="responsive" content="undefined" width="1" height="1" style="width: 100%; height: auto" src="${photo.dataset.src}"></amp-img>
-          // </div>`;
-
-
-          // photo.style = 'width: 100%; height: auto'
-          // photo.style.filter = 'blur(8px)';
-          // photo.ondragstart = 'this.drag($event)';
-          // photo.classList.add('inUse');
           photo.style = 'width: 180px; height: auto; position: absolute';
-          photo.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
-          photo.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
+          photo.style.top = (((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100) + '%';
+          photo.style.left = (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100 )+ '%';
           const thumbnail = photo.src;
           photo.src = photo.dataset.src;
           photo.dataset.src = thumbnail;
@@ -913,10 +909,12 @@ export default {
           })
           photo.classList.add('resize-drag')
           setTimeout(() => {
-            photo.width = photo.getBoundingClientRect().width
-            photo.height = photo.getBoundingClientRect().height
-            photo.setAttribute('data-img', '');
-          }, 100)
+            photo.style.width = ((photo.getBoundingClientRect().width / 421.641) * 100 )+ '%';
+            photo.style.height = ((photo.getBoundingClientRect().height / 702.75) * 100 )+ '%';
+            photo.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100
+            photo.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
+            photo.removeAttribute('data-src');
+          }, 500)
 
           photo.setAttribute('data-x', '');
           photo.setAttribute('data-y', '');
@@ -1142,14 +1140,14 @@ export default {
       htmlCode = htmlCode.replaceAll(/<div class="resizer .+"><\/div>/gi, '')
       // htmlCode = htmlCode.replaceAll(new RegExp('height: ([0-9]|\\.)+px;">'), 'height: fit-content;">') // remove height from main div because of video
       htmlCode = htmlCode.replace('draggable="true"', '');
-      htmlCode = htmlCode.replace('<img', `<amp-img`);
-      htmlCode = htmlCode.replace('data-img="">', `  width="1" height="1"></amp-img>`);
+      // htmlCode = htmlCode.replace('<img', `<amp-img`);
+      // htmlCode = htmlCode.replace('data-img="">', `  width="1" height="1"></amp-img>`);
       console.log(htmlCode)
 
       const title = document.getElementById('title').value;
 
       //eslint-disable-next-line
-      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head>  <meta charset='utf-8'> <script async=\"\" custom-element=\"amp-video\" src=\"https://cdn.ampproject.org/v0/amp-video-0.1.js\"><\/script> <style amp-custom>.inUse {overflow: hidden;} amp-video > :first-child {padding-top: 56%!important;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>" + (title ? title : 'Untitled Story') + "</title>  <link rel='canonical' href='https://www.cnn.com/ampstories/us/labor-day-its-history-and-meaning'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='CNN' publisher-logo-src='https://stamp.static.cnn.io/assets/images/badge.png'>" +
+      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head>  <meta charset='utf-8'> <script async=\"\" custom-element=\"amp-video\" src=\"https://cdn.ampproject.org/v0/amp-video-0.1.js\"><\/script> <style amp-custom>.inUse {overflow: hidden;} amp-video > :first-child {padding-top: 56%!important;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>" + (title ? title : 'Untitled Story') + "</title>  <link rel='canonical' href='/'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='Stori' publisher-logo-src='https://stori-73bd3.web.app/img/logo.389c58bb.svg'>" +
           `<amp-story-page id='page-cover' class='amp-story-page amp-story-page__full' style='background: ${this.isCustomGradient === false ? this.pageBackground : this.customGradientType + '(' + (this.customGradientType !== 'radial-gradient' ? this.customDegree + 'deg' : 'circle') + ', ' + this.customColour1 +  ' ' + this.colourPercentage + '%, ' + this.customColour2 + ' ' + (100 - this.colourPercentage) + '%)'}'>` +
           "<amp-story-grid-layer template='vertical' class='layer-background align-center justify-center'>";
       const endAmpCode = `</amp-story-grid-layer>    </amp-story-page>  </amp-story></body></html>`
@@ -1176,7 +1174,9 @@ export default {
       axios.post(`${this.baseUrl}stories/add`, payload, {headers: {Authorization: this.authToken}, config})
           .then(res => {
             console.log(res)
-            window.open('https://' + res.data.data.amp_file, '_blank')
+            this.previewURL = 'https://' + res.data.data.amp_file;
+            this.QRCode = 'https://' + res.data.data.qrcode;
+            // window.open('https://' + res.data.data.amp_file, '_blank')
           })
       // var a = document.createElement("a");
       // a.id = 'a';
@@ -1212,7 +1212,8 @@ export default {
   components: {
     'text-editor': TextEditor,
     'image-editor': ImageEditor,
-    'vue-guides': Guides
+    'vue-guides': Guides,
+    'stori-preview': Preview
   }
 }
 </script>
