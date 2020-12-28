@@ -1,12 +1,15 @@
 <template>
-<div class="preview">
-  <div class="closePreview" @click="$emit('closePreview')">
-    <i class="fa fa-times"></i>
-  </div>
+  <div>
+    <div id="leftPreview" class="leftPreview animate__animated animate__faster animate__fadeInLeft"
+         @click="closePreview"></div>
+    <div id="preview" class="preview animate__animated animate__faster animate__fadeInRight">
+      <div class="closePreview" @click="closePreview">
+        <i class="fa fa-times"></i>
+      </div>
       <div class="phone">
         <div class="smartphone">
           <div class="content">
-            <iframe :src="previewURL" style="width:100%;border:none;height:100%" />
+            <iframe :src="previewURL" style="width:100%;border:none;height:100%"/>
           </div>
         </div>
       </div>
@@ -29,11 +32,11 @@
           </h4>
           <a target="_blank" :href="previewURL" style="text-decoration: none; display: block; margin: 20px 0">
             <v-btn
-              block
-              color="white"
-              elevation="1"
-              large
-              outlined
+                block
+                color="white"
+                elevation="1"
+                large
+                outlined
             >
               Preview in Browser
             </v-btn>
@@ -41,35 +44,51 @@
         </div>
       </div>
     </div>
+  </div>
 </template>
 
 <script>
 export default {
-name: "Preview",
+  name: "Preview",
 
-props: {
-  previewURL: undefined,
-  QRCode: undefined,
-}
+  props: {
+    previewURL: undefined,
+    QRCode: undefined,
+  },
+
+  methods: {
+    closePreview() {
+      const preview = document.getElementById('preview');
+      preview.classList.remove('animate__fadeInRight')
+      preview.classList.add('animate__fadeOutRight');
+      const leftPreview = document.getElementById('leftPreview');
+      leftPreview.classList.remove('animate__fadeInLeft')
+      leftPreview.classList.add('animate__fadeOutLeft');
+
+      setTimeout(() => {
+        this.$emit('closePreview')
+      }, 500)
+    }
+  }
 }
 </script>
 
 <style lang="scss">
-  .preview {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 50vw;
-    min-width: 770px;
-    height: 100vh;
-    background: #121212;
-    z-index: 10000;
-    box-sizing: border-box;
-    display: flex;
+.preview {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50vw;
+  min-width: 770px;
+  height: 100vh;
+  background: #121212;
+  z-index: 10000;
+  box-sizing: border-box;
+  display: flex;
 
-    .phone {
-      padding: 50px 20px;
-      width: calc(100% - 250px);
+  .phone {
+    padding: 50px 20px;
+    width: calc(100% - 250px);
 
     .smartphone {
       position: relative;
@@ -114,66 +133,81 @@ props: {
       background: white;
     }
 
-    }
+  }
 
-    .details {
+  .details {
+    width: 250px;
+    background: black;
+    color: white;
+
+    .QRCode {
+      position: absolute;
+      bottom: 0;
+      right: 0;
       width: 250px;
-      background: black;
-      color: white;
+      height: 500px;
+      text-align: center;
+      font-family: 'Yanone Kaffeesatz', sans-serif;
+      letter-spacing: 1px;
+      padding: 10px;
+      box-sizing: border-box;
 
-      .QRCode {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 250px;
-        height: 500px;
+      div {
         text-align: center;
-        font-family: 'Yanone Kaffeesatz', sans-serif;
-        letter-spacing: 1px;
-        padding: 10px;
-        box-sizing: border-box;
+        color: white;
+        display: flex;
+        align-content: center;
+        justify-content: center;
 
-        div {
-          text-align: center;
+        .code {
+          padding: 10px;
+          background: white;
+          border-radius: 10px;
+          display: block;
+          width: min-content;
+          height: min-content;
+          margin: 10px;
+
+          img {
+            width: 150px;
+            height: 150px;
+          }
+        }
+
+        .QRNote {
           color: white;
-          display: flex;
-          align-content: center;
-          justify-content: center;
-          .code {
-            padding: 10px;
-            background: white;
-            border-radius: 10px;
-            display: block;
-            width: min-content;
-            height: min-content;
-            margin: 10px;
-            img {
-              width: 150px;
-              height: 150px;
-            }
-          }
-
-          .QRNote {
-            color: white;
-          }
         }
       }
     }
-
-    .closePreview {
-      position: absolute;
-      right: 20px;
-      top: 20px;
-      width: 35px;
-      height: 35px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: black;
-      background: white;
-      border-radius: 5px;
-      font-size: 1.5em;
-      cursor: pointer;
-    }
   }
+
+  .closePreview {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    background: white;
+    border-radius: 5px;
+    font-size: 1.5em;
+    cursor: pointer;
+  }
+}
+
+.leftPreview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50vw;
+  min-width: calc(100% - 770px);
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 10000;
+  box-sizing: border-box;
+  display: flex;
+}
 </style>

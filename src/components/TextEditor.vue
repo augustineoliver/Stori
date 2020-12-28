@@ -102,8 +102,8 @@
         min="6"
         max="144"
         @input="setFontSize"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
@@ -116,8 +116,8 @@
         max="10.0"
         step="0.1"
         @input="changeLetterSpacing"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
@@ -130,8 +130,8 @@
         max="5.0"
         step="0.1"
         @input="changeLineHeight"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 

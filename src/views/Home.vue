@@ -5,7 +5,7 @@
       <nav>
         <div>
           <img src="../assets/images/home/new-story.svg" alt="">
-          <router-link :to="{name: 'Home'}">New Story</router-link>
+          <router-link :to="{name: 'Editor'}">New Story</router-link>
         </div>
         <div>
           <img src="../assets/images/home/templates.svg" alt="">
@@ -63,9 +63,10 @@
       </div>
 
       <div class="templateList">
-        <div class="template">
-          <div class="preview">
-            <img src="../assets/images/home/preview.svg" alt="">
+        <div class="template" v-for="(stori, index) in allUserStori" :key="index">
+          <div class="ampPreview">
+<!--            <img src="../assets/images/home/preview.svg" alt="">-->
+            <iframe class="iframe" :src="`https://${stori.amp_file}`"></iframe>
           </div>
           <div class="details">
             <div>
@@ -82,167 +83,6 @@
             </div>
           </div>
         </div>
-
-        <div class="template">
-          <div class="preview">
-            <img src="../assets/images/home/preview.svg" alt="">
-          </div>
-          <div class="details">
-            <div>
-              <div>Facebook Story</div>
-              <div>Created on Friday 12-10-2020</div>
-            </div>
-            <div>
-              <div>
-                <i class="fas fa-eye"></i>
-              </div>
-              <div>
-                <i class="fas fa-ellipsis-v"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="template">
-          <div class="preview">
-            <img src="../assets/images/home/preview.svg" alt="">
-          </div>
-          <div class="details">
-            <div>
-              <div>Facebook Story</div>
-              <div>Created on Friday 12-10-2020</div>
-            </div>
-            <div>
-              <div>
-                <i class="fas fa-eye"></i>
-              </div>
-              <div>
-                <i class="fas fa-ellipsis-v"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="template">
-          <div class="preview">
-            <img src="../assets/images/home/preview.svg" alt="">
-          </div>
-          <div class="details">
-            <div>
-              <div>Facebook Story</div>
-              <div>Created on Friday 12-10-2020</div>
-            </div>
-            <div>
-              <div>
-                <i class="fas fa-eye"></i>
-              </div>
-              <div>
-                <i class="fas fa-ellipsis-v"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="template">
-          <div class="preview">
-            <img src="../assets/images/home/preview.svg" alt="">
-          </div>
-          <div class="details">
-            <div>
-              <div>Facebook Story</div>
-              <div>Created on Friday 12-10-2020</div>
-            </div>
-            <div>
-              <div>
-                <i class="fas fa-eye"></i>
-              </div>
-              <div>
-                <i class="fas fa-ellipsis-v"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="template">
-          <div class="preview">
-            <img src="../assets/images/home/preview.svg" alt="">
-          </div>
-          <div class="details">
-            <div>
-              <div>Facebook Story</div>
-              <div>Created on Friday 12-10-2020</div>
-            </div>
-            <div>
-              <div>
-                <i class="fas fa-eye"></i>
-              </div>
-              <div>
-                <i class="fas fa-ellipsis-v"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="template">
-          <div class="preview">
-            <img src="../assets/images/home/preview.svg" alt="">
-          </div>
-          <div class="details">
-            <div>
-              <div>Facebook Story</div>
-              <div>Created on Friday 12-10-2020</div>
-            </div>
-            <div>
-              <div>
-                <i class="fas fa-eye"></i>
-              </div>
-              <div>
-                <i class="fas fa-ellipsis-v"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="template">
-          <div class="preview">
-            <img src="../assets/images/home/preview.svg" alt="">
-          </div>
-          <div class="details">
-            <div>
-              <div>Facebook Story</div>
-              <div>Created on Friday 12-10-2020</div>
-            </div>
-            <div>
-              <div>
-                <i class="fas fa-eye"></i>
-              </div>
-              <div>
-                <i class="fas fa-ellipsis-v"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="template">
-          <div class="preview">
-            <img src="../assets/images/home/preview.svg" alt="">
-          </div>
-          <div class="details">
-            <div>
-              <div>Facebook Story</div>
-              <div>Created on Friday 12-10-2020</div>
-            </div>
-            <div>
-              <div>
-                <i class="fas fa-eye"></i>
-              </div>
-              <div>
-                <i class="fas fa-ellipsis-v"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
 
       </div>
     </main>
@@ -252,10 +92,38 @@
 <script>
 // @ is an alias to /src
 
+import axios from "axios";
+
 export default {
   name: 'Home',
-  components: {
+  data() {
+    return {
+      authToken: `Bearer ${localStorage.getItem('authToken')}`,
+      baseUrl: process.env.VUE_APP_baseUrl,
+      allUserStori: [],
+    }
+  },
 
+  created() {
+    this.getUserStories()
+  },
+
+  updated() {
+    const stories = document.getElementsByClassName('iframe')
+    stories.forEach(() => {
+      // const aaa = element.contentWindow.document
+      console.log('QQQQQQQQQQQQ', document.getElementsByClassName('i-amphtml-story-share-control'))
+    })
+  },
+
+  methods: {
+    getUserStories() {
+      axios.post(`${this.baseUrl}stories/all`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
+          .then(res => {
+            this.allUserStori = res.data.data;
+            console.log(this.allUserStori)
+          })
+    }
   }
 }
 </script>
@@ -442,33 +310,39 @@ section {
     .templateList {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
+      justify-content: flex-start;
       width: 100%;
       padding: 20px 50px;
       box-sizing: border-box;
       align-items: center;
       .template {
         width: 308px;
-        height: 450px;
+        height: fit-content;
         background: #1A1A1A;
         border-radius: 13px;
-        padding: 24px;
+        padding: 30px;
         box-sizing: border-box;
         margin: 20px;
 
-        .preview {
+        .ampPreview {
           background: #212326;
           border-radius: 13px;
-          width: 260px;
-          height: 331px;
+          width: 248.024px;
+          height: 413.382px;
           display: flex;
           justify-content: center;
           align-items: center;
 
-          img {
-            width: auto;
-            height: auto;
-            max-width: 100%;
+          //img {
+          //  width: auto;
+          //  height: auto;
+          //  max-width: 100%;
+          //}
+
+          iframe {
+            border: 0;
+            height: 100%;
+            width: 100%;
           }
         }
 
@@ -520,5 +394,11 @@ section {
       }
     }
   }
+}
+
+.i-amphtml-story-share-control, .i-amphtml-story-button {
+  display: none;
+  width: 0;
+  height: 0;
 }
 </style>

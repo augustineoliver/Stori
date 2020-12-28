@@ -112,7 +112,9 @@ export default {
         console.log(res.data);
         if (res.data.data) {
           localStorage.setItem('authToken', res.data.data.accessToken)
-          router.push('editor')
+          localStorage.setItem('userId', res.data.data.id)
+          axios.defaults.headers.common['Authorization'] = localStorage.getItem('authToken');
+          router.push('home')
         } else {
           console.log(res.data.message)
         }
@@ -196,7 +198,7 @@ export default {
           justify-content: space-between;
           align-items: center;
           background: rgba(0,0,0,0);
-          height: 50px;
+          //height: 50px;
           :first-child {
             width: 60px;
             text-align: center;

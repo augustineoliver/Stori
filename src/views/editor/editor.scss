@@ -18,7 +18,8 @@ main {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    //border-bottom: 1px solid #CBDBEC;
+    background: #191919;
+    border-bottom: 2px solid #000000;
     box-sizing: border-box;
 
     .leftHeader {
@@ -114,17 +115,17 @@ main {
 
     ::-webkit-scrollbar-track {
       -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-      background-color: #F5F5F5;
+      background-color: #191919;
     }
 
     ::-webkit-scrollbar {
       width: 6px;
-      background-color: #F5F5F5;
+      background-color: #191919;
     }
 
     ::-webkit-scrollbar:horizontal {
       height: 6px;
-      background-color: #F5F5F5;
+      background-color: #191919;
     }
 
     ::-webkit-scrollbar-thumb {
@@ -134,10 +135,9 @@ main {
     .leftPanel {
       display: flex;
       width: 400px;
-      background: #20262d;
 
       nav {
-        background: #000000;
+        background: #191919;
         width: 80px;
         height: 100%;
         display: flex;
@@ -155,59 +155,19 @@ main {
           cursor: pointer;
           box-sizing: border-box;
 
-          &:hover {
-            color: #a9a9a9;
+          img {
+            width: 25px;
+            height: auto;
+          }
 
-            i {
-              color: #a9a9a9;
-            }
+          &:hover {
+            background: #1B1C1E;
           }
 
           &.active {
-            background: #20262D;
-            border-top-left-radius: 10px;
-            border-bottom-left-radius: 10px;
-
-            &:first-child {
-              &::before {
-                display: none;
-              }
-            }
-
-            &::before {
-              content: '';
-              background: black;
-              width: 10px;
-              height: 10px;
-              position: absolute;
-              margin-top: -90px;
-              margin-left: 70px;
-              border-bottom-right-radius: 100%;
-              box-shadow: 3px 3px 0 0 #20262D;
-              z-index: 0;
-            }
-
-            &::after {
-              content: '';
-              background: black;
-              width: 10px;
-              height: 10px;
-              position: absolute;
-              margin-top: 90px;
-              margin-left: 70px;
-              border-top-right-radius: 100%;
-              box-shadow: 3px -3px 0 0 #20262D;
-              z-index: 0;
-            }
-
+            background: #1B1C1E;
           }
 
-          i {
-            font-size: 25px;
-            color: #eeeeee;
-            display: block;
-            margin: 5px;
-          }
         }
       }
 
@@ -219,6 +179,7 @@ main {
         overflow-y: auto;
         justify-content: flex-start;
         box-sizing: border-box;
+        background: #1B1C1E;
 
         &.emojiPanel {
           flex-direction: row;
@@ -236,7 +197,7 @@ main {
         }
 
         img {
-          max-width: 95px;
+          max-width: 150px;
           width: auto;
           height: auto;
           margin: 3px;
@@ -369,32 +330,11 @@ main {
             }
           }
         }
-
-        .normalText {
-          padding: 20px;
-          box-sizing: border-box;
-          width: 100%;
-
-          div {
-            width: 100%;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 10px;
-            cursor: pointer;
-
-            &:hover {
-              background: rgba(255, 255, 255, 0.1);
-            }
-          }
-        }
       }
     }
 
     .editor {
-      background: #202125;
+      background: #191919;
       width: calc(100% - 400px);
       display: flex;
 
@@ -405,30 +345,87 @@ main {
         overflow: auto;
 
         > div {
-          //display: flex;
+          //display: block;
           justify-content: center;
-          //padding: 50px;
+          padding: 50px;
           width: 100%;
           box-sizing: border-box;
-          height: calc(100% - 50px);
+          height: 100%;
           overflow: auto;
+
+          .pageNavigation {
+            width: 421.641px;
+            height: 20px;
+            margin: 0 100px;
+            display: flex;
+
+            .pageNav {
+              width: 100%;
+              height: 10px;
+              border-radius: 10px;
+              background: #519EF4;
+              margin: 2px;
+              box-sizing: border-box;
+              cursor: pointer;
+
+              &.active {
+                background: #707070;
+                &:hover {
+                  background: #707070;
+                }
+              }
+              &:hover {
+                background: #53a5fe;
+              }
+            }
+          }
 
           .page {
             width: 421.641px;
             height: 702.750px;
             background: #eeeeee;
             display: block;
-            margin: 100px;
+            margin: 5px 100px 10px 100px;
             transform: scale(1, 1);
 
             div {
               position: absolute;
             }
           }
+
+          .pageBottomControl {
+            width: 421.641px;
+            height: 50px;
+            margin: 5px 100px;
+            background: white;
+          }
+
+          .newPageButton {
+            position: fixed;
+            right: 310px;
+            bottom: 100px;
+            width: 50px;
+            height: 50px;
+            box-sizing: border-box;
+            border-radius: 100%;
+            background: black;
+            color: white;
+          }
+          .previewButton {
+            position: fixed;
+            right: 310px;
+            bottom: 40px;
+            width: 50px;
+            height: 50px;
+            box-sizing: border-box;
+            border-radius: 100%;
+            background: black;
+            color: white;
+          }
         }
 
         footer {
-          width: calc(100% - 650px);
+          width: calc(100% - 687px);
           height: 50px;
           background: black;
           position: fixed;
@@ -439,7 +436,7 @@ main {
 
       aside {
         width: 300px;
-        background: #2b2d32;
+        background: #1B1C1E;
         color: #d9d9d9;
         max-height: 100%;
         overflow-y: auto;

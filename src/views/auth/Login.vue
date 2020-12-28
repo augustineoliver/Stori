@@ -102,7 +102,7 @@ export default {
         localStorage.setItem('authToken', res.data.data.accessToken)
         localStorage.setItem('userId', res.data.data.user.id)
         axios.defaults.headers.common['Authorization'] = localStorage.getItem('authToken');
-        router.push('editor')
+        router.push('home')
       })
     },
 
@@ -219,7 +219,7 @@ export default {
           justify-content: space-between;
           align-items: center;
           background: rgba(0,0,0,0);
-          height: 50px;
+          //height: 50px;
           :first-child {
             width: 60px;
             text-align: center;

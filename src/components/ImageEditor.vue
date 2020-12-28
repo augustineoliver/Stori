@@ -82,8 +82,8 @@
         min="0"
         max="100"
         @input="editImage"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
@@ -95,8 +95,8 @@
         min="0"
         max="30"
         @input="editImage"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
@@ -108,8 +108,8 @@
         min="0"
         max="200"
         @input="editImage"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
@@ -121,8 +121,8 @@
         min="0"
         max="200"
         @input="editImage"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
@@ -134,8 +134,8 @@
         min="0"
         max="100"
         @input="editImage"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
@@ -148,8 +148,8 @@
         max="1"
         step="0.01"
         @input="editImage"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
@@ -161,8 +161,8 @@
         min="0"
         max="100"
         @input="editImage"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
@@ -174,8 +174,8 @@
         min="0"
         max="200"
         @input="editImage"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
@@ -187,8 +187,8 @@
         min="0"
         max="100"
         @input="editImage"
-        track-fill-color="black"
-        thumb-color="black"
+       track-fill-color="#519EF4"
+        thumb-color="#519EF4"
       ></v-slider>
     </div>
 
