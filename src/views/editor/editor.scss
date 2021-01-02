@@ -397,7 +397,23 @@ main {
             width: 421.641px;
             height: 50px;
             margin: 5px 100px;
-            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 20px;
+            img {
+              margin: 2px;
+              padding: 10px;
+              cursor: pointer;
+              width: 35px;
+              height: auto;
+              border-radius: 5px;
+              font-family: 'Circular Std Bold';
+
+              &:hover {
+                background: black;
+              }
+            }
           }
 
           .newPageButton {
@@ -408,8 +424,8 @@ main {
             height: 50px;
             box-sizing: border-box;
             border-radius: 100%;
-            background: black;
-            color: white;
+            background: #519EF4;
+            color: black;
           }
           .previewButton {
             position: fixed;
@@ -419,8 +435,8 @@ main {
             height: 50px;
             box-sizing: border-box;
             border-radius: 100%;
-            background: black;
-            color: white;
+            background: #519EF4;
+            color: black;
           }
         }
 

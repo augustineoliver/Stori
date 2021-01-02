@@ -472,9 +472,17 @@
 
             </div>
 
-<!--            <div class="pageBottomControl">-->
-<!--              <h1>This is a sample text</h1>-->
-<!--            </div>-->
+            <div class="pageBottomControl">
+              <img style="width: 30px" @click="viewPage(currentPageNumber - 1)" src="../../assets/images/editor/arrow-left.svg" alt="">
+              <span>Page {{currentPageNumber + 1}}</span>
+              <img @click="addNewPage('before')" src="../../assets/images/editor/pluse.svg" alt="">
+              <img @click="deleteCurrentPage()" src="../../assets/images/editor/garbage.svg" alt="">
+              <img src="../../assets/images/editor/play-circle.svg" alt="">
+              <img @click="copyCurrentPage" src="../../assets/images/editor/copy.svg" alt="">
+<!--              <img src="../../assets/images/editor/overlayNav.svg" alt="">-->
+              <img @click="addNewPage('after')" src="../../assets/images/editor/pluse.svg" alt="">
+              <img style="width: 30px" @click="viewPage(currentPageNumber + 1)" src="../../assets/images/editor/arrow-right.svg" alt="">
+            </div>
             <button class="previewButton" @click="preview()"><i class="fas fa-play"></i></button>
             <button class="newPageButton" @click="addNewPage"><i class="fa fa-plus"></i></button>
           </div>
@@ -895,6 +903,7 @@ export default {
           text.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
           text.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
           text.classList.add('resize-drag')
+          text.classList.add('animate__animated')
           text.classList.add('textEdit')
           text.id = new Date().toISOString();
           text.ref = new Date().toISOString();
@@ -961,6 +970,7 @@ export default {
             console.log(photo)
           })
           photo.classList.add('resize-drag')
+          photo.classList.add('animate__animated')
           setTimeout(() => {
             photo.style.width = ((photo.getBoundingClientRect().width / 421.641) * 100 )+ '%';
             photo.style.height = ((photo.getBoundingClientRect().height / 702.75) * 100 )+ '%';
@@ -1170,16 +1180,48 @@ export default {
     //   }, 1000)
     // },
 
-    addNewPage() {
+    addNewPage(position = '') {
       this.updatePageStructure()
-      this.currentPageNumber = this.pages.length
-      // const newPageText = document.createElement('div')
-      // newPageText.innerHTML = 'Your New Page'
       document.getElementById('page').innerHTML = ''
-      // document.getElementById('page').innerHTML = newPageText
-      this.pages.push([])
+      if (position === 'before') {
+        const part1 = this.pages.slice(0, this.currentPageNumber)
+        const part2 = this.pages.slice(this.currentPageNumber, this.pages.length)
+        this.pages = part1.concat({background: "rgb(255,255,255)", elements: []}, part2)
+        this.viewPage(this.currentPageNumber)
+      } else if (position === 'after') {
+        const part1 = this.pages.slice(0, this.currentPageNumber + 1)
+        const part2 = this.pages.slice(this.currentPageNumber + 1, this.pages.length)
+        this.pages = part1.concat({background: "rgb(255,255,255)", elements: []}, part2)
+        this.currentPageNumber += 1
+        this.viewPage(this.currentPageNumber)
+      } else {
+        this.currentPageNumber = this.pages.length
+        this.pages.push([])
+      }
+
+
       this.pages[this.currentPageNumber].background = '#ffffff'
       document.getElementById('page').style.background = '#ffffff'
+    },
+
+    deleteCurrentPage() {
+      if (this.pages.length > 1) {
+        this.pages.splice(this.currentPageNumber, 1)
+        this.currentPageNumber -= 1
+        if (this.currentPageNumber < 0) {
+          this.currentPageNumber = 0
+        }
+        this.viewPage(this.currentPageNumber)
+      }
+    },
+
+    copyCurrentPage() {
+      const currentPage = this.pages[this.currentPageNumber]
+      const part1 = this.pages.slice(0, this.currentPageNumber + 1)
+      const part2 = this.pages.slice(this.currentPageNumber + 1, this.pages.length)
+      this.pages = part1.concat(currentPage, part2)
+      this.currentPageNumber += 1
+      this.viewPage(this.currentPageNumber)
     },
 
     updatePageStructure() {
@@ -1190,14 +1232,16 @@ export default {
     },
 
     viewPage(pageIndex) {
-      this.currentPageNumber = pageIndex
-      const pageContent = this.pages[pageIndex]
-      const page = document.getElementById('page');
-      page.innerHTML = ''
-      page.style.background = pageContent.background
-      pageContent.elements?.forEach(element => {
-        page.appendChild(element)
-      })
+      if ((pageIndex >= 0) && (pageIndex < this.pages.length)) {
+        this.currentPageNumber = pageIndex
+        const pageContent = this.pages[pageIndex]
+        const page = document.getElementById('page');
+        page.innerHTML = ''
+        page.style.background = pageContent.background
+        pageContent.elements?.forEach(element => {
+          page.appendChild(element)
+        })
+      }
     },
 
     generateAMPCode(HTMLCode) {
@@ -1249,9 +1293,11 @@ export default {
         const section = document.createElement('section')
         section.style.background = page.background;
         // const pageElement =
-        page.elements.forEach(element => {
-          section.appendChild(element)
-        })
+        if (page.elements) {
+          page.elements.forEach(element => {
+            section.appendChild(element)
+          })
+        }
         htmlFile.appendChild(section)
         // const hr = document.createElement('hr')
         // root.appendChild(hr)
