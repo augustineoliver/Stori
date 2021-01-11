@@ -36,6 +36,11 @@ const routes = [
     component: Editor
   },
   {
+    path: '/editor/:id',
+    name: 'EditorId',
+    component: Editor
+  },
+  {
     path: '/upload',
     name: 'Upload',
     component: Upload

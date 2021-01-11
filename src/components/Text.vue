@@ -8,9 +8,9 @@
 
     <v-tab-item style="background-color: #1B1C1E">
       <div class="normalText">
-        <div draggable="true" data-type="heading" @mousedown="$emit($event)" style="height: 35px">Add a heading</div>
-        <div draggable="true" data-type="subheading" @mousedown="drag($event)" style="height: 40px">Add a subheading</div>
-        <div draggable="true" data-type="normal" @mousedown="drag($event)" style="height: 30px">Normal text</div>
+        <div draggable="true" data-type="heading" @mousedown="dragText($event)" style="height: 35px">Add a heading</div>
+        <div draggable="true" data-type="subheading" @mousedown="dragText($event)" style="height: 40px">Add a subheading</div>
+        <div draggable="true" data-type="normal" @mousedown="dragText($event)" style="height: 30px">Normal text</div>
       </div>
     </v-tab-item>
 
@@ -24,7 +24,14 @@
 
 <script>
 export default {
-name: "Text"
+name: "Text",
+
+  methods: {
+    dragText(evt) {
+      // console.log(evt);
+      this.$parent.draggedElement = evt.target;
+    },
+  }
 }
 </script>
 

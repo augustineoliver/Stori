@@ -69,7 +69,7 @@ name: "Upload",
               const payload = new FormData();
               payload.append('file', file);
               payload.append('user_id', localStorage.getItem('userId'));
-              axios.post(`${this.baseUrl}media`, payload, {headers: {Authorization: this.authToken}})
+              axios.post(`${this.baseUrl}media/create`, payload, {headers: {Authorization: this.authToken}})
               .then(res => {
                 console.log(res);
                 this.files.push(res.data.data.file)
@@ -109,7 +109,7 @@ name: "Upload",
          const payload = new FormData();
          payload.append('file', file);
          payload.append('user_id', localStorage.getItem('userId'));
-         axios.post(`${this.baseUrl}media`, payload, {headers: {Authorization: this.authToken}})
+         axios.post(`${this.baseUrl}media/create`, payload, {headers: {Authorization: this.authToken}})
              .then(res => {
                console.log(res);
                this.files.push(res.data.data.file)

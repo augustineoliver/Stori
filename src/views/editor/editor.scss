@@ -57,24 +57,32 @@ main {
       display: flex;
       align-items: center;
 
+      .publish {
+        background: #519EF4;
+        border-radius: 5px;
+        padding: 6px 25px;
+        margin: auto 10px;
+        cursor: pointer;
+      }
+
       .workspaceName {
         display: flex;
         justify-content: space-evenly;
+        align-items: center;
         background: #373E48;
         border: #707070;
         color: #FFFFFF;
-        width: 212px;
-        height: 27px;
+        width: 165px;
+        height: 40px;
         border-radius: 35px;
         font-family: 'Apple SD Gothic Neo', sans-serif;
         font-size: 18px;
         font-weight: 500;
-        padding: 15px 15px;
         cursor: pointer;
 
         .workIcon {
-          width: 17px;
-          height: 17px;
+          width: 23px;
+          height: 23px;
           margin: 5px;
         }
 
@@ -83,17 +91,17 @@ main {
           font-weight: lighter;
 
           &:first-child {
-            font-size: 10px;
+            font-size: 8px;
           }
 
           &:last-child {
-            font-size: 15px;
+            font-size: 11px;
           }
         }
 
         .downIcon {
-          width: 24px;
-          height: 24px;
+          width: 28px;
+          height: 28px;
           margin: 3px;
         }
       }
@@ -135,6 +143,7 @@ main {
     .leftPanel {
       display: flex;
       width: 400px;
+      background: #1B1C1E;
 
       nav {
         background: #191919;
@@ -207,32 +216,6 @@ main {
         &.background {
           //background: green;
           display: block;
-
-          .backgroundType {
-            display: flex;
-            width: 100%;
-            height: 50px;
-            align-items: center;
-            justify-content: flex-start;
-            background: #020202;
-            padding: 0;
-
-            div {
-              display: flex;
-              align-items: center;
-              height: 100%;
-              padding: 10px 26px;
-              cursor: pointer;
-              box-sizing: border-box;
-              &:hover {
-                background: #161a1f;
-              }
-              &.active {
-                background: #20262D;
-                cursor: default;
-              }
-            }
-          }
 
           .colourBox {
             display: flex;
@@ -614,7 +597,32 @@ main {
     box-sizing: border-box!important;
   }
 }
-// Vuetify Overwrite
-//.v-select__selection, .v-select__selection--comma, .v-label, .theme--light, .v-icon {
-//  color: #d7d7d7 !important;
-//}
+
+
+.tabRow {
+  display: flex;
+  width: 100%;
+  height: 50px;
+  align-items: center;
+  justify-content: flex-start;
+  background: #191919;
+  padding: 0;
+
+  div {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    padding: 10px 26px;
+    cursor: pointer;
+    box-sizing: border-box;
+    &:hover {
+      background: #161618;
+    }
+    &.active {
+      background: #1B1C1E;
+      cursor: default;
+    }
+  }
+}

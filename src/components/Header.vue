@@ -96,42 +96,43 @@ name: "Header"
     .workspaceName {
         display: flex;
         justify-content: space-evenly;
+        align-items: center;
         background: #373E48;
         border: #707070;
         color: #FFFFFF;
-        width: 212px;
-        height: 27px;
+        width: 165px;
+        height: 40px;
         border-radius: 35px;
         font-family: 'Apple SD Gothic Neo', sans-serif;
         font-size: 18px;
         font-weight: 500;
-        padding: 15px 15px;
         cursor: pointer;
 
         .workIcon {
-          width: 17px;
-          height: 17px;
+          width: 23px;
+          height: 23px;
           margin: 5px;
         }
 
-      div {
-        font-family: Rubik, sans-serif;
-        font-weight: lighter;
-        &:first-child {
-          font-size: 10px;
+        div {
+          font-family: Rubik, sans-serif;
+          font-weight: lighter;
+
+          &:first-child {
+            font-size: 8px;
+          }
+
+          &:last-child {
+            font-size: 11px;
+          }
         }
 
-        &:last-child {
-          font-size: 15px;
+        .downIcon {
+          width: 28px;
+          height: 28px;
+          margin: 3px;
         }
       }
-
-      .downIcon {
-        width: 24px;
-        height: 24px;
-        margin: 3px;
-      }
-    }
 
     img {
       height: 30px;

@@ -8,6 +8,7 @@
         </label>
       </div>
       <div class="rightHeader">
+        <div class="publish" @click="publish">PUBLISH</div>
         <div class="workspaceName">
           <img alt="" class="workIcon" src="../../assets/images/home/work-icon.svg"/>
           <div>
@@ -32,7 +33,7 @@
           <div :class="{active: activeMedia === 'text'}" @click="activeMedia = 'text'">
             <img src="../../assets/images/editor/text.svg" alt="Text">
           </div>
-          <div :class="{active: activeMedia === 'unsplashPhotos'}" @click="getUnsplashPhotos">
+          <div :class="{active: activeMedia === 'unsplashPhotos'}" @click="activeMedia = 'unsplashPhotos'">
             <img src="../../assets/images/editor/image.svg" alt="Image">
           </div>
           <div :class="{active: activeMedia === 'pexelsVideo'}" @click="getPexelsVideos">
@@ -56,25 +57,12 @@
 
 
         </nav>
-        <div ref="unsplashPhotos" v-if="activeMedia === 'unsplashPhotos'">
-          <masonry
-            :cols="2"
-            :gutter="5"
-            >
-            <div class="masonry-grid-item" v-for="(photo, index) in unsplashPhotos" :key="index">
-              <img draggable="true" @mousedown="drag($event)"
-                 :src="photo.urls.thumb" :data-src="photo.urls.regular" :alt="photo.alt_description">
-            </div>
-          </masonry>
-        </div>
+        <media-panel v-if="activeMedia === 'unsplashPhotos'"></media-panel>
         <div class="unsplashPhotos" v-if="activeMedia === 'uploadedMedia'">
           <img draggable="true" @mousedown="drag($event)" v-for="(photo, index) in uploadedMedia" :key="index"
                :src="'https://' + photo.file" :data-src="'https://' + photo.file" alt="cool">
         </div>
-        <div class="unsplashPhotos" v-if="activeMedia === 'tenorGifs'">
-          <img draggable="true" @mousedown="drag($event)" v-for="(gif, index) in tenorGifs" :key="index"
-               :src="gif.tinygif.url" :data-src="gif.mediumgif.url" alt="">
-        </div>
+
         <div class="unsplashPhotos" v-if="activeMedia === 'pexelsVideo'">
           <img draggable="true" @mousedown="drag($event)" v-for="(video, index) in pexelsVideo" :key="index"
                :src="video.video_pictures[0].picture" :data-src="video.video_files[0].link" alt="">
@@ -259,7 +247,7 @@
                 v-for="(emoji, index) in emojis" :key="index">{{ emoji.character }}</span>
         </div>
         <div class="background" v-if="activeMedia === 'background'">
-          <div class="backgroundType">
+          <div class="tabRow">
             <div @click="activeBackgroundType = 'colour'" :class="{active: activeBackgroundType === 'colour'}">Colour</div>
             <div @click="activeBackgroundType = 'gradient'" :class="{active: activeBackgroundType === 'gradient'}">Gradient</div>
             <div @click="getUnsplashTexture" :class="{active: activeBackgroundType === 'texture'}">Texture</div>
@@ -444,9 +432,7 @@
 
         </div>
         <div class="unsplashPhotos" v-if="activeMedia === 'text'">
-          <text-panel
-
-          ></text-panel>
+          <text-panel></text-panel>
         </div>
 
       </div>
@@ -531,11 +517,13 @@ import Vue from 'vue';
 import VueMasonry from 'vue-masonry-css'
 // import Moveable from 'vue-moveable';
 import Text from '@/components/Text';
+import Media from '@/components/Media';
 import TextEditor from '@/components/TextEditor';
 import ImageEditor from "@/components/ImageEditor";
 import Preview from "@/components/Preview";
 import Animations from "@/components/Animations";
 import CallToActionButtons from "@/components/CallToActionButtons";
+// import router from "@/router";
 
 export default {
   name: "Editor",
@@ -563,10 +551,7 @@ export default {
       dataState: {},
       draggedElement: null,
       nextSibling: null,
-      unsplashPhotos: [],
       uploadedMedia: [],
-      tenorGifs: [],
-      tenorNextPage: '',
       pexelsVideo: [],
       emojis: [],
       clipboard: null,
@@ -604,7 +589,52 @@ export default {
     }
   },
 
+  beforeCreate() {
+    console.log('RRRRRRRRRRRRRRR: ', this.$route.params.id)
+  },
+
   mounted() {
+    if (this.$route.params.id) {
+      axios.get(`https://api-stori.herokuapp.com/api/v1/stories/${this.$route.params.id}`).then(res => {
+        const htmlCode =  res.data.data.file;
+        const tempDiv = document.createElement('div')
+        tempDiv.innerHTML = htmlCode.replaceAll('\\', '')
+        const allPages = tempDiv.getElementsByTagName("section")
+        allPages.forEach((page, index) => {
+          const mainPage = document.getElementById('page')
+          mainPage.style.background = page.style.background;
+          mainPage.innerHTML = page.innerHTML;
+          const pageElements = mainPage.children
+          pageElements.forEach(element => {
+            console.log('RRRRRRRRRRRRRRRR: ', element.constructor.name)
+            element.addEventListener('click', () => {
+              switch (element.constructor.name) {
+                case 'HTMLImageElement': this.selectElement('image', element.id); break;
+                case 'HTMLDivElement': this.selectElement('text', element.id); break;
+                case 'HTMLButtonElement': {
+                  this.$store.commit('setSelectedButton', {
+                    title: element.innerHTML.trim(),
+                    url: element.getAttribute('data-href').trim(),
+                    background: element.style.background.trim(),
+                    textColour: element.style.color.trim(),
+                  });
+                  this.selectElement('callToActionButtons', element.id);
+                  this.selectedButtonData = {title: element.innerHTML, url: element.getAttribute('data-href')}
+                  break;
+                }
+                case 'HTMLVideoElement': this.selectElement('video', element.id); break;
+              }
+            })
+          })
+          if (index !== (allPages.length - 1)) {
+            this.addNewPage();
+          }
+          this.updatePageStructure()
+        })
+        this.viewPage(0)
+      })
+    }
+
     this.currentPageNumber = 0;
     this.updatePageStructure();
 
@@ -760,13 +790,7 @@ export default {
       console.log('onPinch', target);
     },
 
-    getUnsplashPhotos() {
-      axios.get('https://api.unsplash.com/photos?per_page=20&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b')
-          .then(res => {
-            this.unsplashPhotos = res.data;
-          })
-      this.activeMedia = 'unsplashPhotos';
-    },
+
     getUnsplashTexture() {
       this.activeBackgroundType = 'texture'
       axios.get('https://api.unsplash.com/search/photos?per_page=20&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b&query=texture')
@@ -775,24 +799,6 @@ export default {
           console.log(this.backgroundTexture)
         })
 
-    },
-
-    getTenorGifs() {
-      axios.get(`https://api.tenor.com/v1/trending?key=LIVDSRZULELA&pos=${this.tenorNextPage}`)
-          .then(res => {
-            this.tenorGifs = res.data;
-            this.tenorNextPage = this.tenorGifs.next;
-            this.tenorGifs = this.tenorGifs.results.map(res => {
-              return {
-                tinygif: res.media[0].tinygif,
-                mediumgif: res.media[0].mediumgif
-              }
-            })
-            console.log(this.tenorGifs);
-          }).catch((err) => {
-        console.log(err)
-      })
-      this.activeMedia = 'tenorGifs';
     },
 
     getPexelsVideos() {
@@ -1055,7 +1061,7 @@ export default {
           // video.style = 'width: 100%'
           // video.ondragstart = 'this.drag($event)';
           // video.draggable = true;
-          // video.controls = true;
+          video.controls = true;
           // video.onclick = this.resizeElement(div.children[0].id, '.resizers')
           const source = document.createElement('source');
           source.src = this.draggedElement.dataset.src
@@ -1251,7 +1257,9 @@ export default {
       })
       let htmlCode = tempPage.innerHTML;
       // const postHTMLCode = htmlCode;
-      htmlCode = htmlCode.replaceAll(/<video.+<\/video>/gi, '');
+      // htmlCode = htmlCode.replaceAll(/<video.+<\/video>/gi, '');
+      htmlCode = htmlCode.replaceAll(/<video/gi, '<amp-video');
+      htmlCode = htmlCode.replaceAll(/<\/video>/gi, '</amp-video>');
       // htmlCode = htmlCode.replaceAll(/<img.+\/>/gi, '');
       // htmlCode = htmlCode.replaceAll(/data-src=".+"/gi, ' width="1" height="1" ');
       htmlCode = htmlCode.replaceAll(/<div class="resizer .+"><\/div>/gi, '')
@@ -1318,18 +1326,37 @@ export default {
           // maybe dispatch an action that will update a progress bar or something
         }
       }
-      axios.post(`${this.baseUrl}stories/add`, payload, {headers: {Authorization: this.authToken}, config})
+
+      if (this.$route.params.id) {
+        axios.put(`${this.baseUrl}stories/${this.$route.params.id}`, payload, {headers: {Authorization: this.authToken}, config})
           .then(res => {
             console.log(res)
             this.previewURL = 'https://' + res.data.data.amp_file;
             this.QRCode = 'https://' + res.data.data.qrcode;
             // window.open('https://' + res.data.data.amp_file, '_blank')
           })
+      } else {
+        axios.post(`${this.baseUrl}stories/add`, payload, {headers: {Authorization: this.authToken}, config})
+          .then(res => {
+            console.log(res)
+            this.previewURL = 'https://' + res.data.data.amp_file;
+            this.QRCode = 'https://' + res.data.data.qrcode;
+            // window.open('https://' + res.data.data.amp_file, '_blank')
+          })
+      }
+
       // var a = document.createElement("a");
       // a.id = 'a';
       // a.href = URL.createObjectURL(file);
       // a.download = 'AMP.html';
       // a.click();
+    },
+
+    publish() {
+      axios.put(`${this.baseUrl}stories/${this.$route.params.id}/publish`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
+        .then(res => {
+          console.log(res)
+        })
     },
 
     changPageBackground(event, image) {
@@ -1343,7 +1370,7 @@ export default {
       this.pages[this.currentPageNumber].background = this.pageBackground
     },
     getUploadedMedia() {
-      axios.post(`${this.baseUrl}media/get`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
+      axios.post(`${this.baseUrl}media`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
           .then(res => {
             this.uploadedMedia = res.data.data;
             console.log(this.uploadedMedia)
@@ -1353,7 +1380,7 @@ export default {
   },
 
   created() {
-    this.getUnsplashPhotos()
+    // this.getUnsplashPhotos()
   },
 
   components: {
@@ -1362,6 +1389,7 @@ export default {
     // 'vue-guides': Guides,
     // Moveable,
     'text-panel': Text,
+    'media-panel': Media,
     'stori-preview': Preview,
     'animations': Animations,
     'callToActionButtons': CallToActionButtons,
