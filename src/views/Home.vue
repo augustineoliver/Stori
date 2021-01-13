@@ -56,7 +56,7 @@
         </div>
         <div>
           <label>
-            <input type="search">
+            <input type="search" @keyup="searchStories($event.target.value)">
             <i class="fas fa-search"></i>
           </label>
         </div>
@@ -69,7 +69,7 @@
             <div>
               <div class="ampPreview">
                 <div class="viewOverlay">
-                  <router-link :to="{name: 'EditorId', params: {id: stori.id}}">
+                  <router-link :to="{name: 'Story', params: {id: stori.id}}">
                     <button>Open</button>
                   </router-link>
                 </div>
@@ -91,6 +91,9 @@
               </div>
             </div>
           </div>
+          <div v-if="allStories.length === 0 && loadingMoreData === false" class="noStoryFound">
+            <div>No story found</div>
+          </div>
         </template>
 
         <template v-if="activeTab === 'myStory'">
@@ -98,7 +101,7 @@
             <div>
               <div class="ampPreview">
                 <div class="viewOverlay">
-                  <router-link :to="{name: 'EditorId', params: {id: stori.id}}">
+                  <router-link :to="{name: 'Story', params: {id: stori.id}}">
                     <button>Open</button>
                   </router-link>
                   <button>Preview</button>
@@ -124,7 +127,9 @@
               </div>
             </div>
           </div>
-
+          <div v-if="allUserStori.length === 0 && loadingMoreData === false" class="noStoryFound">
+            <div>No story found</div>
+          </div>
         </template>
 
         <template v-if="activeTab === 'draft'">
@@ -132,7 +137,7 @@
             <div>
               <div class="ampPreview">
                 <div class="viewOverlay">
-                  <router-link :to="{name: 'EditorId', params: {id: stori.id}}">
+                  <router-link :to="{name: 'Story', params: {id: stori.id}}">
                     <button>Open</button>
                   </router-link>
                 </div>
@@ -154,6 +159,9 @@
               </div>
             </div>
           </div>
+          <div v-if="draftedStories.length === 0 && loadingMoreData === false" class="noStoryFound">
+            <div>No story found</div>
+          </div>
         </template>
 
         <template v-if="activeTab === 'published'">
@@ -161,7 +169,7 @@
             <div>
               <div class="ampPreview">
                 <div class="viewOverlay">
-                  <router-link :to="{name: 'EditorId', params: {id: stori.id}}">
+                  <router-link :to="{name: 'Story', params: {id: stori.id}}">
                     <button>Open</button>
                   </router-link>
                 </div>
@@ -182,6 +190,9 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div v-if="publishedStories.length === 0 && loadingMoreData === false" class="noStoryFound">
+            <div>No story found</div>
           </div>
         </template>
 
@@ -287,6 +298,19 @@ export default {
   },
 
   methods: {
+    searchStories(keyword) {
+      switch (this.activeTab) {
+        case "myStory": {
+          console.log(keyword)
+          this.searchUserStories(keyword)
+          break;
+        }
+        // case 'home': {
+        //
+        // }
+      }
+    },
+
     getUserStories(page = 1) {
       this.loadingMoreData = true
       axios.post(`${this.baseUrl}stories?page=${page}`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
@@ -309,6 +333,37 @@ export default {
             this.loadingMoreData = false
           })
     },
+
+    searchUserStories(searchQuery, page = 1) {
+      this.allUserStori = []
+      this.loadingMoreData = true
+
+      if (searchQuery === '') {
+        this.getUserStories()
+      } else {
+        axios.post(`${this.baseUrl}stories/${searchQuery}?page=${page}`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
+          .then(res => {
+            this.allUserStoriCurrentPageNumber = res.data.data.current_page
+            this.allUserStoriNextPageNumber = res.data.data.next_page_url ? res.data.data.current_page + 1 : res.data.data.current_page
+            this.allUserStori.push(...res.data.data.data.filter(r => {
+              const htmlCode = r.file;
+              const tempDiv = document.createElement('div')
+              tempDiv.innerHTML = htmlCode.replaceAll('\\', '')
+              const allPages = tempDiv.getElementsByTagName("section")
+              const firstPage = allPages[0]
+              const pageObject = {
+                background: firstPage.style.background,
+                elements: firstPage.innerHTML.replaceAll(/class="([a-z] |[A-z]|[0-9]|-|_)+"/ig, '')
+              }
+              return r.htmlCode = pageObject
+            }));
+            this.activeTab = 'myStory'
+            this.loadingMoreData = false
+          })
+      }
+    },
+
+
 
     getAllStories(page = 1) {
       this.loadingMoreData = true
@@ -764,5 +819,11 @@ section {
     position: absolute;
     animation: skeleton 700ms linear infinite;
   }
+}
+
+.noStoryFound {
+  font-size: 2em;
+  text-align: center;
+  flex-grow: 1;
 }
 </style>

@@ -31,13 +31,13 @@ const routes = [
     component: Home
   },
   {
-    path: '/editor',
+    path: '/story',
     name: 'Editor',
     component: Editor
   },
   {
-    path: '/editor/:id',
-    name: 'EditorId',
+    path: '/story/:id',
+    name: 'Story',
     component: Editor
   },
   {
