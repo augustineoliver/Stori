@@ -27,12 +27,9 @@
         <label>
           <span>Poster images sizes and format are portrait (696x928), landscape (928x696) and square (696x696)</span>
           <span v-if="!mediaWidgetDetails" @click="showMediaWidget = true" class="uploadImage">click to <br>upload/select <br>an image</span>
-          <img v-if="mediaWidgetDetails" class="uploadImage" :src="mediaWidgetDetails.thumb" alt="">
+          <img v-if="mediaWidgetDetails" @click="showMediaWidget = true" class="uploadImage" :src="mediaWidgetDetails.thumb" alt="">
         </label>
       </div>
-<!--      <div class="mediaDrawer">-->
-
-<!--      </div>-->
     </div>
 
     <div v-if="currentlyViewing === 'publishOptions'">
@@ -376,16 +373,6 @@ methods: {
         text-align: center;
         cursor: pointer;
       }
-    }
-
-    .mediaDrawer {
-      position: absolute;
-      //display: block;
-      right: 0;
-      top: 0;
-      width: 50%;
-      height: 100%;
-      background-color: red;
     }
 
     .publishOptions {

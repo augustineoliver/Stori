@@ -59,8 +59,15 @@
         </nav>
         <media-panel v-if="activeMedia === 'unsplashPhotos'"></media-panel>
         <div class="unsplashPhotos" v-if="activeMedia === 'uploadedMedia'">
-          <img draggable="true" @mousedown="drag($event)" v-for="(photo, index) in uploadedMedia" :key="index"
+          <masonry
+            :cols="2"
+            :gutter="5"
+            >
+            <div class="masonry-grid-item" v-for="(photo, index) in uploadedMedia" :key="index">
+              <img draggable="true" @mousedown="drag($event)"
                :src="'https://' + photo.file" :data-src="'https://' + photo.file" alt="cool">
+            </div>
+          </masonry>
         </div>
 
         <div class="unsplashPhotos" v-if="activeMedia === 'pexelsVideo'">
@@ -970,7 +977,7 @@ export default {
           console.log('QQQQQQQQQQQQQQQ: ', text.style.fontSize.replace('px', ''))
           div = text;
         }
-        else if (this.activeMedia === 'unsplashPhotos') {
+        else if (this.activeMedia === 'unsplashPhotos' || this.activeMedia === 'uploadedMedia') {
           console.log('QQQQQQQQQQQQQ', this.draggedElement)
           const photo = this.draggedElement.cloneNode(true)
           photo.id = new Date().toISOString();

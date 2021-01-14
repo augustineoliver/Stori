@@ -119,7 +119,7 @@ name: "Upload",
          this.uploadingCount = this.uploadingCount - 1
        }
      });
-     // event.preventDefault();
+       // event.preventDefault();
    }
   }
 }

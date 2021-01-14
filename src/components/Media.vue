@@ -1,8 +1,11 @@
 <template>
-  <div class="mediaComponent">
+  <div id="mediaComponent" class="mediaComponent">
     <div class="menu">
       <div class="button">
-        <button><i class="fa fa-file-upload"></i> Upload Media</button>
+        <label>
+          <i class="fa fa-file-upload"></i> Upload Media
+          <input style="display: none" type="file" @change="uploadFiles" id="fileInput" multiple accept="image/*, video/*">
+        </label>
       </div>
       <div class="categories">
         <div @click="activeMedia = 'uploadedMedia'"><i class="fa fa-upload"></i> Uploaded Media</div>
@@ -93,6 +96,7 @@ name: "Media",
 
 data() {
   return {
+    authToken: `Bearer ${localStorage.getItem('authToken')}`,
     baseUrl: process.env.VUE_APP_baseUrl,
     selectedMedia: undefined,
     activeMedia: 'uploadedMedia',
@@ -103,6 +107,9 @@ data() {
     tenorNextPage: '',
     unsplashPhotoPage: 1,
     tenorGifPage: 1,
+    uploadingCount: 0,
+    badFiles: 0,
+    files: []
   }
 },
 
@@ -111,6 +118,70 @@ mounted() {
   this.getTenorGifs()
   this.getUploadedMedia()
   this.getPexelsVideos()
+
+  document.getElementById('mediaComponent').addEventListener('dragover', () => {
+    console.log('SSSSSSSSSSSSSSSSSS')
+      if (!document.getElementById('uploadDiv')) {
+        const label = document.createElement('div')
+        label.style.width = '100vw';
+        label.style.height = '100vh';
+        label.style.backgroundColor = 'rgba(58,160,255,0.8)';
+        label.style.position = 'absolute';
+        label.style.top = '0';
+        label.style.left = '0';
+        label.style.display = 'block';
+        label.style.zIndex = '90000';
+        label.for = 'fileInput';
+        label.className = 'animate__backInUp'
+        // div.ondragend = this.drop($event);
+        label.id = 'uploadDiv';
+        label.addEventListener('dragover',function(e){
+            e.preventDefault();
+        });
+        label.ondrop = (event) => {
+          event.preventDefault();
+          const dt = event.dataTransfer;
+          let files = dt.files;
+          this.uploadingCount = this.uploadingCount + files.length;
+
+          files.forEach((file, index) => {
+            console.log('SSSSSSSSSSSS', file)
+            if (file.type.includes('image') || file.type.includes('video')) {
+              const payload = new FormData();
+              payload.append('file', file);
+              payload.append('user_id', localStorage.getItem('userId'));
+              setTimeout(() => {
+                axios.post(`${this.baseUrl}media/create`, payload, {headers: {Authorization: this.authToken}})
+                .then(res => {
+                  this.getUploadedMedia()
+                  this.files.push(res.data.data.file)
+                  this.uploadingCount = this.uploadingCount - 1;
+                });
+              }, 1000 * (index + 1))
+            } else {
+              this.uploadingCount = this.uploadingCount - 1;
+              this.badFiles = this.badFiles + 1;
+            }
+
+            // console.log('ZZZZZZZZZZZZZZZZ', (index + 1), files.length)
+            // if ((index + 1) === files.length) {
+            //   setTimeout(() => {
+            //     this.getUploadedMedia()
+            //   }, (1000 * files.length) + 2000)
+            // }
+          })
+          label.remove()
+        }
+        document.getElementById('mediaComponent').appendChild(label)
+      }
+
+      document.getElementById('uploadDiv').addEventListener('dragleave', () => {
+        document.getElementById('uploadDiv').classNamer = 'animate__backInDown';
+        setTimeout(() => {
+          document.getElementById('uploadDiv').remove()
+        }, 1000)
+      })
+    })
 },
 
 methods: {
@@ -173,7 +244,34 @@ methods: {
     } else {
       video.pause()
     }
-  }
+  },
+
+  uploadFiles(event) {
+     this.uploadingCount = this.uploadingCount + event.target.files.length
+     console.log('I am in', event.target.files);
+
+     event.target.files.forEach(file => {
+       if (file.type.includes('image') || file.type.includes('video')) {
+         const payload = new FormData();
+         payload.append('file', file);
+         payload.append('user_id', localStorage.getItem('userId'));
+         axios.post(`${this.baseUrl}media/create`, payload, {headers: {Authorization: this.authToken}})
+             .then(res => {
+               this.getUploadedMedia()
+               console.log(res);
+               this.files.push(res.data.data.file)
+               this.uploadingCount = this.uploadingCount - 1;
+             });
+       } else {
+         this.uploadingCount = this.uploadingCount - 1
+       }
+     });
+
+     setTimeout(() => {
+       this.getUploadedMedia()
+     }, 1000)
+       // event.preventDefault();
+   }
 }
 }
 </script>
@@ -198,12 +296,14 @@ methods: {
       justify-content: center;
       margin-top: 20px;
 
-      button {
+      label {
         background-color: #0a81be;
         color: white;
         padding: 15px 40px;
         border-radius: 10px;
         width: 100%;
+        text-align: center;
+        cursor: pointer;
       }
     }
 
