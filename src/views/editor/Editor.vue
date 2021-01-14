@@ -4,7 +4,7 @@
       <div class="leftHeader">
         <img src="../../assets/images/home/logo.svg" alt="Stori"/>
         <label class="title">
-          <input type="text" id="title" placeholder="Untitled Story">
+          <input v-model="storyTitle" type="text" id="title" placeholder="Untitled Story">
         </label>
       </div>
       <div class="rightHeader">
@@ -508,7 +508,7 @@
     </div>
 
   <stori-preview @closePreview="() => {this.previewURL = undefined}" v-if="previewURL" :previewURL="previewURL" :QRCode="QRCode"></stori-preview>
-  <publish></publish>
+  <publish v-if="isPublishing === true"></publish>
   </main>
 </template>
 
@@ -518,7 +518,7 @@ import Vue from 'vue';
 import VueMasonry from 'vue-masonry-css'
 // import Moveable from 'vue-moveable';
 import Text from '@/components/Text';
-import Media from '@/components/Media';
+import MediaEditor from '@/components/MediaEditor';
 import TextEditor from '@/components/TextEditor';
 import ImageEditor from "@/components/ImageEditor";
 import Preview from "@/components/Preview";
@@ -535,6 +535,7 @@ export default {
     return {
       pages: [],
       currentPageNumber: undefined,
+      isPublishing: false,
       moveable: {
         draggable: true,
         throttleDrag: 0,
@@ -548,6 +549,12 @@ export default {
         pinchable: true, // ["draggable", "resizable", "scalable", "rotatable"]
         origin: false,
       },
+      // Meta Data Start
+      storyTitle: '',
+      metaKeywords: '',
+      authorName: '',
+      metaDescription: '',
+      // Meta Data Ends
       authToken: `Bearer ${localStorage.getItem('authToken')}`,
       baseUrl: process.env.VUE_APP_baseUrl,
       activeMedia: 'unsplashPhotos',
@@ -1359,7 +1366,7 @@ export default {
 
     save() {
       // eslint-disable-next-line
-      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head>  <meta charset='utf-8'> <script async=\"\" custom-element=\"amp-video\" src=\"https://cdn.ampproject.org/v0/amp-video-0.1.js\"><\/script> <link href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css' rel='stylesheet' /> <style amp-custom>.inUse {overflow: hidden;} amp-video > :first-child {padding-top: 56%!important;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>" + (title ? title : 'Untitled Story') + "</title>  <link rel='canonical' href='/'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='Stori' publisher-logo-src='https://stori-73bd3.web.app/img/logo.389c58bb.svg'>"
+      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head> <meta name=\"keywords\" content=\"" + this.metaKeywords + "\"> <meta name=\"author\" content=\"" + this.authorName + "\">  <meta name=\"description\" content=\"" + this.metaDescription + "\">  <meta charset='utf-8'> <script async=\"\" custom-element=\"amp-video\" src=\"https://cdn.ampproject.org/v0/amp-video-0.1.js\"><\/script> <link href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css' rel='stylesheet' /> <style amp-custom>.inUse {overflow: hidden;} amp-video > :first-child {padding-top: 56%!important;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>" + (title ? title : 'Untitled Story') + "</title>  <link rel='canonical' href='/'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='Stori' publisher-logo-src='https://stori-73bd3.web.app/img/logo.389c58bb.svg'>"
       const title = document.getElementById('title').value;
       let generatedAMPCode =  ''
       this.pages.forEach((page, index) => {
@@ -1407,10 +1414,11 @@ export default {
     },
 
     publish() {
-      axios.put(`${this.baseUrl}stories/${this.$route.params.id}/publish`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
-        .then(res => {
-          console.log(res)
-        })
+      this.isPublishing = true
+      // axios.put(`${this.baseUrl}stories/${this.$route.params.id}/publish`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
+      //   .then(res => {
+      //     console.log(res)
+      //   })
     },
 
     changPageBackground(event, image) {
@@ -1443,7 +1451,7 @@ export default {
     // 'vue-guides': Guides,
     // Moveable,
     'text-panel': Text,
-    'media-panel': Media,
+    'media-panel': MediaEditor,
     'stori-preview': Preview,
     'animations': Animations,
     'callToActionButtons': CallToActionButtons,

@@ -40,14 +40,16 @@ main {
         input {
           border: none;
           background: rgba(0, 0, 0, 0);
-          color: #5b6d81;
+          color: #a5d1e7;
           width: 100%;
           font-size: 20px;
+          -webkit-text-fill-color: #a5d1e7;
 
           &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active, &:focus, :focus {
             border: none !important;
             transition: background-color 5000s ease-in-out 0s;
             outline: none;
+            color: #5b6d81;
           }
         }
       }

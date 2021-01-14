@@ -1,59 +1,66 @@
 <template>
-<div class="publishMain animate__animated animate__fadeInUp">
+<div>
+<div id="mainAnimatedDiv" class="publishMain animate__animated animate__fadeInUp">
+  <div class="overlay" @click="removePublish"></div>
   <div class="mainDiv">
-    <div>
+    <div v-if="currentlyViewing === 'firstPage'">
       <div class="nextStep">
-        <button>Next <i class="fa fa-arrow-circle-right"></i></button>
+        <button @click="currentlyViewing = 'publishOptions'">Next <i class="fa fa-arrow-circle-right"></i></button>
       </div>
       <div>
         <label>
           <span>Title</span>
-          <input type="text">
+          <input v-model="$parent.storyTitle" type="text" placeholder="Untitled Story">
+        </label>
+        <label>
+          <span>Author</span>
+          <input v-model="$parent.authorName" type="text" placeholder="Author's Name">
         </label>
         <label>
           <span>Key Words <small>(separate each keyword with a comma)</small></span>
-          <input type="text">
+          <input v-model="$parent.metaKeywords" type="text">
         </label>
         <label>
           <span>SEO Description</span>
-          <textarea></textarea>
+          <textarea v-model="$parent.metaDescription"></textarea>
         </label>
         <label>
           <span>Poster images sizes and format are portrait (696x928), landscape (928x696) and square (696x696)</span>
-          <span class="uploadImage">click to upload/select an image</span>
+          <span v-if="!mediaWidgetDetails" @click="showMediaWidget = true" class="uploadImage">click to <br>upload/select <br>an image</span>
+          <img v-if="mediaWidgetDetails" class="uploadImage" :src="mediaWidgetDetails.thumb" alt="">
         </label>
       </div>
+<!--      <div class="mediaDrawer">-->
+
+<!--      </div>-->
     </div>
 
-    <div>
+    <div v-if="currentlyViewing === 'publishOptions'">
       <div class="steps">
         <div class="prevStep">
-          <button><i class="fa fa-arrow-circle-left"></i> Back</button>
-        </div>
-        <div class="nextStep">
-          <button>Next <i class="fa fa-arrow-circle-right"></i></button>
+          <button @click="currentlyViewing = 'firstPage'"><i class="fa fa-arrow-circle-left"></i> Back</button>
         </div>
       </div>
 
       <div class="publishOptions">
-        <div>URL</div>
-        <div>Share to Social Media</div>
-        <div>Iframe Embed</div>
-        <div>Widget Embed</div>
+        <div @click="currentlyViewing = 'urlQRCode'">URL</div>
+        <div @click="currentlyViewing = 'socialMediaShare'">Share to Social Media</div>
+        <div @click="currentlyViewing = 'iframeCode'">Iframe Embed</div>
+        <div @click="currentlyViewing = 'widget'">Widget Embed</div>
         <div>Export to Zip</div>
         <div>Export for Social Media</div>
       </div>
     </div>
 
-    <div>
+    <div v-if="currentlyViewing !== 'firstPage' && currentlyViewing !== 'publishOptions'">
       <div class="steps">
         <div class="prevStep">
-          <button><i class="fa fa-arrow-circle-left"></i> Back</button>
+          <button @click="currentlyViewing = 'publishOptions'"><i class="fa fa-arrow-circle-left"></i> Back</button>
         </div>
       </div>
 
       <div class="published">
-        <div class="urls">
+        <div v-if="currentlyViewing === 'urlQRCode'" class="urls">
           <div>
             <span>Short URL</span>
             <div>
@@ -82,7 +89,7 @@
 
         </div>
 
-        <div class="socialShare">
+        <div v-if="currentlyViewing === 'socialMediaShare'" class="socialShare">
           <a href="#">
             <i class="fab fa-facebook"></i>
           </a>
@@ -100,18 +107,176 @@
           </a>
         </div>
 
-        <div class="iframe">
-          <input type="url" disabled="disabled">
+        <div v-if="currentlyViewing === 'iframeCode'" class="iframe">
+          <div>
+            <input id="iframeCode" disabled value="http://sto.ri/ry3jg4">
+            <button><i class="fa fa-copy"></i> Copy</button>
+          </div>
+        </div>
+
+        <div v-if="currentlyViewing === 'widget'" class="widget">
+          <div>
+            <label>
+              <span>Title</span>
+              <input type="text">
+            </label>
+            <label>
+              <span>Sub title</span>
+              <input type="text">
+            </label>
+          </div>
+          <div>
+            <label>
+              <span>Logo URL</span>
+              <input v-model="logoURL" type="url">
+            </label>
+            <img :src="logoURL" alt="Logo" style="position: relative; width: auto; height: 70px">
+          </div>
+
+          <div style="display: block; margin-top: 20px">
+            <span>Select widget position</span>
+            <div class="select">
+              <label>
+                <input v-model="widgetPosition" type="radio" value="topLeft">
+                <span>Top left</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="topRight">
+                <span>Top right</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="bottomLeft">
+                <span>Bottom left</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="bottomRight">
+                <span>Bottom right</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="display: block; margin-top: 20px">
+            <span>Select widget type</span>
+            <div class="select">
+              <label>
+                <input v-model="widgetPosition" type="radio" value="circle">
+                <span>Circle</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="square">
+                <span>Square</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="bottomBar">
+                <span>Bottom bar</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="display: block; margin-top: 20px">
+            <span>Select widget size</span>
+            <div class="select">
+              <label>
+                <input v-model="widgetPosition" type="radio" value="desktop">
+                <span>Desktop</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="mobile">
+                <span>Mobile</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="fullScreen">
+                <span>Full screen</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="display: block; margin-top: 20px">
+            <span>Select widget animation <small>(No animation for bottom bar widget)</small></span>
+            <div class="select">
+              <label>
+                <input v-model="widgetPosition" type="radio" value="none">
+                <span>None</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="zooming">
+                <span>Zooming</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="shakingY">
+                <span>Shaking - Y</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="shakingX">
+                <span>Shaking - X</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="flex-wrap: wrap">
+            <div style="width: 100%;">Copy widget code</div>
+            <div style="width: 100%; display: flex">
+              <input id="widgetCode" disabled value="http://sto.ri/ry3jg4">
+              <button><i class="fa fa-copy"></i> Copy</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<div>
+  <media v-if="showMediaWidget === true"></media>
+</div>
+</div>
+
 </template>
 
 <script>
+import Media from '@/components/Media';
+
 export default {
-name: "Publish"
+name: "Publish",
+data() {
+  return {
+    showMediaWidget: undefined,
+    mediaWidgetDetails: undefined,
+    currentlyViewing: 'firstPage',
+    // Widget Values
+    logoURL: '',
+    widgetTitle: '',
+    widgetSubTitle: '',
+    widgetPosition: '',
+  }
+},
+
+components: {
+  media: Media
+},
+
+methods: {
+  removePublish() {
+    const div = document.getElementById('mainAnimatedDiv')
+    div.classList.remove('animate__fadeInUp')
+    div.classList.add('animate__fadeOutDown')
+
+    setTimeout(() => {
+      this.$parent.isPublishing = false
+    }, 600)
+  }
+
+}
 }
 </script>
 
@@ -138,6 +303,7 @@ name: "Publish"
     padding: 50px;
     color: #a5d1e7;
     overflow-y: auto;
+    z-index: 2000;
 
     .steps {
       display: flex;
@@ -200,7 +366,7 @@ name: "Publish"
       .uploadImage {
         display: block;
         align-self: center;
-        width: 200px;
+        width: auto;
         height: 150px;
         border: 1px solid #a5d1e7;
         border-radius: 10px;
@@ -210,6 +376,16 @@ name: "Publish"
         text-align: center;
         cursor: pointer;
       }
+    }
+
+    .mediaDrawer {
+      position: absolute;
+      //display: block;
+      right: 0;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background-color: red;
     }
 
     .publishOptions {
@@ -308,6 +484,7 @@ name: "Publish"
         justify-content: center;
         flex-wrap: wrap;
         gap: 20px 100px;
+        margin-top: 80px;
 
         a {
           width: 100px;
@@ -325,7 +502,130 @@ name: "Publish"
           }
         }
       }
+
+      .iframe {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 90%;
+        height: max-content;
+        border: 1px solid #a5d1e7;
+        border-radius: 10px;
+        padding: 50px;
+        margin-top: 100px;
+
+        div {
+          display: flex;
+          width: 100%;
+
+          input {
+            flex: 1 1 100%;
+            border: 1px solid #a5d1e7;
+            border-radius: 5px;
+            padding: 10px;
+            color: #a5d1e7;
+            font-size: 1.2em;
+            outline: none;
+          }
+
+          button {
+            margin: auto 10px;
+            padding: 10px 20px;
+            width: 150px;
+            border: none;
+            border-radius: 5px;
+            background: #0a81be;
+            color: white;
+            outline: none;
+
+            &:focus {
+              background: black;
+            }
+          }
+        }
+      }
+
+      .widget {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width: 90%;
+        height: max-content;
+        border: 1px solid #a5d1e7;
+        border-radius: 10px;
+        padding: 50px;
+
+        > div {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          gap: 20px;
+
+          .select {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            label {
+              display: flex;
+              align-items: center;
+              flex-direction: row;
+              width: auto;
+              input {
+                flex: none;
+                display: inline;
+                width: auto;
+                height: auto;
+                border: solid 1px #a5d1e7;
+                outline: none;
+                color: #a5d1e7;
+                margin: auto 5px;
+                &:focus {
+                  border-radius: 100%;
+                  background-color: rgba(0,0,0,0);
+                }
+              }
+
+              span {
+                display: flex;
+              }
+            }
+          }
+
+          input {
+            flex: 1 1 100%;
+            border: 1px solid #a5d1e7;
+            border-radius: 5px;
+            padding: 10px;
+            color: #a5d1e7;
+            font-size: 1.2em;
+            outline: none;
+          }
+
+          button {
+            margin: auto 10px;
+            padding: 10px 20px;
+            width: 150px;
+            border: none;
+            border-radius: 5px;
+            background: #0a81be;
+            color: white;
+            outline: none;
+
+            &:focus {
+              background: black;
+            }
+          }
+        }
+      }
+
     }
   }
+}
+.overlay {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
 }
 </style>
