@@ -288,6 +288,7 @@ methods: {
   width: 100vw;
   height: 100vh;
   background: rgb(0, 0, 0, 0.9);
+  z-index: 3000;
 
   .mainDiv {
     width: 65%;
@@ -300,7 +301,7 @@ methods: {
     padding: 50px;
     color: #a5d1e7;
     overflow-y: auto;
-    z-index: 2000;
+    z-index: 4000;
 
     .steps {
       display: flex;
@@ -386,7 +387,7 @@ methods: {
       div {
         width: 30%;
         height: 200px;
-        background: black;
+        background: #0b0b0b;
         padding: 20px;
         border-radius: 10px;
         display: flex;

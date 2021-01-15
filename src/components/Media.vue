@@ -19,20 +19,20 @@
         <div class="header">
           <h2 style="margin-top: 60px">Uploaded Media</h2>
         </div>
-        <div class="imageDiv">
+        <div class="imageDiv" id="uploadedImagesDiv">
           <img @click="selectedMedia = {thumb: 'https://' + photo.file, actual: 'https://' + photo.file, type: photo.file_type}" v-for="(photo, index) in uploadedMedia" :key="index" :src="'https://' + photo.file" :data-src="'https://' + photo.file" :alt="photo.alt_description">
         </div>
       </template>
 
-      <template v-if="activeMedia === 'unsplashPhotos'">
+      <template v-show="activeMedia === 'unsplashPhotos'">
         <div class="header">
           <h2>Free Photo</h2>
           <div class="searchDiv">
-            <input type="search" placeholder="Search free photo">
+            <input ref="unsplashSearch" type="search" placeholder="Search free photo" @keyup.enter="searchUnsplashPhotos($event.target.value, true, 1)">
           </div>
         </div>
-        <div class="imageDiv">
-          <img @click="selectedMedia = {thumb: photo.urls.thumb, actual: photo.urls.regular, type: 'image'}" v-for="(photo, index) in unsplashPhotos" :key="index" :src="photo.urls.thumb" :data-src="photo.urls.regular" :alt="photo.alt_description">
+        <div class="imageDiv" id="unsplashImagesDiv">
+          <img @click="selectedMedia = {thumb: photo.urls.thumb, actual: photo.urls.regular, type: 'image'}" v-for="(photo, index) in unsplashPhotos" :key="index" :src="photo.urls.regular" :data-src="photo.urls.regular" :alt="photo.alt_description">
         </div>
       </template>
 
@@ -43,7 +43,7 @@
             <input type="search" placeholder="Search free videos">
           </div>
         </div>
-        <div class="imageDiv">
+        <div class="imageDiv" id="pexelsVideo">
           <div v-for="(video, index) in pexelsVideo" :key="index">
             <video
                 @click="selectedMedia = {thumb: video.video_pictures[0].picture, actual: video.video_files[0].link, type: 'video'}"
@@ -66,7 +66,7 @@
             <input type="search" placeholder="Search free GIFs">
           </div>
         </div>
-        <div class="imageDiv">
+        <div class="imageDiv" id="tinygif">
           <img @click="selectedMedia = {thumb: gif.tinygif.url, actual: gif.tinygif.url, type: 'gif'}" v-for="(gif, index) in tenorGifs" :key="index" :src="gif.tinygif.url" :data-src="gif.mediumgif.url" alt="">
         </div>
       </template>
@@ -102,10 +102,12 @@ data() {
     activeMedia: 'uploadedMedia',
     uploadedMedia: [],
     unsplashPhotos: [],
+    unsplashPhotoSearch: [],
     pexelsVideo: [],
     tenorGifs: [],
     tenorNextPage: '',
     unsplashPhotoPage: 1,
+    searchUnsplashPhotoPage: 1,
     tenorGifPage: 1,
     uploadingCount: 0,
     badFiles: 0,
@@ -118,6 +120,11 @@ mounted() {
   this.getTenorGifs()
   this.getUploadedMedia()
   this.getPexelsVideos()
+  const main = document.getElementById('unsplashImagesDiv')
+  main.addEventListener('scroll', () => {
+    console.log('BBBBBBBBBBBBB')
+    this.loadNextPage(main)
+  });
 
   document.getElementById('mediaComponent').addEventListener('dragover', () => {
     console.log('SSSSSSSSSSSSSSSSSS')
@@ -182,9 +189,31 @@ mounted() {
         }, 1000)
       })
     })
+
 },
 
 methods: {
+  loadNextPage(container) {
+      if ((container.scrollTop + container.clientHeight) >= container.scrollHeight) {
+        // you're at the bottom of the page
+        switch (this.activeMedia) {
+          case "unsplashPhotos": {
+            if (this.$refs.unsplashSearch.value) {
+              this.searchUnsplashPhotos(this.$refs.unsplashSearch.value, false, this.searchUnsplashPhotoPage)
+            } else {
+              this.getUnsplashPhotos(this.unsplashPhotoPage)
+            }
+
+            break;
+          }
+          case 'tenorGifs': {
+            this.getTenorGifs()
+            break;
+          }
+        }
+      }
+  },
+
   getUploadedMedia() {
     axios.post(`${this.baseUrl}media`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
         .then(res => {
@@ -216,6 +245,24 @@ methods: {
         .then(res => {
           this.unsplashPhotos = [...this.unsplashPhotos, ...res.data];
           this.unsplashPhotoPage += 1
+        })
+  },
+  searchUnsplashPhotos(query, isNew, page = 1) {
+    axios.get(`https://api.unsplash.com/search/photos?per_page=20&page=${page}&query=${query}&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b`)
+        .then(res => {
+          if (res.data.results.length === 0) {
+            this.getUnsplashPhotos()
+          } else {
+            if (isNew) {
+              this.unsplashPhotoSearch = []
+              this.unsplashPhotos = res.data.results
+              this.searchUnsplashPhotoPage = 1
+            } else {
+              this.unsplashPhotoSearch = [...this.unsplashPhotoSearch, ...res.data.results];
+              this.unsplashPhotos = this.unsplashPhotoSearch
+            }
+            this.searchUnsplashPhotoPage += 1
+          }
         })
   },
 
