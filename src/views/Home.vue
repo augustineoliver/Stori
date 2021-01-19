@@ -69,7 +69,7 @@
             <div>
               <div class="ampPreview">
                 <div class="viewOverlay">
-                  <router-link :to="{name: 'Story', params: {id: stori.id}}">
+                  <router-link :to="{name: 'Story', params: {id: stori.unique_id}}">
                     <button>Open</button>
                   </router-link>
                 </div>
@@ -101,7 +101,7 @@
             <div>
               <div class="ampPreview">
                 <div class="viewOverlay">
-                  <router-link :to="{name: 'Story', params: {id: stori.id}}">
+                  <router-link :to="{name: 'Story', params: {id: stori.unique_id}}">
                     <button>Open</button>
                   </router-link>
                   <button>Preview</button>
@@ -137,7 +137,7 @@
             <div>
               <div class="ampPreview">
                 <div class="viewOverlay">
-                  <router-link :to="{name: 'Story', params: {id: stori.id}}">
+                  <router-link :to="{name: 'Story', params: {id: stori.unique_id}}">
                     <button>Open</button>
                   </router-link>
                 </div>
@@ -169,7 +169,7 @@
             <div>
               <div class="ampPreview">
                 <div class="viewOverlay">
-                  <router-link :to="{name: 'Story', params: {id: stori.id}}">
+                  <router-link :to="{name: 'Story', params: {id: stori.unique_id}}">
                     <button>Open</button>
                   </router-link>
                 </div>

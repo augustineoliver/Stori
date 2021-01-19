@@ -3,7 +3,7 @@
   <div class="tabRow">
     <div @click="selectedTab = 'images'" :class="{active: selectedTab === 'images'}">Images</div>
     <div @click="selectedTab = 'tenorGifs'" :class="{active: selectedTab === 'tenorGifs'}">GIFs</div>
-    <div @click="selectedTab = 'emoji'" :class="{active: selectedTab === 'emoji'}">Emoji</div>
+    <div @click="selectedTab = 'emojis'" :class="{active: selectedTab === 'emojis'}">Emoji</div>
   </div>
 
   <div class="mediaMain" id="mediaMain">
@@ -30,6 +30,12 @@
           </div>
         </masonry>
       </template>
+
+      <template v-if="selectedTab === 'emojis'">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap">
+          <img v-for="(emoji, index) in emojis" :key="index" draggable="true" @mousedown="dragMedia($event)" :data-src="'https://' + emoji" :src="'https://' + emoji" height="128" width="128" :alt="emoji"/>
+        </div>
+      </template>
   </div>
 
 </div>
@@ -42,8 +48,10 @@ export default {
 name: "MediaEditor",
   data() {
     return {
+      baseUrl: process.env.VUE_APP_baseUrl,
       unsplashPhotos: [],
       tenorGifs: [],
+      emojis: [],
       tenorNextPage: '',
       selectedTab: 'images',
       unsplashPhotoPage: 1,
@@ -54,6 +62,7 @@ name: "MediaEditor",
   mounted() {
     this.getUnsplashPhotos()
     this.getTenorGifs()
+    this.getEmoji()
 
     const main = document.getElementById('mediaMain')
     main.addEventListener('scroll', () => {
@@ -78,6 +87,16 @@ name: "MediaEditor",
       // console.log(evt);
       this.$parent.draggedElement = evt.target;
     },
+
+    getEmoji() {
+      axios.get(`${this.baseUrl}emoji`)
+          .then(res => {
+            this.emojis = res.data.data
+            console.log('Emojis: ', this.emojis)
+          })
+      this.$parent.activeMedia = 'unsplashPhotos';
+    },
+
     getUnsplashPhotos(page = 1) {
       axios.get(`https://api.unsplash.com/photos?per_page=20&page=${page}&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b`)
           .then(res => {

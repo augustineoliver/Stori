@@ -55,6 +55,10 @@
             <img src="../../assets/images/editor/background.svg" alt="Background">
           </div>
 
+          <div :class="{active: activeMedia === 'quizAndPoll'}" @click="activeMedia = 'quizAndPoll'">
+            <img src="../../assets/images/editor/background.svg" alt="Background">
+          </div>
+
 
         </nav>
         <media-panel v-if="activeMedia === 'unsplashPhotos'"></media-panel>
@@ -1347,7 +1351,7 @@ export default {
       }
 
       if (this.$route.params.id) {
-        axios.put(`${this.baseUrl}stories/${this.$route.params.id}`, payload, {headers: {Authorization: this.authToken}, config})
+        axios.put(`${this.baseUrl}stories/${this.$route.params.id}/update`, payload, {headers: {Authorization: this.authToken}, config})
           .then(res => {
             console.log(res)
             this.previewURL = 'https://' + res.data.data.amp_file;
@@ -1355,7 +1359,7 @@ export default {
             // window.open('https://' + res.data.data.amp_file, '_blank')
           })
       } else {
-        axios.post(`${this.baseUrl}stories/add`, payload, {headers: {Authorization: this.authToken}, config})
+        axios.post(`${this.baseUrl}stories/create`, payload, {headers: {Authorization: this.authToken}, config})
           .then(res => {
             console.log(res)
             this.previewURL = 'https://' + res.data.data.amp_file;
@@ -1372,6 +1376,7 @@ export default {
     },
 
     save() {
+      console.log('YYYYYYYYYYYYYYYY')
       // eslint-disable-next-line
       const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head> <meta name=\"keywords\" content=\"" + this.metaKeywords + "\"> <meta name=\"author\" content=\"" + this.authorName + "\">  <meta name=\"description\" content=\"" + this.metaDescription + "\">  <meta charset='utf-8'> <script async=\"\" custom-element=\"amp-video\" src=\"https://cdn.ampproject.org/v0/amp-video-0.1.js\"><\/script> <link href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css' rel='stylesheet' /> <style amp-custom>.inUse {overflow: hidden;} amp-video > :first-child {padding-top: 56%!important;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>" + (title ? title : 'Untitled Story') + "</title>  <link rel='canonical' href='/'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='Stori' publisher-logo-src='https://stori-73bd3.web.app/img/logo.389c58bb.svg'>"
       const title = document.getElementById('title').value;
@@ -1401,15 +1406,15 @@ export default {
       }
 
       if (this.$route.params.id) {
-        axios.put(`${this.baseUrl}stories/${this.$route.params.id}`, payload, {headers: {Authorization: this.authToken}})
+        axios.put(`${this.baseUrl}stories/${this.$route.params.id}/update`, payload, {headers: {Authorization: this.authToken}})
           .then(res => {
             console.log('Saved and Updated', res)
             router.push({name: 'Story', params: {id: res.data.data.id}})
           })
       } else {
-        axios.post(`${this.baseUrl}stories/add`, payload, {headers: {Authorization: this.authToken}})
+        axios.post(`${this.baseUrl}stories/create`, payload, {headers: {Authorization: this.authToken}})
           .then(res => {
-            console.log('Saved', res)
+            this.$router.push({name: 'Story', params: { id: res.data.data.unique_id }})
           })
       }
 

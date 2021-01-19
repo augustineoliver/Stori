@@ -5,7 +5,7 @@
   <div class="mainDiv">
     <div v-if="currentlyViewing === 'firstPage'">
       <div class="nextStep">
-        <button @click="currentlyViewing = 'publishOptions'">Next <i class="fa fa-arrow-circle-right"></i></button>
+        <button @click="nextPage">Next <i class="fa fa-arrow-circle-right"></i></button>
       </div>
       <div>
         <label>
@@ -131,6 +131,51 @@
           </div>
 
           <div style="display: block; margin-top: 20px">
+            <span>Select widget colour</span>
+            <div class="select">
+              <v-menu offset-y :close-on-content-click="false">
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    :color="background"
+                    dark
+                    small
+                    v-on="on"
+                    style="text-shadow: black 1px 1px; height: 40px"
+                  >
+                    Background Color
+                  </v-btn>
+                </template>
+                <v-color-picker
+                  dot-size="25"
+                  mode="rgba"
+                  v-model="background"
+                  swatches-max-height="250"
+                ></v-color-picker>
+              </v-menu>
+
+              <v-menu offset-y :close-on-content-click="false">
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    :color="color"
+                    dark
+                    small
+                    v-on="on"
+                    style="text-shadow: black 1px 1px; height: 40px"
+                  >
+                    Text Color
+                  </v-btn>
+                </template>
+                <v-color-picker
+                  dot-size="25"
+                  mode="rgba"
+                  v-model="color"
+                  swatches-max-height="250"
+                ></v-color-picker>
+              </v-menu>
+            </div>
+          </div>
+
+          <div style="display: block; margin-top: 20px">
             <span>Select widget position</span>
             <div class="select">
               <label>
@@ -204,8 +249,13 @@
               </label>
 
               <label>
-                <input v-model="widgetPosition" type="radio" value="zooming">
-                <span>Zooming</span>
+                <input v-model="widgetPosition" type="radio" value="flash">
+                <span>Flash</span>
+              </label>
+
+              <label>
+                <input v-model="widgetPosition" type="radio" value="zoom">
+                <span>Zoom</span>
               </label>
 
               <label>
@@ -251,10 +301,12 @@ data() {
     mediaWidgetDetails: undefined,
     currentlyViewing: 'firstPage',
     // Widget Values
-    logoURL: '',
+    logoURL: 'https://stori-73bd3.web.app/img/logo.389c58bb.svg',
     widgetTitle: '',
     widgetSubTitle: '',
     widgetPosition: '',
+    background: 'rgba(0, 0, 0, 1)',
+    color: 'rgb(110, 110, 110, 1)',
   }
 },
 
@@ -271,6 +323,11 @@ methods: {
     setTimeout(() => {
       this.$parent.isPublishing = false
     }, 600)
+  },
+
+  nextPage() {
+    this.$parent.save()
+    this.currentlyViewing = 'publishOptions'
   }
 
 }
