@@ -313,7 +313,7 @@ export default {
 
     getUserStories(page = 1) {
       this.loadingMoreData = true
-      axios.post(`${this.baseUrl}stories?page=${page}`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
+      axios.post(`${this.baseUrl}stories/user?page=${page}`, {user_id: localStorage.getItem('userId')}, {headers: {Authorization: this.authToken}})
           .then(res => {
             this.allUserStoriCurrentPageNumber = res.data.data.current_page
             this.allUserStoriNextPageNumber = res.data.data.next_page_url ? res.data.data.current_page + 1 : res.data.data.current_page

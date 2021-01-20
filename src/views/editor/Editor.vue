@@ -505,7 +505,7 @@
                 v-bind:selectedImageSrc="selectedImageSrc"
             ></image-editor>
             <InteractiveEditor
-                v-if="selectedElement.type === 'image'"
+                v-if="selectedElement.type === 'interactivePanel'"
             ></InteractiveEditor>
             <text-editor
                 v-if="selectedElement.type === 'text'"
@@ -1058,7 +1058,7 @@ export default {
             //   background: interactive.style.background.trim(),
             //   textColour: interactive.style.color.trim(),
             // });
-            // this.selectElement('callToActionButtons', interactive.id);
+            this.selectElement('interactivePanel', interactive.id);
             // this.selectedButtonData = {title: interactive.innerHTML, url: interactive.getAttribute('data-href')}
           })
           setTimeout(() => {
