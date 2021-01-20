@@ -45,7 +45,7 @@
 import axios from "axios";
 
 export default {
-name: "MediaEditor",
+name: "MediaPanel",
   data() {
     return {
       baseUrl: process.env.VUE_APP_baseUrl,
@@ -84,7 +84,6 @@ name: "MediaEditor",
 
   methods: {
     dragMedia(evt) {
-      // console.log(evt);
       this.$parent.draggedElement = evt.target;
     },
 

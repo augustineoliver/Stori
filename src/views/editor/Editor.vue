@@ -55,7 +55,7 @@
             <img src="../../assets/images/editor/background.svg" alt="Background">
           </div>
 
-          <div :class="{active: activeMedia === 'quizAndPoll'}" @click="activeMedia = 'quizAndPoll'">
+          <div :class="{active: activeMedia === 'interactivePanel'}" @click="activeMedia = 'interactivePanel'">
             <img src="../../assets/images/editor/background.svg" alt="Background">
           </div>
 
@@ -446,6 +446,8 @@
           <text-panel></text-panel>
         </div>
 
+        <InteractivePanel  v-if="activeMedia === 'interactivePanel'"></InteractivePanel>
+
       </div>
       <div class="editor">
         <div>
@@ -502,6 +504,9 @@
                 v-bind:selectedElement="selectedElement"
                 v-bind:selectedImageSrc="selectedImageSrc"
             ></image-editor>
+            <InteractiveEditor
+                v-if="selectedElement.type === 'image'"
+            ></InteractiveEditor>
             <text-editor
                 v-if="selectedElement.type === 'text'"
                 v-bind:selectedElement="selectedElement"
@@ -529,12 +534,14 @@ import Vue from 'vue';
 import VueMasonry from 'vue-masonry-css'
 // import Moveable from 'vue-moveable';
 import Text from '@/components/Text';
-import MediaEditor from '@/components/MediaEditor';
+import MediaPanel from '@/components/MediaPanel';
 import TextEditor from '@/components/TextEditor';
 import ImageEditor from "@/components/ImageEditor";
 import Preview from "@/components/Preview";
 import Animations from "@/components/Animations";
 import CallToActionButtons from "@/components/CallToActionButtons";
+import InteractivePanel from "@/components/InteractivePanel";
+import InteractiveEditor from "@/components/InteractiveEditor";
 import Publish from "@/components/Publish";
 import router from "@/router";
 // import router from "@/router";
@@ -887,23 +894,6 @@ export default {
       // evt.preventDefault();
       console.log(evt)
 
-      // var ComponentClass = Vue.extend(Moveable)
-      //   var instance = new ComponentClass({
-      //     propsData: {
-      //       moveable: this.moveable,
-      //     }
-      //   })
-      // instance.ondrag = this.handleDrag;
-      // instance.onresize = this.handleResize;
-      // instance.onScale = this.handleScale;
-      // instance.onRotate = this.handleRotate;
-      // instance.onWarp = this.handleWarp;
-      // instance.onPinch = this.handlePinch;
-      // instance.$slots.default = ['Sample Text Goes Here']
-      // instance.$mount() // pass nothing
-      // this.$refs.page.appendChild(instance.$el)
-
-
       if (this.draggedElement) {
         let div = document.createElement('div')
         console.log(evt);
@@ -1048,6 +1038,36 @@ export default {
             button.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
           }, 500)
           div = button;
+        }
+        else if (this.activeMedia === 'interactivePanel') {
+          const interactive = this.draggedElement.cloneNode(true);
+          interactive.style.position = 'absolute';
+          interactive.style.top = (((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100) + '%';
+          interactive.style.left = (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100 )+ '%';
+          interactive.classList.add('resize-drag')
+          // interactive.width = 100;
+          // interactive.height = 50;
+          interactive.removeAttribute('draggable')
+          interactive.id = new Date().toISOString();
+          // interactive.setAttribute('data-href', 'http://example.com')
+          interactive.addEventListener('click', () => {
+            // console.log(interactive.style.backgroundColor.trim())
+            // this.$store.commit('setSelectedButton', {
+            //   title: interactive.innerHTML.trim(),
+            //   url: interactive.getAttribute('data-href').trim(),
+            //   background: interactive.style.background.trim(),
+            //   textColour: interactive.style.color.trim(),
+            // });
+            // this.selectElement('callToActionButtons', interactive.id);
+            // this.selectedButtonData = {title: interactive.innerHTML, url: interactive.getAttribute('data-href')}
+          })
+          setTimeout(() => {
+            interactive.style.width = ((interactive.getBoundingClientRect().width / 421.641) * 100 )+ '%';
+            interactive.style.height = ((interactive.getBoundingClientRect().height / 702.75) * 100 )+ '%';
+            interactive.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100
+            interactive.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
+          }, 500)
+          div = interactive;
         }
         else {
           const video = document.createElement('video')
@@ -1463,16 +1483,18 @@ export default {
     // 'vue-guides': Guides,
     // Moveable,
     'text-panel': Text,
-    'media-panel': MediaEditor,
+    'media-panel': MediaPanel,
     'stori-preview': Preview,
     'animations': Animations,
     'callToActionButtons': CallToActionButtons,
     'publish': Publish,
+    InteractivePanel,
+    InteractiveEditor
   }
 }
 </script>
 
 <style lang="scss">
-  @import 'editor';
+  @import 'Editor';
   @import '~animate.css/animate.min.css';
 </style>
