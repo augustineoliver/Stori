@@ -31,7 +31,7 @@
           dot-size="25"
           mode="rgba"
           v-model="backgroundColour"
-          @input="changeTextBackground"
+          @input="changeBackgroundColour"
           swatches-max-height="250"
         ></v-color-picker>
       </v-menu>
@@ -44,6 +44,8 @@
         ]"
         label="Prompt Size"
         outlined
+        v-model="promptSize"
+        @change="changePromptSize"
       ></v-select>
 
       <v-select
@@ -54,6 +56,8 @@
             {text: 'Justified', value: 'justified'},
         ]"
         label="Prompt Alignment"
+        v-model="promptAlignment"
+        @change="changePromptAlignment"
         outlined
       ></v-select>
 
@@ -74,7 +78,7 @@
           dot-size="25"
           mode="rgba"
           v-model="promptColour"
-          @input="changeTextBackground"
+          @input="changePromptColour"
           swatches-max-height="250"
         ></v-color-picker>
       </v-menu>
@@ -96,7 +100,7 @@
           dot-size="25"
           mode="rgba"
           v-model="optionColour"
-          @input="changeTextBackground"
+          @input="changeOptionColour"
           swatches-max-height="250"
         ></v-color-picker>
       </v-menu>
@@ -129,7 +133,73 @@ name: "InteractiveEditor",
       backgroundColour: 'rgb(1, 90, 239, 1)',
       promptColour: 'rgb(255, 255, 255, 1)',
       optionColour: 'rgb(0, 0, 0, 1)',
+      promptSize: 'medium',
+      promptAlignment: '',
     }
+  },
+
+  props: {
+    selectedElement: null,
+  },
+
+  methods: {
+    changeBackgroundColour() {
+      const interactiveElement = document.getElementById(this.selectedElement.id)
+      interactiveElement.style.background = this.backgroundColour
+    },
+
+    changePromptColour() {
+      const interactiveElement = document.getElementById(this.selectedElement.id).children[0]
+      interactiveElement.style.color = this.promptColour
+    },
+
+    changePromptSize() {
+      const interactiveElement = document.getElementById(this.selectedElement.id).children[0]
+      switch (this.promptSize) {
+        case "light": {
+          interactiveElement.style.fontSize = '1.75em';
+          break;
+        }
+        case "medium": {
+          interactiveElement.style.fontSize = '1.375em';
+          break;
+        }
+        case "small": {
+          interactiveElement.style.fontSize = '1.125em';
+          break;
+        }
+      }
+    },
+
+    changeOptionColour() {
+      const interactiveElement = document.getElementById(this.selectedElement.id).children[1]
+      interactiveElement.style.color = this.optionColour
+    },
+
+    changePromptAlignment() {
+      const interactiveElement = document.getElementById(this.selectedElement.id).children[0]
+      switch (this.promptSize) {
+        case "left": {
+          interactiveElement.style.justify_content = 'star';
+          break;
+        }
+        case "centre": {
+          interactiveElement.style.justify_content = 'center';
+          break;
+        }
+        case "right": {
+          interactiveElement.style.justify_content = 'end';
+          break;
+        }
+        case "justified": {
+          interactiveElement.style.justify_content = 'space';
+          break;
+        }
+
+      }
+      interactiveElement.style.textAlign = this.promptAlignment
+    },
+
   }
 }
 </script>

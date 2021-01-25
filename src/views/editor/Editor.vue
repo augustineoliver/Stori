@@ -506,6 +506,7 @@
             ></image-editor>
             <InteractiveEditor
                 v-if="selectedElement.type === 'interactivePanel'"
+                v-bind:selectedElement="selectedElement"
             ></InteractiveEditor>
             <text-editor
                 v-if="selectedElement.type === 'text'"

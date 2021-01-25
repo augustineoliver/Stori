@@ -11,6 +11,7 @@
         option-1-confetti="🍕"
         option-2-text="No"
         option-2-confetti="🤢"
+        v-on:click="isModalActive = true"
     >
       <div class="question">
         Like Pizza?
@@ -21,31 +22,38 @@
       </div>
     </amp-story-interactive-binary-poll>
 
-<!--    <div>-->
-<!--      <h4>Poll</h4>-->
-<!--      <amp-story-interactive-poll-->
-<!--          draggable="true"-->
-<!--          @mousedown="dragMedia($event)"-->
-<!--          class="pollInteraction"-->
-<!--          endpoint="https://backend.com/v1/interactives"-->
-<!--          prompt-text="Pick a season"-->
-<!--          option-1-text="Spring" option-1-confetti="🌼"-->
-<!--          option-2-text="Summer" option-2-confetti="☀"-->
-<!--          option-3-text="Fall" option-3-confetti="🍁"-->
-<!--          option-4-text="Winter" option-4-confetti="☃">-->
-<!--      >-->
+<!--    <h4>Poll</h4>-->
+<!--    <amp-story-interactive-poll-->
+<!--        draggable="true"-->
+<!--        @mousedown="dragMedia($event)"-->
+<!--        class="pollInteraction"-->
+<!--        endpoint="https://backend.com/v1/interactives"-->
+<!--        prompt-text="Pick a season"-->
+<!--        option-1-text="Spring" option-1-confetti="🌼"-->
+<!--        option-2-text="Summer" option-2-confetti="☀"-->
+<!--        option-3-text="Fall" option-3-confetti="🍁"-->
+<!--        option-4-text="Winter" option-4-confetti="☃">-->
+<!--    >-->
+<!--      <div class="question">-->
+<!--        Like Pizza?-->
+<!--      </div>-->
+<!--      <div class="options">-->
+<!--        <div>Yes</div>-->
+<!--        <div>No</div>-->
+<!--      </div>-->
+<!--    </amp-story-interactive-poll>-->
 
-<!--      </amp-story-interactive-poll>-->
-<!--    </div>-->
+    <InteractiveModal v-if="isModalActive === true"></InteractiveModal>
   </div>
 </template>
 
 <script>
+import InteractiveModal from '@/components/InteractiveModal'
 export default {
 name: "InteractivePanel",
   data() {
     return {
-
+      isModalActive: false
     }
   },
 
@@ -53,6 +61,10 @@ name: "InteractivePanel",
     dragMedia(evt) {
       this.$parent.draggedElement = evt.target;
     },
+  },
+
+  components: {
+    InteractiveModal
   }
 }
 </script>
@@ -92,6 +104,7 @@ name: "InteractivePanel",
     border-radius: 20px;
     background: white;
     display: flex;
+    color: black;
 
     div {
       position: relative !important;
@@ -99,9 +112,9 @@ name: "InteractivePanel",
       justify-content: center;
       align-items: center;
       flex: 1 1 100%;
-      color: black;
       font-weight: 900;
       font-size: 1.5em;
+      color: inherit;
       padding: 20px;
       &:first-child {
         border-right: 1px solid #EAEAEA;
