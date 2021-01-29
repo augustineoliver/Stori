@@ -90,7 +90,7 @@ name: "MediaPanel",
     getEmoji() {
       axios.get(`${this.baseUrl}emoji`)
           .then(res => {
-            this.emojis = res.data.data
+            this.emojis = res.data.data.splice(2)
             console.log('Emojis: ', this.emojis)
           })
       this.$parent.activeMedia = 'unsplashPhotos';

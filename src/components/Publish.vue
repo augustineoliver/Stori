@@ -115,7 +115,7 @@
           <div>
             <label>
               <span>Title</span>
-              <input type="text">
+              <input type="text" v-model="widgetTitle">
             </label>
             <label>
               <span>Sub title</span>
@@ -273,7 +273,7 @@
           <div style="flex-wrap: wrap">
             <div style="width: 100%;">Copy widget code</div>
             <div style="width: 100%; display: flex">
-              <input id="widgetCode" disabled value="http://sto.ri/ry3jg4">
+              <input id="widgetCode" disabled :value="`<script id='stori-widget' src='https://api-stori.herokuapp.com/vendor/widget.js?title=${widgetTitle}&subtitle=${widgetSubTitle}&size=fullScreen&type=bottomBar&animation=shakingX&background=${background}&colour=${color}&position=${widgetPosition}&logoURL=${logoURL}&url=https://onl.st/chykesamplestory/'></script>`">
               <button><i class="fa fa-copy"></i> Copy</button>
             </div>
           </div>

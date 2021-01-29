@@ -544,8 +544,7 @@ import CallToActionButtons from "@/components/CallToActionButtons";
 import InteractivePanel from "@/components/InteractivePanel";
 import InteractiveEditor from "@/components/InteractiveEditor";
 import Publish from "@/components/Publish";
-import router from "@/router";
-// import router from "@/router";
+
 
 export default {
   name: "Editor",
@@ -1430,7 +1429,6 @@ export default {
         axios.put(`${this.baseUrl}stories/${this.$route.params.id}/update`, payload, {headers: {Authorization: this.authToken}})
           .then(res => {
             console.log('Saved and Updated', res)
-            router.push({name: 'Story', params: {id: res.data.data.id}})
           })
       } else {
         axios.post(`${this.baseUrl}stories/create`, payload, {headers: {Authorization: this.authToken}})
