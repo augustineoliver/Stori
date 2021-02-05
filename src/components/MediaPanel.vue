@@ -33,7 +33,7 @@
 
       <template v-if="selectedTab === 'emojis'">
         <div style="display: flex; justify-content: space-between; flex-wrap: wrap">
-          <img v-for="(emoji, index) in emojis" :key="index" draggable="true" @mousedown="dragMedia($event)" :data-src="'https://' + emoji" :src="'https://' + emoji" height="128" width="128" :alt="emoji"/>
+          <img v-for="(emoji, index) in emojis" :key="index" draggable="true" @mousedown="dragMedia($event)" :data-src="emoji" :src="emoji" height="128" width="128" :alt="emoji"/>
         </div>
       </template>
   </div>

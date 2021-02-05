@@ -12,3 +12,5 @@ new Vue({
   vuetify,
   render: h => h(App)
 }).$mount('#app')
+
+// scp -r * root@139.162.238.238:/var/www/html/api/

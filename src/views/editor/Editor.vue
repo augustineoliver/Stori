@@ -623,7 +623,7 @@ export default {
 
   mounted() {
     if (this.$route.params.id) {
-      axios.get(`https://api-stori.herokuapp.com/api/v1/stories/${this.$route.params.id}`).then(res => {
+      axios.get(`${this.baseUrl}stories/${this.$route.params.id}`).then(res => {
         const htmlCode =  res.data.data.file;
         const tempDiv = document.createElement('div')
         tempDiv.innerHTML = htmlCode.replaceAll('\\', '')
@@ -1374,16 +1374,16 @@ export default {
         axios.put(`${this.baseUrl}stories/${this.$route.params.id}/update`, payload, {headers: {Authorization: this.authToken}, config})
           .then(res => {
             console.log(res)
-            this.previewURL = 'https://' + res.data.data.amp_file;
-            this.QRCode = 'https://' + res.data.data.qrcode;
+            this.previewURL = res.data.data.amp_file;
+            this.QRCode = res.data.data.qrcode;
             // window.open('https://' + res.data.data.amp_file, '_blank')
           })
       } else {
         axios.post(`${this.baseUrl}stories/create`, payload, {headers: {Authorization: this.authToken}, config})
           .then(res => {
             console.log(res)
-            this.previewURL = 'https://' + res.data.data.amp_file;
-            this.QRCode = 'https://' + res.data.data.qrcode;
+            this.previewURL = res.data.data.amp_file;
+            this.QRCode = res.data.data.qrcode;
             // window.open('https://' + res.data.data.amp_file, '_blank')
           })
       }
