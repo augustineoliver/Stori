@@ -28,6 +28,9 @@
         <input type="text">
       </label>
 
+      <div>
+        <button>Save Quiz</button>
+      </div>
     </template>
   </div>
 </div>
@@ -46,6 +49,10 @@ name: "InteractiveModal",
       setTimeout(() => {
         this.$parent.isModalActive = false
       }, 600)
+    },
+
+    saveQuiz() {
+
     }
   }
 }

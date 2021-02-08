@@ -1429,6 +1429,7 @@ export default {
         axios.put(`${this.baseUrl}stories/${this.$route.params.id}/update`, payload, {headers: {Authorization: this.authToken}})
           .then(res => {
             console.log('Saved and Updated', res)
+            sessionStorage.setItem('storiURL', res.data.data.amp_file)
           })
       } else {
         axios.post(`${this.baseUrl}stories/create`, payload, {headers: {Authorization: this.authToken}})

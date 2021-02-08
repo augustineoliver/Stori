@@ -273,7 +273,7 @@
           <div style="flex-wrap: wrap">
             <div style="width: 100%;">Copy widget code</div>
             <div style="width: 100%; display: flex">
-              <input id="widgetCode" disabled :value="`<script id='stori-widget' src='https://api-stori.herokuapp.com/vendor/widget.js?title=${widgetTitle}&subtitle=${widgetSubTitle}&size=fullScreen&type=bottomBar&animation=shakingX&background=${background}&colour=${color}&position=${widgetPosition}&logoURL=${logoURL}&url=https://onl.st/chykesamplestory/'></script>`">
+              <input id="widgetCode" disabled :value="`<script id='stori-widget' src='http://139.162.238.238/api/public/vendor/widget.js?title=${widgetTitle}&subtitle=${widgetSubTitle}&size=fullScreen&type=bottomBar&animation=shakingX&background=${background}&colour=${color}&position=${widgetPosition}&logoURL=${logoURL}&url=${storiURL}'></script>`">
               <button><i class="fa fa-copy"></i> Copy</button>
             </div>
           </div>
@@ -302,6 +302,7 @@ data() {
     currentlyViewing: 'firstPage',
     // Widget Values
     logoURL: 'https://stori-73bd3.web.app/img/logo.389c58bb.svg',
+    storiURL: sessionStorage.getItem('storiURL'),
     widgetTitle: '',
     widgetSubTitle: '',
     widgetPosition: '',

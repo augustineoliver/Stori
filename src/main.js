@@ -13,4 +13,4 @@ new Vue({
   render: h => h(App)
 }).$mount('#app')
 
-// scp -r * root@139.162.238.238:/var/www/html/api/
+// scp -r * root@139.162.238.238:/var/www/html/
