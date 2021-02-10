@@ -629,3 +629,131 @@ main {
     }
   }
 }
+
+
+.binaryInteraction {
+  width: 250px;
+  height: 150px;
+  margin: 20px 35px;
+  border-radius: 40px 40px 20px 20px;
+  background: #0259ED;
+
+  &:hover {
+    &:before {
+      content: '';
+      position: absolute;
+      width: 250px;
+      height: 150px;
+      z-index: 1;
+    }
+  }
+  .question {
+    position: relative !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.6em;
+    font-weight: 600;
+    padding: 0 50px;
+    height: 65px;
+  }
+
+  .options {
+    position: relative !important;
+    width: 100%;
+    height: 85px;
+    border-radius: 20px;
+    background: white;
+    display: flex;
+    color: black;
+
+    div {
+      position: relative !important;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1 1 100%;
+      max-width: 50%;
+      overflow: hidden;
+      font-weight: 900;
+      font-size: 1.5em;
+      color: inherit;
+      padding: 20px;
+      &:first-child {
+        border-right: 0.2px groove #EAEAEA;
+        border-right-width: thin;
+      }
+    }
+  }
+}
+
+.pollInteraction {
+  width: 250px;
+  margin: 20px 35px;
+  border-radius: 40px 40px 20px 20px;
+  background: #0259ED;
+  height: max-content;
+
+  &:hover {
+    &:before {
+      content: '';
+      position: absolute;
+      width: 250px;
+      height: 150px;
+      z-index: 1;
+    }
+  }
+  .question {
+    position: relative !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.6em;
+    font-weight: 600;
+    min-height: 65px;
+    padding: 15px 10px;
+    height: max-content;
+  }
+
+  .options {
+    position: relative !important;
+    width: 100%;
+    height: max-content;
+    border-radius: 20px;
+    background: white;
+    //display: flex;
+    color: black;
+    padding: 10px;
+
+    > div {
+      position: relative !important;
+      box-shadow: 0 0 2px #7c7c7c;
+      margin-top: 6.3px;
+      border-radius: 10px;
+      box-sizing: border-box;
+      font-weight: 500;
+      font-size: 1em;
+      color: inherit;
+      padding: 0 9.4px;
+      height: 44.2px;
+      display: flex;
+      align-items: center;
+      div {
+        span {
+          margin-right: 10px;
+          border-radius: 100%;
+          width: 20px;
+          height: 20px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border: 1px solid #0a81be;
+          padding: 12px;
+        }
+      }
+      &:first-child {
+        border-right: 1px solid #EAEAEA;
+      }
+    }
+  }
+}
