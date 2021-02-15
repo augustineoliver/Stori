@@ -73,7 +73,7 @@
             </div>
           </masonry>
         </div>
-
+        
         <div class="unsplashPhotos" v-if="activeMedia === 'pexelsVideo'">
           <img draggable="true" @mousedown="drag($event)" v-for="(video, index) in pexelsVideo" :key="index"
                :src="video.video_pictures[0].picture" :data-src="video.video_files[0].link" alt="">
@@ -451,24 +451,12 @@
       </div>
       <div class="editor">
         <div>
-          <div>
+          <div class="moveableArea">
             <div class="pageNavigation">
               <div v-for="(index) in pages.length" :key="index" class="pageNav" :class="{active: currentPageNumber === (index - 1)}" @click="viewPage(index - 1)"></div>
             </div>
             <div class="page" ref="page" id="page" @drop="drop($event)" :style="{background: this.isCustomGradient === false ? this.pageBackground : `${this.customGradientType}(${ this.customGradientType !== 'radial-gradient' ? this.customDegree + 'deg' : radiaShape }, ${this.customColour1} ${' ' + this.colourPercentage + '%'}, ${this.customColour2} ${' ' + 100 - this.colourPercentage + '%'})`}" @dragover.prevent @dragenter.prevent>
-<!--              <Moveable-->
-<!--                class="moveable"-->
-<!--                v-bind="moveable"-->
-<!--                @drag="handleDrag"-->
-<!--                @resize="handleResize"-->
-<!--                @scale="handleScale"-->
-<!--                @rotate="handleRotate"-->
-<!--                @warp="handleWarp"-->
-<!--                @pinch="handlePinch"-->
-<!--              >-->
-<!--                <span>Vue Moveable</span>-->
-<!--              </Moveable>-->
-
+             <move-view v-for='item in pageItems' :type="item.type" :key='item.key' :ref="'main-moveable'+item.key" :tgt="'main-moveable'+item.key" :data-html="item.html" />
             </div>
 
             <div class="pageBottomControl">
@@ -512,6 +500,7 @@
                 v-if="selectedElement.type === 'text'"
                 v-bind:selectedElement="selectedElement"
                 v-bind:textSize="fontSize"
+                v-bind:movableObj="selectedMovable"
             ></text-editor>
             <callToActionButtons
                 v-if="selectedElement.type === 'callToActionButtons'"
@@ -533,7 +522,6 @@
 import axios from "axios";
 import Vue from 'vue';
 import VueMasonry from 'vue-masonry-css'
-// import Moveable from 'vue-moveable';
 import Text from '@/components/Text';
 import MediaPanel from '@/components/MediaPanel';
 import TextEditor from '@/components/TextEditor';
@@ -541,6 +529,7 @@ import ImageEditor from "@/components/ImageEditor";
 import Preview from "@/components/Preview";
 import Animations from "@/components/Animations";
 import CallToActionButtons from "@/components/CallToActionButtons";
+import Move from '@/components/Move';
 import InteractivePanel from "@/components/InteractivePanel";
 import InteractiveEditor from "@/components/InteractiveEditor";
 import Publish from "@/components/Publish";
@@ -551,22 +540,10 @@ export default {
 
   data() {
     return {
+      pageItems: [],
       pages: [],
       currentPageNumber: undefined,
       isPublishing: false,
-      moveable: {
-        draggable: true,
-        throttleDrag: 0,
-        resizable: false,
-        throttleResize: 1,
-        keepRatio: false,
-        scalable: true,
-        throttleScale: 0,
-        rotatable: true,
-        throttleRotate: 0,
-        pinchable: true, // ["draggable", "resizable", "scalable", "rotatable"]
-        origin: false,
-      },
       // Meta Data Start
       storyTitle: '',
       metaKeywords: '',
@@ -585,6 +562,7 @@ export default {
       clipboard: null,
       selectedElement: {type: undefined, id: undefined},
       selectedButtonData: {title: undefined, url: undefined},
+      selectedMovable: null,
       pageBackground: '#ffffff',
       activeBackgroundType: 'colour',
       backgroundTexture: [],
@@ -760,23 +738,25 @@ export default {
 
     document.getElementById('page').addEventListener('contextmenu', e => {
       e.preventDefault()
-      if (document.getElementById('contextmenu')) {
+      if (document.getElementById('contextmenu') != null) {
         document.getElementById('contextmenu').remove()
       }
       window.addEventListener('click', (event) => {
-        document.getElementById('contextmenu').remove()
+        if (document.getElementById('contextmenu') != null) {
+          document.getElementById('contextmenu').remove()
+        }
         event.stopImmediatePropagation()
       })
 
       const menu = document.createElement('div');
       const menuHTMLCode = `<div>
-                                <div>Copy</div>
-                                <div>Past</div>
-                                <div>Delete</div>
-                                <div>Send to Back</div>
-                                <div>Send Backward</div>
-                                <div>Bring Farword</div>
-                                <div>Bring to Front</div>
+                              <div>Copy</div>
+                              <div>Past</div>
+                              <div>Delete</div>
+                              <div>Send to Back</div>
+                              <div>Send Backward</div>
+                              <div>Bring Farword</div>
+                              <div>Bring to Front</div>
                             </div>`
       menu.classList.add('contextmenu')
       menu.id = 'contextmenu';
@@ -794,34 +774,7 @@ export default {
   },
 
   methods: {
-    handleDrag({ target, transform }) {
-      console.log('onDrag left, top', transform);
-      target.style.transform = transform;
-    },
-    handleResize({
-      target, width, height, delta,
-    }) {
-      console.log('onResize', width, height);
-      delta[0] && (target.style.width = `${width}px`);
-      delta[1] && (target.style.height = `${height}px`);
-    },
-    handleScale({ target, transform, scale }) {
-      console.log('onScale scale', scale);
-      target.style.transform = transform;
-    },
-    handleRotate({ target, dist, transform }) {
-      console.log('onRotate', dist);
-      target.style.transform = transform;
-    },
-    handleWarp({ target, transform }) {
-      console.log('onWarp', transform);
-      target.style.transform = transform;
-    },
-    handlePinch({ target }) {
-      console.log('onPinch', target);
-    },
-
-
+    
     getUnsplashTexture() {
       this.activeBackgroundType = 'texture'
       axios.get('https://api.unsplash.com/search/photos?per_page=20&client_id=e72d3972ba3ff93da57a4c0be4f0b7323346c136b73794e2a01226216076655b&query=texture')
@@ -872,7 +825,7 @@ export default {
     },
 
     drag(evt) {
-      // console.log(evt);
+      // console.log('drag', evt);
       this.draggedElement = evt.target;
     },
 
@@ -896,53 +849,22 @@ export default {
       console.log(evt)
 
       if (this.draggedElement) {
+        document.getElementsByClassName("moveable-control").forEach(element => { element.style.display = 'none'; });
+        document.getElementsByClassName("moveable-line").forEach(element => { element.style.display = 'none'; });
         let div = document.createElement('div')
-        console.log(evt);
-        div.classList.add('resize-drag');
-        div.classList.add('resizable');
-        // div.id = new Date().toISOString();
-        // div.draggable = 'true';
-        // div.style = 'width: 180px; height: content-box; position: absolute';
-        // div.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
-        // div.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
-
-        // div.addEventListener('drag', (element) => {
-        //     this.alwaysOnTop(div);
-        //     console.log(element)
-        //     // console.log('page X:',(element.pageX -document.getElementById('page').offsetLeft))
-        //     // console.log('page Y:',(element.pageY - document.getElementById('page').offsetTop))
-        //     element.target.parentNode.parentNode.parentNode.style.top = (element.pageY - document.getElementById('page').offsetTop) + 'px';
-        //     element.target.parentNode.parentNode.parentNode.style.left = (element.pageX -document.getElementById('page').offsetLeft) + 'px';
-        //   })
-
         if (this.activeMedia === 'text') {
-          console.log('I am here');
-          console.log('I am here', this.draggedElement);
           const text = this.draggedElement.cloneNode(true);
-          text.style = 'color: #202125; position: absolute; min-width: 100px; min-height: 50px';
-          text.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
-          text.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
-          text.classList.add('resize-drag')
+          text.style = 'color: #202125; min-width: 250px; min-height: 50px;';
+          //text.style.top = (evt.pageY - document.getElementById('page').offsetTop) + 'px';
+          //text.style.left = (evt.pageX - document.getElementById('page').offsetLeft) + 'px';
           text.classList.add('animate__animated')
           text.classList.add('textEdit')
           text.id = new Date().toISOString();
           text.ref = new Date().toISOString();
-          setTimeout(() => {
-            text.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100
-            text.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
-          }, 500)
-          text.addEventListener('click', () => {
-            this.selectElement('text', text.id)
-          })
-          text.ondblclick = () => {
-            text.contentEditable = true
-          }
-          text.onblur = () => {
-            text.contentEditable = false
-          }
+          text.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100;
+          text.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100;
 
-          console.log('QQQQQQQQQQQQQQ:', text.getAttribute('data-type'))
-
+          text.removeAttribute('draggable')
           switch (text.getAttribute('data-type')) {
             case 'heading': {
               text.style.fontWeight = '600'
@@ -960,84 +882,54 @@ export default {
             } break;
 
           }
-
-          setTimeout(() => {
-            text.width = text.getBoundingClientRect().width
-            text.height = text.getBoundingClientRect().height
-          }, 100)
-          text.classList.add('resize-drag')
-
+          
           // Update Editing Values
           this.fontSize = text.style.fontSize.replace('px', '')
-          console.log('QQQQQQQQQQQQQQQ: ', text.style.fontSize.replace('px', ''))
           div = text;
         }
         else if (this.activeMedia === 'unsplashPhotos' || this.activeMedia === 'uploadedMedia') {
-          console.log('QQQQQQQQQQQQQ', this.draggedElement)
           const photo = this.draggedElement.cloneNode(true)
           photo.id = new Date().toISOString();
-
-          photo.style = 'width: 180px; height: auto; position: absolute';
-          photo.style.top = (((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100) + '%';
-          photo.style.left = (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100 )+ '%';
+          photo.removeAttribute('draggable')
+          photo.style = 'width:100%';
+          //photo.style.top = (((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100) + '%';
+          //photo.style.left = (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100 )+ '%';
           const thumbnail = photo.src;
           photo.src = photo.dataset.src;
           photo.dataset.src = thumbnail;
-          photo.addEventListener('click', () => {
-            this.selectElement('image', photo.id)
-            this.selectedImageSrc = photo.src
-            this.alwaysOnTop(photo);
-            console.log(photo)
-          })
-          photo.classList.add('resize-drag')
-          photo.classList.add('animate__animated')
-          setTimeout(() => {
-            photo.style.width = ((photo.getBoundingClientRect().width / 421.641) * 100 )+ '%';
-            photo.style.height = ((photo.getBoundingClientRect().height / 702.75) * 100 )+ '%';
-            photo.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100
-            photo.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
-            photo.removeAttribute('data-src');
-          }, 500)
-
-          photo.setAttribute('data-x', '');
-          photo.setAttribute('data-y', '');
-
+          //photo.classList.add('animate__animated');
+          
+           //setTimeout(() => {
+             //photo.style.width = ((photo.getBoundingClientRect().width / 421.641) * 100 )+ '%';
+             //photo.style.height = ((photo.getBoundingClientRect().height / 702.75) * 100 )+ '%';
+          //   photo.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100
+          //   photo.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
+             //photo.removeAttribute('data-src');
+           //}, 500)
+          //photo.setAttribute('data-x', '');
+          //photo.setAttribute('data-y', '');
           // photo.onclick = this.resizeElement(div.children[0].id, '.resizers')
           div = photo
         }
         else if (this.activeMedia === 'callToActionButtons') {
-          // console.log('I am here', evt.pageX);
-          // console.log('I am here', document.getElementById('page').offsetLeft);
-          // console.log('I am here', (evt.pageX - document.getElementById('page').offsetLeft));
-          // console.log('I am here', (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100) + '%');
           const button = this.draggedElement.cloneNode(true);
-          button.style.position = 'absolute';
+          //button.style.position = 'absolute';
           button.style.overflow = 'hidden';
-          button.style.top = (((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100) + '%';
-          button.style.left = (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100 )+ '%';
-          button.classList.add('resize-drag')
+          //button.style.top = (((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100) + '%';
+          //button.style.left = (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100 )+ '%';
+          //button.classList.add('resize-drag')
           button.width = 100;
           button.height = 50;
           button.removeAttribute('draggable')
           button.id = new Date().toISOString();
           button.setAttribute('data-href', 'http://example.com')
-          button.addEventListener('click', () => {
-            console.log(button.style.backgroundColor.trim())
-            this.$store.commit('setSelectedButton', {
-              title: button.innerHTML.trim(),
-              url: button.getAttribute('data-href').trim(),
-              background: button.style.background.trim(),
-              textColour: button.style.color.trim(),
-            });
-            this.selectElement('callToActionButtons', button.id);
-            this.selectedButtonData = {title: button.innerHTML, url: button.getAttribute('data-href')}
-          })
-          setTimeout(() => {
-            button.style.width = ((button.getBoundingClientRect().width / 421.641) * 100 )+ '%';
-            button.style.height = ((button.getBoundingClientRect().height / 702.75) * 100 )+ '%';
-            button.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100
-            button.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
-          }, 500)
+        
+          //setTimeout(() => {
+            //button.style.width = ((button.getBoundingClientRect().width / 421.641) * 100 )+ '%';
+            //button.style.height = ((button.getBoundingClientRect().height / 702.75) * 100 )+ '%';
+            //button.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100
+            //button.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
+          //}, 500)
           div = button;
         }
         else if (this.activeMedia === 'interactivePanel') {
@@ -1079,14 +971,14 @@ export default {
           // let width = 0;
           // let height = 0;
 
-          setTimeout(() => {
-            video.style.width = ((video.getBoundingClientRect().width / 421.641) * 100 )+ '%';
-            video.style.height = ((video.getBoundingClientRect().height / 702.75) * 100 )+ '%';
-            video.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100
-            video.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
+          //setTimeout(() => {
+            //video.style.width = ((video.getBoundingClientRect().width / 421.641) * 100 )+ '%';
+            //video.style.height = ((video.getBoundingClientRect().height / 702.75) * 100 )+ '%';
+            //video.dataset.x = ((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100
+            //video.dataset.y = ((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100
             // photo.removeAttribute('data-src');
-          }, 200)
-          video.classList.add('resize-drag')
+          //}, 200)
+          //video.classList.add('resize-drag')
           // video.addEventListener("resize", (resize) => {
           //   console.log('WWWWWWWWWWWW', resize);
           //   // width = getComputedStyle(video, null).getPropertyValue('width').replace('px', '');
@@ -1105,8 +997,10 @@ export default {
           // video.style = 'width: 100%'
           // video.ondragstart = 'this.drag($event)';
           // video.draggable = true;
-          video.controls = true;
+          // video.controls = true;
           // video.onclick = this.resizeElement(div.children[0].id, '.resizers')
+          video.controls = true;
+          video.poster= this.draggedElement.src;
           const source = document.createElement('source');
           source.src = this.draggedElement.dataset.src
           video.appendChild(source);
@@ -1114,7 +1008,12 @@ export default {
           // div.children[0].appendChild(video);
         }
 
-        evt.target.appendChild(div);
+        //evt.target.appendChild(div);
+        this.pageItems.push({
+          key: this.pageItems.length + 1,
+          html: div,
+          type: this.activeMedia
+        });
         this.draggedElement = null;
         this.updatePageStructure();
       }
@@ -1482,7 +1381,7 @@ export default {
     'text-editor': TextEditor,
     'image-editor': ImageEditor,
     // 'vue-guides': Guides,
-    // Moveable,
+    'move-view': Move,
     'text-panel': Text,
     'media-panel': MediaPanel,
     'stori-preview': Preview,

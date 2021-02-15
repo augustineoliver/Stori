@@ -192,6 +192,7 @@ export default {
   props: {
     selectedElement: null,
     textSize: null,
+    movableObj: null
   },
 
   data() {
@@ -212,6 +213,8 @@ export default {
     setFontSize() {
       const text = document.getElementById(this.selectedElement.id)
       text.style.fontSize = this.fontSize + 'px';
+      this.movableObj.updateRect();
+      this.movableObj.updateTarget();
     },
 
     formatText() {
@@ -289,12 +292,16 @@ export default {
       const text = document.getElementById(this.selectedElement.id)
       console.log(this.letterSpacing)
       text.style.letterSpacing = this.letterSpacing + 'px';
+      this.movableObj.updateRect();
+      this.movableObj.updateTarget();
     },
 
     changeLineHeight() {
       const text = document.getElementById(this.selectedElement.id)
       console.log(this.letterSpacing)
       text.style.lineHeight = this.lineHeight + 'em';
+      this.movableObj.updateRect();
+      this.movableObj.updateTarget();
     }
 
   }

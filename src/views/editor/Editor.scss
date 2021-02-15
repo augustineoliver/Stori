@@ -630,6 +630,25 @@ main {
   }
 }
 
+//Moveable CSS
+.moveable-control.moveable-direction[data-direction="n"],
+.moveable-control.moveable-direction[data-direction="s"]
+{
+  height: 6px;
+  width: 22px;
+  border-radius: 2px;
+  margin-top: -3px;
+  margin-left: -12px;
+}
+.moveable-control.moveable-direction[data-direction="e"],
+.moveable-control.moveable-direction[data-direction="w"] {
+  height: 22px;
+  width: 6px;
+  border-radius: 2px;
+  margin-top: -12px;
+  margin-left: -3px;
+}
+.moveableObj {position: absolute;overflow: hidden;}
 
 .binaryInteraction {
   width: 250px;
