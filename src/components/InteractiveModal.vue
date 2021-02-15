@@ -29,6 +29,7 @@
 
             <picker title="" @select="showOption1Confetti" :data="emojiIndex" set="google" />
           </v-menu>
+          <input v-if="interactionType === 'quiz'" type="radio" v-model="correctAnswer" value="option-1-correct">
         </span>
       </label>
       <label>
@@ -53,6 +54,7 @@
 
             <picker title="" @select="showOption2Confetti" :data="emojiIndex" set="google" />
           </v-menu>
+          <input v-if="interactionType === 'quiz'" type="radio" v-model="correctAnswer" value="option-2-correct">
         </span>
       </label>
       <label v-if="isBinaryPool === false">
@@ -77,6 +79,7 @@
 
             <picker title="" @select="showOption3Confetti" :data="emojiIndex" set="google" />
           </v-menu>
+          <input v-if="interactionType === 'quiz'" type="radio" v-model="correctAnswer" value="option-3-correct">
         </span>
       </label>
       <label v-if="isBinaryPool === false">
@@ -101,7 +104,9 @@
 
             <picker title="" @select="showOption4Confetti" :data="emojiIndex" set="google" />
           </v-menu>
+          <input v-if="interactionType === 'quiz'" type="radio" v-model="correctAnswer" value="option-4-correct">
         </span>
+
       </label>
 
       <v-btn block @click="saveQuiz" color="#519EF4">
@@ -113,7 +118,7 @@
 </template>
 
 <script>
-// import axios from "axios";
+import axios from "axios";
 import data from 'emoji-mart-vue-fast/data/all.json'
 import { Picker, EmojiIndex } from 'emoji-mart-vue-fast'
 let emojiIndex = new EmojiIndex(data)
@@ -136,6 +141,7 @@ name: "InteractiveModal",
       option3Confetti: '',
       option4: '',
       option4Confetti: '',
+      correctAnswer: ''
     }
   },
 
@@ -177,6 +183,44 @@ name: "InteractiveModal",
       }
     },
 
+    createBinaryPoll() {
+      const payload = {
+        user_id: localStorage.getItem('userId'),
+        story_id: sessionStorage.getItem('storyId'),
+        title: this.$parent.$parent.storyTitle + ' - ' + this.question,
+        question: this.question,
+        option1: this.option1,
+        option2: this.option2
+      }
+      axios.post(`${this.baseUrl}binary/poll/create`, payload, {headers: {Authorization: this.authToken}})
+          .then(res => {
+            console.log('Binary Poll Created', res)
+            const page = document.getElementById('page')
+            const interactivePoll =  document.createElement('amp-story-interactive-binary-poll')
+
+            interactivePoll.setAttribute('endpoint', `${this.baseUrl}quiz/${res.data.id}/show`);
+            interactivePoll.setAttribute('theme', this.theme);
+            interactivePoll.setAttribute('prompt-text', this.question);
+
+            interactivePoll.setAttribute('option-1-text', this.option1);
+            interactivePoll.setAttribute('option-1-confetti', this.option1Confetti);
+            interactivePoll.setAttribute('option-2-text', this.option2);
+            interactivePoll.setAttribute('option-2-confetti', this.option2Confetti);
+
+            interactivePoll.dataset.data = `{theme: ${this.theme}, prompt-text: ${this.question}, option-1-text: ${this.option1}, option-1-confetti: ${this.option1Confetti}, option-2-text: ${this.option2}, option-2-confetti: ${this.option2Confetti}, option-3-text: ${this.option3}, option-3-confetti: ${this.option3Confetti}, option-4-text: ${this.option4}, option-4-confetti: ${this.option4Confetti}}`
+            interactivePoll.style.width = '250px';
+            interactivePoll.style.display = 'block';
+            interactivePoll.style.overflow = 'hidden';
+            interactivePoll.style.position = 'absolute';
+            interactivePoll.classList.add('binaryInteraction', 'resize-drag')
+            interactivePoll.id = Date.now().toString()
+            interactivePoll.innerHTML = `<div class="question"> ${this.question} </div><div class="options" style="background: ${this.theme === "dark" ? '#202124' : ''}; color: ${this.theme === "dark" ? '#ffffff' : ''}"><div>${this.option1}</div><div>${this.option2}</div></div>`
+
+            page.appendChild(interactivePoll)
+            this.$parent.$parent.updatePageStructure();
+          })
+    },
+
     createPoll() {
       const page = document.getElementById('page')
       const interactivePoll =  document.createElement('amp-story-interactive-poll')
@@ -196,7 +240,7 @@ name: "InteractiveModal",
 
       interactivePoll.dataset.data = `{theme: ${this.theme}, prompt-text: ${this.question}, option-1-text: ${this.option1}, option-1-confetti: ${this.option1Confetti}, option-2-text: ${this.option2}, option-2-confetti: ${this.option2Confetti}, option-3-text: ${this.option3}, option-3-confetti: ${this.option3Confetti}, option-4-text: ${this.option4}, option-4-confetti: ${this.option4Confetti}}`
       interactivePoll.style.width = '250px';
-      interactivePoll.style.height = '300px';
+      // interactivePoll.style.height = '300px';
       interactivePoll.style.display = 'block';
       interactivePoll.style.overflow = 'hidden';
       interactivePoll.style.position = 'absolute';
@@ -206,11 +250,21 @@ name: "InteractiveModal",
 
       page.appendChild(interactivePoll)
       this.$parent.$parent.updatePageStructure();
-      // axios.put(`${this.baseUrl}quiz/create`, null, {headers: {Authorization: this.authToken}})
-      //     .then(res => {
-      //       console.log('Saved and Updated', res)
-      //       sessionStorage.setItem('storiURL', res.data.data.amp_file)
-      //     })
+
+      const payload = {
+        user_id: localStorage.getItem('userId'),
+        story_id: sessionStorage.getItem('storyId'),
+        title: this.$parent.$parent.storyTitle + ' - ' + this.question,
+        question: this.question,
+        option1: this.option1,
+        option2: this.option2,
+        option3: this.option3,
+        option4: this.option4
+      }
+      axios.post(`${this.baseUrl}poll/create`, payload, {headers: {Authorization: this.authToken}})
+          .then(res => {
+            console.log('Binary Poll Created', res)
+          })
     },
 
     createQuiz() {
@@ -230,6 +284,13 @@ name: "InteractiveModal",
       interactiveQuiz.setAttribute('option-4-text', this.option4);
       interactiveQuiz.setAttribute('option-4-confetti', this.option4Confetti);
 
+      switch (this.correctAnswer) {
+        case 'option-1-correct' : interactiveQuiz.setAttribute('option-1-correct', null); break;
+        case 'option-2-correct' : interactiveQuiz.setAttribute('option-2-correct', null); break;
+        case 'option-3-correct' : interactiveQuiz.setAttribute('option-3-correct', null); break;
+        case 'option-4-correct' : interactiveQuiz.setAttribute('option-4-correct', null);
+      }
+
       interactiveQuiz.dataset.data = `{theme: ${this.theme}, prompt-text: ${this.question}, option-1-text: ${this.option1}, option-1-confetti: ${this.option1Confetti}, option-2-text: ${this.option2}, option-2-confetti: ${this.option2Confetti}, option-3-text: ${this.option3}, option-3-confetti: ${this.option3Confetti}, option-4-text: ${this.option4}, option-4-confetti: ${this.option4Confetti}}`
       interactiveQuiz.style.width = '250px';
       interactiveQuiz.style.height = '300px';
@@ -238,15 +299,53 @@ name: "InteractiveModal",
       interactiveQuiz.style.position = 'absolute';
       interactiveQuiz.classList.add('pollInteraction', 'resize-drag')
       interactiveQuiz.id = Date.now().toString()
-      interactiveQuiz.innerHTML = `<div class="question"> ${this.question} </div><div class="options" style="background: ${this.theme === "dark" ? '#202124' : ''}; color: ${this.theme === "dark" ? '#ffffff' : ''}"><div>${this.option1}</div><div>${this.option2}</div><div>${this.option3}</div><div>${this.option4}</div></div>`
+      interactiveQuiz.innerHTML = `
+      <div class="question"> ${this.question} </div>
+      <div class="options" style="background: ${this.theme === "dark" ? '#202124' : ''}; color: ${this.theme === "dark" ? '#ffffff' : ''}">
+        <div>
+          <div>
+            <span>A</span>
+          </div>
+          <div>${this.option1}</div>
+        </div>
+        <div>
+          <div>
+            <span>A</span>
+          </div>
+          <div>${this.option2}</div>
+        </div>
+        <div>
+          <div>
+            <span>A</span>
+          </div>
+          <div>${this.option3}</div>
+        </div>
+        <div>
+          <div>
+            <span>A</span>
+          </div>
+          <div>${this.option4}</div>
+        </div>
+      </div>
+      `
 
       page.appendChild(interactiveQuiz)
       this.$parent.$parent.updatePageStructure();
-      // axios.put(`${this.baseUrl}quiz/create`, null, {headers: {Authorization: this.authToken}})
-      //     .then(res => {
-      //       console.log('Saved and Updated', res)
-      //       sessionStorage.setItem('storiURL', res.data.data.amp_file)
-      //     })
+
+      const payload = {
+        user_id: localStorage.getItem('userId'),
+        story_id: sessionStorage.getItem('storyId'),
+        title: this.$parent.$parent.storyTitle + ' - ' + this.question,
+        question: this.question,
+        option1: this.option1,
+        option2: this.option2,
+        option3: this.option3,
+        option4: this.option4
+      }
+      axios.post(`${this.baseUrl}quiz/create`, payload, {headers: {Authorization: this.authToken}})
+          .then(res => {
+            console.log('Quiz Created', res)
+          })
     },
 
   },
@@ -301,8 +400,9 @@ name: "InteractiveModal",
       span {
         display: block;
       }
-      input, textarea {
-        display: block;width: 100%;
+      input[type='text'], textarea {
+        display: block;
+        width: 100%;
         height: 50px;
         border: solid 1px #a5d1e7;
         border-radius: 5px;
@@ -317,6 +417,7 @@ name: "InteractiveModal",
       }
       .inputBox {
         display: flex;
+        align-items: center;
 
         button {
           height: 50px;
@@ -324,7 +425,7 @@ name: "InteractiveModal",
           margin: auto 5px;
         }
 
-        input, textarea {
+        input[type='text'], textarea {
           display: block;width: 100%;
           height: 50px;
           border: solid 1px #a5d1e7;
@@ -337,6 +438,10 @@ name: "InteractiveModal",
           &:focus {
             box-shadow: 0 0 5px #a5d1e7;
           }
+        }
+        input[type='radio'] {
+          width: 30px;
+          height: 30px;
         }
       }
       .uploadImage {

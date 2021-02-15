@@ -624,6 +624,7 @@ export default {
   mounted() {
     if (this.$route.params.id) {
       axios.get(`${this.baseUrl}stories/${this.$route.params.id}`).then(res => {
+        sessionStorage.setItem('storyId', res.data.data.id)
         const htmlCode =  res.data.data.file;
         const tempDiv = document.createElement('div')
         tempDiv.innerHTML = htmlCode.replaceAll('\\', '')
