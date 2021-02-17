@@ -1205,7 +1205,7 @@ export default {
       htmlCode = htmlCode.replaceAll(/<\/video>/gi, '</amp-video>');
       // htmlCode = htmlCode.replaceAll(/<img.+\/>/gi, '');
       // htmlCode = htmlCode.replaceAll(/data-src=".+"/gi, ' width="1" height="1" ');
-      htmlCode = htmlCode.replaceAll(/<div class="resizer .+"><\/div>/gi, '')
+      // htmlCode = htmlCode.replaceAll(/<div class="resizer .+"><\/div>/gi, '')
       // htmlCode = htmlCode.replaceAll(new RegExp('height: ([0-9]|\\.)+px;">'), 'height: fit-content;">') // remove height from main div because of video
       htmlCode = htmlCode.replace('draggable="true"', '');
       htmlCode = htmlCode.replace('data-href', 'href');
