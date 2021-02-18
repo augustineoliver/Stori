@@ -456,7 +456,7 @@
               <div v-for="(index) in pages.length" :key="index" class="pageNav" :class="{active: currentPageNumber === (index - 1)}" @click="viewPage(index - 1)"></div>
             </div>
             <div class="page" ref="page" id="page" @drop="drop($event)" :style="{background: this.isCustomGradient === false ? this.pageBackground : `${this.customGradientType}(${ this.customGradientType !== 'radial-gradient' ? this.customDegree + 'deg' : radiaShape }, ${this.customColour1} ${' ' + this.colourPercentage + '%'}, ${this.customColour2} ${' ' + 100 - this.colourPercentage + '%'})`}" @dragover.prevent @dragenter.prevent>
-             <move-view v-for='item in pageItems' :type="item.type" :key='item.key' :ref="'main-moveable'+item.key" :tgt="'main-moveable'+item.key" :data-html="item.html" />
+             <move-view v-for='item in pageItems' :type="item.type" :key='item.key' :ref="'main-moveable'+item.key" :tgt="'main-moveable'+item.key" :elementPosition="item.positionStyle" :data-html="item.html" />
             </div>
 
             <div class="pageBottomControl">
@@ -610,29 +610,47 @@ export default {
         allPages.forEach((page, index) => {
           const mainPage = document.getElementById('page')
           mainPage.style.background = page.style.background;
-          mainPage.innerHTML = page.innerHTML;
-          const pageElements = mainPage.children
-          pageElements.forEach(element => {
-            console.log('RRRRRRRRRRRRRRRR: ', element.constructor.name)
-            element.addEventListener('click', () => {
-              switch (element.constructor.name) {
-                case 'HTMLImageElement': this.selectElement('image', element.id); break;
-                case 'HTMLDivElement': this.selectElement('text', element.id); break;
-                case 'HTMLButtonElement': {
-                  this.$store.commit('setSelectedButton', {
-                    title: element.innerHTML.trim(),
-                    url: element.getAttribute('data-href').trim(),
-                    background: element.style.background.trim(),
-                    textColour: element.style.color.trim(),
-                  });
-                  this.selectElement('callToActionButtons', element.id);
-                  this.selectedButtonData = {title: element.innerHTML, url: element.getAttribute('data-href')}
-                  break;
-                }
-                case 'HTMLVideoElement': this.selectElement('video', element.id); break;
-              }
-            })
+
+          /////////////////////////////////////
+          page.children.forEach(element => {
+            console.log('AAAAAAAAAAAAAAAAA', element.classList[0])
+            if (element.classList[0] === 'moveableObj') {
+              const positionStyle = element.style.cssText;
+              console.log('QQQQQQQQQQ', element.style.cssText)
+              const originalElement = element.children[0]
+
+              this.pageItems.push({
+                key: this.pageItems.length + 1,
+                html: originalElement,
+                type: this.activeMedia,
+                positionStyle: positionStyle
+              });
+            }
           })
+          /////////////////////////////////////
+          // mainPage.innerHTML = page.innerHTML;
+          // const pageElements = mainPage.children
+          // pageElements.forEach(element => {
+          //   console.log('RRRRRRRRRRRRRRRR: ', element.constructor.name)
+          //   element.addEventListener('click', () => {
+          //     switch (element.constructor.name) {
+          //       case 'HTMLImageElement': this.selectElement('image', element.id); break;
+          //       case 'HTMLDivElement': this.selectElement('text', element.id); break;
+          //       case 'HTMLButtonElement': {
+          //         this.$store.commit('setSelectedButton', {
+          //           title: element.innerHTML.trim(),
+          //           url: element.getAttribute('data-href').trim(),
+          //           background: element.style.background.trim(),
+          //           textColour: element.style.color.trim(),
+          //         });
+          //         this.selectElement('callToActionButtons', element.id);
+          //         this.selectedButtonData = {title: element.innerHTML, url: element.getAttribute('data-href')}
+          //         break;
+          //       }
+          //       case 'HTMLVideoElement': this.selectElement('video', element.id); break;
+          //     }
+          //   })
+          // })
           if (index !== (allPages.length - 1)) {
             this.addNewPage();
           }
@@ -1017,6 +1035,7 @@ export default {
         this.draggedElement = null;
         this.updatePageStructure();
       }
+      this.updatePageStructure();
     },
 
     // resizeElement(divElement, className) {
@@ -1196,7 +1215,13 @@ export default {
     generateAMPCode(HTMLCode) {
       const tempPage = document.createElement('div')
       HTMLCode.elements?.forEach(element => {
-        tempPage.appendChild(element.cloneNode(true))
+        if (element.classList[0] === 'moveableObj') {
+          element.style.position = 'absolute';
+          element.style.overflow = 'hidden';
+        }
+        if (element.classList[0] !== 'moveable-control-box') {
+          tempPage.appendChild(element.cloneNode(true))
+        }
       })
       let htmlCode = tempPage.innerHTML;
       // const postHTMLCode = htmlCode;
@@ -1298,7 +1323,7 @@ export default {
     save() {
       console.log('YYYYYYYYYYYYYYYY')
       // eslint-disable-next-line
-      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head> <meta name=\"keywords\" content=\"" + this.metaKeywords + "\"> <meta name=\"author\" content=\"" + this.authorName + "\">  <meta name=\"description\" content=\"" + this.metaDescription + "\">  <meta charset='utf-8'> <script async=\"\" custom-element=\"amp-video\" src=\"https://cdn.ampproject.org/v0/amp-video-0.1.js\"><\/script> <link href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css' rel='stylesheet' /> <style amp-custom>.inUse {overflow: hidden;} amp-video > :first-child {padding-top: 56%!important;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>" + (title ? title : 'Untitled Story') + "</title>  <link rel='canonical' href='/'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='Stori' publisher-logo-src='https://stori-73bd3.web.app/img/logo.389c58bb.svg'>"
+      const startAmpCode = "<!DOCTYPE html><html amp='' lang='en'><head> <meta name=\"keywords\" content=\"" + this.metaKeywords + "\"> <meta name=\"author\" content=\"" + this.authorName + "\">  <meta name=\"description\" content=\"" + this.metaDescription + "\">  <meta charset='utf-8'> <script async=\"\" custom-element=\"amp-video\" src=\"https://cdn.ampproject.org/v0/amp-video-0.1.js\"><\/script> <link href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css' rel='stylesheet' /> <style amp-custom>.inUse {overflow: hidden;} amp-video > :first-child {padding-top: 56%!important;}</style>  <script async='' src='https://cdn.ampproject.org/v0.js'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-story-1.0.js' custom-element='amp-story'><\/script>  <script async='' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js' custom-element='amp-analytics'><\/script>  <title>" + (title ? title : 'Untitled Story') + "</title>  <link rel='canonical' href='/'>    <style amp-boilerplate=''>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}} .moveableObj {position: absolute;overflow: hidden;}</style>    <noscript>        <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style>    </noscript>  <meta name='viewport' content='width=device-width,minimum-scale=1,initial-scale=1'></head><body>  <amp-story poster-portrait-src='https://dynaimage.cdn.cnn.com/cnn/w_768,h_1024,c_scale/https%3A%2F%2Fdynaimage.cdn.cnn.com%2Fcnn%2Fx_572%2Cy_0%2Cw_868%2Ch_1158%2Cc_crop%2Fhttps%253A%252F%252Fstamp.static.cnn.io%252F5f46fd46e2547600227c1cd5%252F200826190320-03-labor-day-stamp.jpg' title='Labor Day: Its history and meaning' standalone='' publisher='Stori' publisher-logo-src='https://stori-73bd3.web.app/img/logo.389c58bb.svg'>"
       const title = document.getElementById('title').value;
       let generatedAMPCode =  ''
       this.pages.forEach((page, index) => {

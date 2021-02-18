@@ -2,6 +2,7 @@
     <Moveable
         :ref="tgt"
         :class="'moveableObj ' + tgt"
+        :style="elementPosition"
         v-bind="moveable"
         @drag="handleDrag"
         @resize="handleResize"
@@ -16,13 +17,13 @@
 import Moveable from 'vue-moveable';
 export default {
     name: 'MoveView',
-    props: [ 'type', 'tgt', 'dataHtml' ],
+    props: [ 'type', 'tgt', 'dataHtml', 'elementPosition' ],
     mounted(){
         const moveable = this.$refs[this.$props.tgt];
         setTimeout(() => {
             console.log(moveable);
             this.$parent.selectedMovable = moveable.moveable;
-            moveable.$el.style.cssText = 'top: 50%;left: 50%;transform:translate(-50%,-50%);'
+            moveable.$el.style.cssText = this.elementPosition ? this.elementPosition : 'top: 50%;left: 50%;transform:translate(-50%,-50%);'
             moveable.$el.style.clipPath = 'inset(0px)';
             if(this.$props.type == 'text'){
                 moveable.$el.textContent = this.$props.dataHtml.textContent;
