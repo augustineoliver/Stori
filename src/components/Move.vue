@@ -6,9 +6,7 @@
         v-bind="moveable"
         @drag="handleDrag"
         @resize="handleResize"
-        @scale="handleScale"
         @rotate="handleRotate"
-        @warp="handleWarp"
     ></Moveable>
 </template>
 
@@ -21,7 +19,6 @@ export default {
     mounted(){
         const moveable = this.$refs[this.$props.tgt];
         setTimeout(() => {
-            console.log(moveable);
             this.$parent.selectedMovable = moveable.moveable;
             moveable.$el.style.cssText = this.elementPosition ? this.elementPosition : 'top: 50%;left: 50%;transform:translate(-50%,-50%);'
             moveable.$el.style.clipPath = 'inset(0px)';
@@ -30,14 +27,19 @@ export default {
                 console.log(this.$props.dataHtml.style);
                 moveable.$el.style.cssText = moveable.$el.style.cssText + this.$props.dataHtml.style.cssText;
                 moveable.$el.id = this.$props.dataHtml.id;
-                //moveable.$el.style.width = this.$props.dataHtml.getBoundingClientRect().width;
-                //moveable.$el.style.height = this.$props.dataHtml.getBoundingClientRect().height;
             } else if(this.$props.type == 'unsplashPhotos') {
-                //console.log(this.$props.dataHtml);
                 var img = new Image();
                 img.onload = () => {
-                    moveable.moveable.updateTarget();
-                    moveable.moveable.updateRect();
+                    setTimeout(() => {
+                        var elementHeight = this.$props.dataHtml.getBoundingClientRect().height;
+                        var elementWidth = this.$props.dataHtml.getBoundingClientRect().width;
+                        moveable.$el.children[0].width = elementWidth;
+                        moveable.$el.children[0].height = elementHeight;
+                        moveable.$el.style.width = elementWidth;
+                        moveable.$el.style.height = elementHeight;
+                        moveable.moveable.updateTarget();
+                        moveable.moveable.updateRect();
+                    }, 10);
                 }
                 img.src = this.$props.dataHtml.src;
                
@@ -52,8 +54,6 @@ export default {
             }
             moveable.moveable.updateTarget();
             moveable.moveable.updateRect();
-            
-            //moveable.moveable.request("draggable", { x: 0, y: 0 });
             moveable.moveable.on("clip", e => {
                 if (e.clipType === "rect") {
                     e.target.style.clip = e.clipStyle;
@@ -103,16 +103,29 @@ export default {
                     default:
                     break;
                 }
+            }).on("rotateStart", (e) => {
+                e.set(this.frame.rotate);
+            }).on("resizeStart", (e) => {
+                e.setOrigin(["%", "%"]);
+                e.dragStart && e.dragStart.set(this.frame.translate);
+            }).on("resizeEnd", (e) => {
+                if(e.lastEvent.width && e.target.children[0].width < e.lastEvent.width){
+                    e.target.style.width = `${e.target.children[0].width}px`;
+                }
             });
-
         }, 100);
     },
     data() {
         return {
+            frame: {
+                translate: [0,0],
+                rotate: 0,
+            },
             moveable: {
                 target: this.$refs[this.$props.tgt],
                 container: this.$parent.$refs.page,
                 bounds: { left: 0, top: 0, bottom: this.$parent.$refs.page.offsetHeight, right: this.$parent.$refs.page.offsetWidth },
+                throttleResize: 0,
                 draggable: true,
                 resizable: true,
                 keepRatio: false,
@@ -123,43 +136,32 @@ export default {
                 dragArea: true,
                 rotatable: true,
                 snappable:true,
-                pinchable: true, // ["draggable", "resizable", "scalable", "rotatable"]
+                pinchable: true,
                 origin: false,
-                clippable: false,
-                defaultClipPath: "inset",
-                customClipPath: "",
-                clipRelative: false,
-                clipArea: false,
-                dragWithClip: true,
-                clipTargetBounds: true,
-                edge:true
+                edge:false
             },
         }
     },
     methods: {
         handleDrag({ target, transform }) {
             target.style.transform = transform;
+            const style = getComputedStyle(target);
+            const matrix = new DOMMatrix(style.webkitTransform);
+            const scale = matrix.m11;
+            this.frame.translate = [matrix.m41 * scale, matrix.m42 * scale, 0];
         },
-        handleResize({ target, width, height, delta }) {
-            delta[0] && (target.style.width = `${width}px`);
-            delta[1] && (target.style.height = `${height}px`);
-            //console.log(target.children[0].style.height = '100%';);
-            target.children[0].style.height = '100%';
-            target.children[0].style.width = 'auto';
-            const moveable = this.$refs[this.$props.tgt];
-            moveable.moveable.updateTarget();
-            moveable.moveable.updateRect();
+        handleResize(e) {
+            e.target.children[0].style.height = '100%';
+            e.target.children[0].style.width = 'auto';
+            const beforeTranslate = e.drag.beforeTranslate;
+            this.frame.translate = beforeTranslate;
+            e.target.style.width = `${e.width}px`;
+            e.target.style.height = `${e.height}px`;
+            e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${this.frame.rotate}deg)`;
         },
-        handleScale({ target, transform, direction }) {
-            console.log(target, transform, direction);
-            target.style.transform = transform;
-            
-        },
-        handleRotate({ target, transform }) {
-            target.style.transform = transform;
-        },
-        handleWarp({ target, transform }) {
-            target.style.transform = transform;
+        handleRotate(e) {
+            this.frame.rotate = e.beforeRotate;
+            e.target.style.transform = `translate(${this.frame.translate[0]}px, ${this.frame.translate[1]}px) rotate(${e.beforeRotate}deg)`;
         }
     },
     components: {
