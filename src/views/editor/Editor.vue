@@ -36,7 +36,7 @@
           <div :class="{active: activeMedia === 'unsplashPhotos'}" @click="activeMedia = 'unsplashPhotos'">
             <img src="../../assets/images/editor/image.svg" alt="Image">
           </div>
-          <div :class="{active: activeMedia === 'pexelsVideo'}" @click="getPexelsVideos">
+          <div :class="{active: activeMedia === 'pexelsVideo'}" @click="getPexelsVideos()">
             <img src="../../assets/images/editor/video.svg" alt="Video">
           </div>
 <!--          <div :class="{active: activeMedia === 'tenorGifs'}" @click="getTenorGifs">-->
@@ -75,8 +75,14 @@
         </div>
         
         <div class="unsplashPhotos" v-if="activeMedia === 'pexelsVideo'">
-          <img draggable="true" @mousedown="drag($event)" v-for="(video, index) in pexelsVideo" :key="index"
-               :src="video.video_pictures[0].picture" :data-src="video.video_files[0].link" alt="">
+          <label>
+            <input placeholder="Search Videos" type="search" v-on:keyup="getPexelsVideos($event.target.value)">
+          </label>
+          <div class="mediaList">
+            <img draggable="true" @mousedown="drag($event)" v-for="(video, index) in pexelsVideo" :key="index"
+                 :src="video.video_pictures[0].picture" :data-src="video.video_files[0].link" alt="">
+            <div v-if="pexelsVideo.length === 0" style="text-align: center; width: 320px; padding: 30px">Loading Videos</div>
+          </div>
         </div>
         <div class="unsplashPhotos" v-if="activeMedia === 'callToActionButtons'">
           <div style="display: flex; justify-content: space-around; flex-wrap: wrap">
@@ -803,20 +809,10 @@ export default {
 
     },
 
-    getPexelsVideos() {
-      console.log('WWWWWWWWWWWWWWWWWWWWW')
-      axios.get(`https://api.pexels.com/videos/popular?per_page=20&page${1}`, {headers: {Authorization: '563492ad6f91700001000001b57dca97e28e403a847090e59abecfb9'}})
+    getPexelsVideos(keyWord = 'business') {
+      axios.get(`https://api.pexels.com/videos/search?query=${keyWord ? keyWord : 'business'}&per_page=20&page${1}`, {headers: {Authorization: '563492ad6f91700001000001b57dca97e28e403a847090e59abecfb9'}})
           .then(res => {
-            console.log('FFFFFFFFFFFFFFFFFFFFFFFFF')
             this.pexelsVideo = res.data.videos.filter(res => res.video_files.sort((a, b) => a.width - b.width).shift());
-            // this.pexelsVideo = this.pexelsVideo.filter(res => res.video_files.map(res => res.width !== null));
-            // this.tenorNextPage = this.tenorGifs.next;
-            // this.pexelsVideo = this.pexelsVideo.hits.map(res => {
-            //   return {
-            //     tinygif: res.media[0].tinygif,
-            //     mediumgif: res.media[0].mediumgif
-            //   }
-            // })
             console.log(this.pexelsVideo);
           }).catch((err) => {
         console.log('There was an err: ', err)
@@ -1012,7 +1008,7 @@ export default {
           //       <source src="${this.draggedElement.dataset.src}" type="video/mp4" />
           //   </amp-video>
           // </div>`;
-          // video.style = 'width: 100%'
+          video.style = 'width:400px'
           // video.ondragstart = 'this.drag($event)';
           // video.draggable = true;
           // video.controls = true;
