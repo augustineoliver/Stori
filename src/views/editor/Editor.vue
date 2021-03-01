@@ -69,7 +69,7 @@
             >
             <div class="masonry-grid-item" v-for="(photo, index) in uploadedMedia" :key="index">
               <img draggable="true" @mousedown="drag($event)"
-               :src="'https://' + photo.file" :data-src="'https://' + photo.file" alt="cool">
+               :src="photo.file" :data-src="photo.file" alt="cool">
             </div>
           </masonry>
         </div>
@@ -468,6 +468,7 @@
             <div class="pageBottomControl">
               <img style="width: 30px" @click="viewPage(currentPageNumber - 1)" src="../../assets/images/editor/arrow-left.svg" alt="">
               <span>Page {{currentPageNumber + 1}}</span>
+              <span>Page {{currentPageNumber + 1}}</span>
               <img @click="addNewPage('before')" src="../../assets/images/editor/pluse.svg" alt="">
               <img @click="deleteCurrentPage()" src="../../assets/images/editor/garbage.svg" alt="">
               <img src="../../assets/images/editor/play-circle.svg" alt="">
@@ -566,6 +567,7 @@ export default {
       pexelsVideo: [],
       emojis: [],
       clipboard: null,
+      rightClickedOn: undefined,
       selectedElement: {type: undefined, id: undefined},
       selectedButtonData: {title: undefined, url: undefined},
       selectedMovable: null,
@@ -674,64 +676,6 @@ export default {
     let position = {x: 0, y: 0}
     // eslint-disable-next-line no-undef
     interact('.resize-drag')
-        .resizable({
-          // resize from all edges and corners
-          edges: {left: true, right: true, bottom: true, top: true},
-          margin: 10,
-
-          listeners: {
-            move(event) {
-              var target = event.target
-              var x = (parseFloat(target.getAttribute('data-x')) || 0)
-              var y = (parseFloat(target.getAttribute('data-y')) || 0)
-
-              // update the element's style
-              // (event.dx / 421.641) * 100
-              target.style.width = ((event.rect.width / 421.641) * 100) + '%'
-              target.style.height = ((event.rect.height / 702.75) * 100) + '%'
-
-              // translate when resizing from top or left edges
-              x += event.deltaRect.left
-              y += event.deltaRect.top
-
-              target.style.webkitTransform = target.style.transform =
-                  'translate(' + x + 'px,' + y + 'px)'
-
-              target.setAttribute('data-x', x)
-              target.setAttribute('data-y', y)
-              target.width = target.getBoundingClientRect().width
-              target.height = target.getBoundingClientRect().height
-
-
-              // position.x += (event.dx / 421.641) * 100
-              // position.y += (event.dy / 702.75) * 100
-
-              // event.target.dataset.x = position.x
-              // event.target.dataset.y = position.y
-
-              // event.target.style.left = position.x + '%';
-              // event.target.style.top = position.y + '%';
-              // target.translationX('-50%')
-              // target.translationY('-50%')
-              // target.textContent = Math.round(event.rect.width) + '\u00D7' + Math.round(event.rect.height)
-            }
-          },
-          modifiers: [
-            // keep the edges inside the parent
-            // eslint-disable-next-line no-undef
-            interact.modifiers.restrictEdges({
-              outer: 'parent'
-            }),
-
-            // minimum size
-            // eslint-disable-next-line no-undef
-            interact.modifiers.restrictSize({
-              min: {width: 100, height: 50}
-            })
-          ],
-
-          inertia: true
-        })
         .draggable({
           listeners: {
             start(event) {
@@ -774,13 +718,13 @@ export default {
 
       const menu = document.createElement('div');
       const menuHTMLCode = `<div>
-                              <div>Copy</div>
-                              <div>Past</div>
-                              <div>Delete</div>
-                              <div>Send to Back</div>
+<!--                              <div>Copy</div>-->
+<!--                              <div>Past</div>-->
+                              <div id="deleteElement">Delete</div>
+                              <div id="sendToBack">Send to Back</div>
                               <div>Send Backward</div>
-                              <div>Bring Farword</div>
-                              <div>Bring to Front</div>
+                              <div id="bringForward">Bring Forward</div>
+                              <div id="bringToFront">Bring to Front</div>
                             </div>`
       menu.classList.add('contextmenu')
       menu.id = 'contextmenu';
@@ -789,9 +733,11 @@ export default {
       menu.innerHTML = menuHTMLCode;
 
       document.getElementById('page').appendChild(menu);
-
-      console.log('QQQQQQQQQQQQ: ', e)
-
+      this.rightClickedOn = e;
+      this.deleteElement()
+      this.bringToFront()
+      this.sendToBack()
+      this.bringForward()
     })
 
     this.save()
@@ -850,7 +796,85 @@ export default {
         if (Number(ele.style.zIndex) > highestIndex) {
           highestIndex = Number(ele.style.zIndex);
         }
-        element.parentNode.parentNode.parentNode.style.zIndex = highestIndex + 1;
+        element.style.zIndex = highestIndex + 1;
+      })
+    },
+
+    oneStepForward(element, element2) {
+      const allElement = document.getElementById('page').children;
+      let currentIndex = element.style.zIndex
+      let isCompleted = false
+      console.log('currentIndex: ', currentIndex)
+      const indexArray = Array.prototype.slice.call( allElement ).map(r => r.style.zIndex).map(r => r === '' ? 0 : r)
+      indexArray.sort()
+      console.log('WWWWWWWWWWWWWWWWWWWWW: ', indexArray)
+      indexArray.forEach(index => {
+        if (index >= currentIndex && isCompleted === true) {
+          element.style.zIndex = Number(index) + 1;
+          element2.style.zIndex = Number(index) + 1;
+          isCompleted = true
+          console.log('Current index is: ', element.style.zIndex)
+        }
+      })
+    },
+
+    alwaysBehind(element, element2) {
+      const allElement = document.getElementById('page').children;
+      let lowestIndex = 0
+      allElement.forEach(ele => {
+        if (Number(ele.style.zIndex) < lowestIndex) {
+          lowestIndex = Number(ele.style.zIndex);
+        }
+        element.style.zIndex = lowestIndex - 1;
+        element2.style.zIndex = lowestIndex - 1;
+      })
+    },
+
+    oneStepBackward(element) {
+      const allElement = document.getElementById('page').children;
+      let currentIndex = element.style.zIndex
+      allElement.forEach(ele => {
+        if (Number(ele.style.zIndex) > currentIndex) {
+          element.style.zIndex = Number(ele.style.zIndex) + 1;
+        }
+      })
+    },
+
+    deleteElement() {
+      document.getElementById('deleteElement').addEventListener('click', () => {
+        if (this.rightClickedOn.target.id !== 'page') {
+          this.rightClickedOn.target.parentElement.previousSibling.remove()
+          this.rightClickedOn.target.parentElement.remove()
+          this.updatePageStructure();
+        }
+      });
+    },
+
+    bringForward() {
+      document.getElementById('bringForward').addEventListener('click', () => {
+        if (this.rightClickedOn.target.id !== 'page') {
+          this.oneStepForward(this.rightClickedOn.target.parentElement.previousSibling, this.rightClickedOn.target.parentElement);
+          this.updatePageStructure();
+        }
+      });
+    },
+
+    bringToFront() {
+      document.getElementById('bringToFront').addEventListener('click', () => {
+        if (this.rightClickedOn.target.id !== 'page') {
+          this.alwaysOnTop(this.rightClickedOn.target.parentElement.previousSibling);
+          this.alwaysOnTop(this.rightClickedOn.target.parentElement);
+          this.updatePageStructure();
+        }
+      });
+    },
+
+    sendToBack() {
+      document.getElementById('sendToBack').addEventListener('click', () => {
+        if (this.rightClickedOn.target.id !== 'page') {
+          this.alwaysBehind(this.rightClickedOn.target.parentElement.previousSibling, this.rightClickedOn.target.parentElement);
+          this.updatePageStructure();
+        }
       })
     },
 
