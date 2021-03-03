@@ -1,9 +1,9 @@
 <template>
 <div ref="unsplashPhotos" class="media">
   <div class="tabRow">
-    <div @click="$refs.search.value = ''; selectedTab = 'Unsplash'" :class="{active: selectedTab === 'images'}">Images</div>
-    <div @click="$refs.search.value = ''; selectedTab = 'Gifs'" :class="{active: selectedTab === 'tenorGifs'}">GIFs</div>
-    <div @click="$refs.search.value = ''; selectedTab = 'Emojis'" :class="{active: selectedTab === 'emojis'}">Emoji</div>
+    <div @click="$refs.search.value = ''; selectedTab = 'Unsplash'" :class="{active: selectedTab === 'Unsplash'}">Images</div>
+    <div @click="$refs.search.value = ''; selectedTab = 'Gifs'" :class="{active: selectedTab === 'Gifs'}">GIFs</div>
+    <div @click="$refs.search.value = ''; selectedTab = 'Emojis'" :class="{active: selectedTab === 'Emojis'}">Emoji</div>
   </div>
 
   <div class="mediaMain">
@@ -213,7 +213,7 @@ name: "MediaPanel",
     overflow-y: auto;
     justify-content: flex-start;
     box-sizing: border-box;
-    background: #1B1C1E;
+    background: #000000;
     align-content: flex-start;
 
     .searchBox {

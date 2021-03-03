@@ -73,7 +73,7 @@
             </div>
           </masonry>
         </div>
-        
+
         <div class="unsplashPhotos" v-if="activeMedia === 'pexelsVideo'">
           <label>
             <input placeholder="Search Videos" type="search" v-on:keyup="getPexelsVideos($event.target.value)">
@@ -456,68 +456,66 @@
 
       </div>
       <div class="editor">
-        <div>
-          <div class="moveableArea">
-            <div class="pageNavigation">
-              <div v-for="(index) in pages.length" :key="index" class="pageNav" :class="{active: currentPageNumber === (index - 1)}" @click="viewPage(index - 1)"></div>
-            </div>
-            <div class="page" ref="page" id="page" @drop="drop($event)" :style="{background: this.isCustomGradient === false ? this.pageBackground : `${this.customGradientType}(${ this.customGradientType !== 'radial-gradient' ? this.customDegree + 'deg' : radiaShape }, ${this.customColour1} ${' ' + this.colourPercentage + '%'}, ${this.customColour2} ${' ' + 100 - this.colourPercentage + '%'})`}" @dragover.prevent @dragenter.prevent>
-             <move-view v-for='item in pageItems' :type="item.type" :key='item.key' :ref="'main-moveable'+item.key" :tgt="'main-moveable'+item.key" :elementPosition="item.positionStyle" :data-html="item.html" />
-            </div>
-
-            <div class="pageBottomControl">
-              <img style="width: 30px" @click="viewPage(currentPageNumber - 1)" src="../../assets/images/editor/arrow-left.svg" alt="">
-              <span>Page {{currentPageNumber + 1}}</span>
-              <span>Page {{currentPageNumber + 1}}</span>
-              <img @click="addNewPage('before')" src="../../assets/images/editor/pluse.svg" alt="">
-              <img @click="deleteCurrentPage()" src="../../assets/images/editor/garbage.svg" alt="">
-              <img src="../../assets/images/editor/play-circle.svg" alt="">
-              <img @click="copyCurrentPage" src="../../assets/images/editor/copy.svg" alt="">
-<!--              <img src="../../assets/images/editor/overlayNav.svg" alt="">-->
-              <img @click="addNewPage('after')" src="../../assets/images/editor/pluse.svg" alt="">
-              <img style="width: 30px" @click="viewPage(currentPageNumber + 1)" src="../../assets/images/editor/arrow-right.svg" alt="">
-            </div>
-            <button class="previewButton" @click="preview()"><i class="fas fa-play"></i></button>
-            <button class="newPageButton" @click="addNewPage"><i class="fa fa-plus"></i></button>
+        <div class="moveableArea">
+          <div class="pageNavigation">
+            <div v-for="(index) in pages.length" :key="index" class="pageNav" :class="{active: currentPageNumber === (index - 1)}" @click="viewPage(index - 1)"></div>
           </div>
-<!--          <footer>-->
-<!--            <button @click="preview()">Preview</button>-->
-<!--            <button @click="addNewPage">Add New Page</button>-->
-<!--            &lt;!&ndash;          <select name="" id="">&ndash;&gt;-->
+          <div class="page" ref="page" id="page" @drop="drop($event)" :style="{background: this.isCustomGradient === false ? this.pageBackground : `${this.customGradientType}(${ this.customGradientType !== 'radial-gradient' ? this.customDegree + 'deg' : radiaShape }, ${this.customColour1} ${' ' + this.colourPercentage + '%'}, ${this.customColour2} ${' ' + 100 - this.colourPercentage + '%'})`}" @dragover.prevent @dragenter.prevent>
+            <move-view v-for='item in pageItems' :type="item.type" :key='item.key' :ref="'main-moveable'+item.key" :tgt="'main-moveable'+item.key" :elementPosition="item.positionStyle" :data-html="item.html" />
+          </div>
 
-<!--            &lt;!&ndash;          </select>&ndash;&gt;-->
-<!--          </footer>-->
+          <div class="pageBottomControl">
+            <img style="width: 30px" @click="viewPage(currentPageNumber - 1)" src="../../assets/images/editor/arrow-left.svg" alt="">
+            <span>Page {{currentPageNumber + 1}}</span>
+            <span>Page {{currentPageNumber + 1}}</span>
+            <img @click="addNewPage('before')" src="../../assets/images/editor/pluse.svg" alt="">
+            <img @click="deleteCurrentPage()" src="../../assets/images/editor/garbage.svg" alt="">
+            <img src="../../assets/images/editor/play-circle.svg" alt="">
+            <img @click="copyCurrentPage" src="../../assets/images/editor/copy.svg" alt="">
+            <!--              <img src="../../assets/images/editor/overlayNav.svg" alt="">-->
+            <img @click="addNewPage('after')" src="../../assets/images/editor/pluse.svg" alt="">
+            <img style="width: 30px" @click="viewPage(currentPageNumber + 1)" src="../../assets/images/editor/arrow-right.svg" alt="">
+          </div>
         </div>
-        <aside>
-          <v-expansion-panels>
-            <animations
-                v-if="selectedElement.type"
-                v-bind:selectedElement="selectedElement"
-            ></animations>
-            <image-editor
-                v-if="selectedElement.type === 'image'"
-                v-bind:selectedElement="selectedElement"
-                v-bind:selectedImageSrc="selectedImageSrc"
-            ></image-editor>
-            <InteractiveEditor
-                v-if="selectedElement.type === 'interactivePanel'"
-                v-bind:selectedElement="selectedElement"
-            ></InteractiveEditor>
-            <text-editor
-                v-if="selectedElement.type === 'text'"
-                v-bind:selectedElement="selectedElement"
-                v-bind:textSize="fontSize"
-                v-bind:movableObj="selectedMovable"
-            ></text-editor>
-            <callToActionButtons
-                v-if="selectedElement.type === 'callToActionButtons'"
-                v-bind:selectedElement="selectedElement"
-                v-bind:selectedButtonData="selectedButtonData"
-            ></callToActionButtons>
-          </v-expansion-panels>
+        <!--          <footer>-->
+        <!--            <button @click="preview()">Preview</button>-->
+        <!--            <button @click="addNewPage">Add New Page</button>-->
+        <!--            &lt;!&ndash;          <select name="" id="">&ndash;&gt;-->
 
-        </aside>
+        <!--            &lt;!&ndash;          </select>&ndash;&gt;-->
+        <!--          </footer>-->
       </div>
+      <aside>
+        <v-expansion-panels>
+          <animations
+              v-if="selectedElement.type"
+              v-bind:selectedElement="selectedElement"
+          ></animations>
+          <image-editor
+              v-if="selectedElement.type === 'image'"
+              v-bind:selectedElement="selectedElement"
+              v-bind:selectedImageSrc="selectedImageSrc"
+          ></image-editor>
+          <InteractiveEditor
+              v-if="selectedElement.type === 'interactivePanel'"
+              v-bind:selectedElement="selectedElement"
+          ></InteractiveEditor>
+          <text-editor
+              v-if="selectedElement.type === 'text'"
+              v-bind:selectedElement="selectedElement"
+              v-bind:textSize="fontSize"
+              v-bind:movableObj="selectedMovable"
+          ></text-editor>
+          <callToActionButtons
+              v-if="selectedElement.type === 'callToActionButtons'"
+              v-bind:selectedElement="selectedElement"
+              v-bind:selectedButtonData="selectedButtonData"
+          ></callToActionButtons>
+        </v-expansion-panels>
+
+        <button class="previewButton" @click="preview()"><i class="fas fa-play"></i></button>
+        <button class="newPageButton" @click="addNewPage"><i class="fa fa-plus"></i></button>
+      </aside>
     </div>
 
   <stori-preview @closePreview="() => {this.previewURL = undefined}" v-if="previewURL" :previewURL="previewURL" :QRCode="QRCode"></stori-preview>
@@ -722,7 +720,7 @@ export default {
 <!--                              <div>Past</div>-->
                               <div id="deleteElement">Delete</div>
                               <div id="sendToBack">Send to Back</div>
-                              <div>Send Backward</div>
+                              <div id="sendBackward">Send Backward</div>
                               <div id="bringForward">Bring Forward</div>
                               <div id="bringToFront">Bring to Front</div>
                             </div>`
@@ -738,6 +736,7 @@ export default {
       this.bringToFront()
       this.sendToBack()
       this.bringForward()
+      this.sendBackward()
     })
 
     this.save()
@@ -809,7 +808,7 @@ export default {
       indexArray.sort()
       console.log('WWWWWWWWWWWWWWWWWWWWW: ', indexArray)
       indexArray.forEach(index => {
-        if (index >= currentIndex && isCompleted === true) {
+        if (index >= currentIndex && isCompleted === false) {
           element.style.zIndex = Number(index) + 1;
           element2.style.zIndex = Number(index) + 1;
           isCompleted = true
@@ -830,12 +829,20 @@ export default {
       })
     },
 
-    oneStepBackward(element) {
+    oneStepBackward(element, element2) {
       const allElement = document.getElementById('page').children;
       let currentIndex = element.style.zIndex
-      allElement.forEach(ele => {
-        if (Number(ele.style.zIndex) > currentIndex) {
-          element.style.zIndex = Number(ele.style.zIndex) + 1;
+      let isCompleted = false
+      console.log('currentIndex: ', currentIndex)
+      const indexArray = Array.prototype.slice.call( allElement ).map(r => r.style.zIndex).map(r => r === '' ? 0 : r)
+      indexArray.sort()
+      console.log('WWWWWWWWWWWWWWWWWWWWW: ', indexArray)
+      indexArray.forEach(index => {
+        if (index >= currentIndex && isCompleted === false) {
+          element.style.zIndex = Number(index) - 1;
+          element2.style.zIndex = Number(index) - 1;
+          isCompleted = true
+          console.log('Current index is: ', element.style.zIndex)
         }
       })
     },
@@ -869,6 +876,14 @@ export default {
       });
     },
 
+    sendBackward() {
+      document.getElementById('sendBackward').addEventListener('click', () => {
+        if (this.rightClickedOn.target.id !== 'page') {
+          this.oneStepBackward(this.rightClickedOn.target.parentElement.previousSibling, this.rightClickedOn.target.parentElement);
+          this.updatePageStructure();
+        }
+      })
+    },
     sendToBack() {
       document.getElementById('sendToBack').addEventListener('click', () => {
         if (this.rightClickedOn.target.id !== 'page') {
