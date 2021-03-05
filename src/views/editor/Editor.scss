@@ -5,6 +5,7 @@ main {
   background: #000000;
   box-sizing: border-box;
   color: white;
+  overflow-y: hidden;
 
   * {
     touch-action: none;
@@ -19,12 +20,21 @@ main {
     align-items: center;
     justify-content: space-between;
     background: #000000;
-    border-bottom: 2px solid #000000;
     box-sizing: border-box;
+    @media (max-height: 800px) {
+      padding: 8px 16px;
+      height: 56px;
+    }
 
     .leftHeader {
       display: flex;
       align-items: center;
+      @media (max-height: 800px) {
+        img {
+          width: 80px;
+          height: auto;
+        }
+      }
 
       .title {
         border: #20262D 1px solid;
@@ -36,6 +46,10 @@ main {
         align-items: center;
         padding: 10px;
         box-sizing: border-box;
+        @media (max-height: 800px) {
+          height: 32px;
+          width: 150px;
+        }
 
         input {
           border: none;
@@ -58,6 +72,8 @@ main {
     .rightHeader {
       display: flex;
       align-items: center;
+      @media (max-height: 800px) {
+      }
 
       .publish {
         background: #519EF4;
@@ -65,6 +81,11 @@ main {
         padding: 6px 25px;
         margin: auto 10px;
         cursor: pointer;
+        @media (max-height: 800px) {
+          padding: 4.8px 20px;
+          margin: auto 8px;
+          font-size: 14px;
+        }
       }
 
       .workspaceName {
@@ -81,6 +102,17 @@ main {
         font-size: 18px;
         font-weight: 500;
         cursor: pointer;
+        @media (max-height: 800px) {
+          width: 132px;
+          height: 32px;
+          border-radius: 28px;
+          font-size: 15px;
+          .workIcon {
+            width: 20px;
+            height: 20px;
+            margin: 1px;
+          }
+        }
 
         .workIcon {
           width: 23px;
@@ -99,6 +131,15 @@ main {
           &:last-child {
             font-size: 11px;
           }
+          @media (max-height: 800px) {
+            &:first-child {
+              font-size: 6.4px;
+            }
+
+            &:last-child {
+              font-size: 8.8px;
+            }
+          }
         }
 
         .downIcon {
@@ -109,7 +150,7 @@ main {
       }
 
       img {
-        height: 30px;
+        height: 24px;
         width: auto;
         padding: 5px;
         margin: 5px;
@@ -122,6 +163,10 @@ main {
     height: calc(100vh - 70px);
     box-sizing: border-box;
     width: 100%;
+    overflow-x: hidden;
+    @media (max-height: 800px) {
+      height: calc(100vh - 56px);
+    }
 
     ::-webkit-scrollbar-track {
       -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
@@ -147,6 +192,10 @@ main {
       width: 46vh;
       max-width: 400px;
       background: #000000;
+      @media (max-height: 800px) {
+        width: 36.8vh;
+        overflow-x: hidden;
+      }
 
       nav {
         background: #000000;
@@ -155,6 +204,10 @@ main {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
+        @media (max-height: 800px) {
+          width: 54px;
+          gap: 10px 0;
+        }
 
         div {
           display: flex;
@@ -165,6 +218,10 @@ main {
           flex-direction: column;
           cursor: pointer;
           box-sizing: border-box;
+          @media (max-height: 800px) {
+            width: 55px;
+            height: 2.5vh;
+          }
 
           img {
             width: 2.6vh;
@@ -193,6 +250,10 @@ main {
         box-sizing: border-box;
         background: #000000;
         align-content: flex-start;
+        @media (max-height: 800px) {
+          width: 256px;
+          overflow-x: hidden;
+        }
 
         label {
           width: inherit;
@@ -353,9 +414,6 @@ main {
 
         > div {
           @media (max-height: 800px) {
-            transform: scale(0.8);
-          }
-          @media (max-height: 750px) {
             transform: scale(0.7);
           }
           @media (max-height: 700px) {
@@ -461,7 +519,7 @@ main {
 
       .newPageButton {
         position: fixed;
-        left: 450px;
+        left: 320px;
         bottom: 100px;
         width: 50px;
         height: 50px;
@@ -469,10 +527,14 @@ main {
         border-radius: 100%;
         background: #519EF4;
         color: black;
+        @media (max-height: 800px) {
+          width: 40px;
+          height: 40px;
+        }
       }
       .previewButton {
         position: fixed;
-        left: 450px;
+        left: 320px;
         bottom: 40px;
         width: 50px;
         height: 50px;
@@ -480,6 +542,10 @@ main {
         border-radius: 100%;
         background: #519EF4;
         color: black;
+        @media (max-height: 800px) {
+          width: 40px;
+          height: 40px;
+        }
       }
     }
   }
@@ -655,6 +721,9 @@ main {
   gap: 0 10px;
   background: #000000;
   padding: 0;
+  @media (max-height: 800px) {
+    height: 40px;
+  }
 
   div {
     display: flex;
@@ -665,6 +734,10 @@ main {
     padding: 10px 20px;
     cursor: pointer;
     box-sizing: border-box;
+    @media (max-height: 800px) {
+      padding: 5px 20px;
+      font-size: 14px;
+    }
     &:hover {
       height: calc(100% - 4px);
       border-bottom: solid 4px #519EF4;

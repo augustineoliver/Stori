@@ -18,7 +18,7 @@
           <img alt="" class="downIcon" src="../../assets/images/home/drop-down.svg"/>
         </div>
         <div>
-          <img src="../../assets/images/home/sun.svg" alt=""/>
+<!--          <img src="../../assets/images/home/sun.svg" alt=""/>-->
           <img src="../../assets/images/home/notification.svg" alt=""/>
           <img src="../../assets/images/home/user.svg" alt=""/>
         </div>
@@ -466,7 +466,6 @@
 
           <div class="pageBottomControl">
             <img style="width: 30px" @click="viewPage(currentPageNumber - 1)" src="../../assets/images/editor/arrow-left.svg" alt="">
-            <span>Page {{currentPageNumber + 1}}</span>
             <span>Page {{currentPageNumber + 1}}</span>
             <img @click="addNewPage('before')" src="../../assets/images/editor/pluse.svg" alt="">
             <img @click="deleteCurrentPage()" src="../../assets/images/editor/garbage.svg" alt="">

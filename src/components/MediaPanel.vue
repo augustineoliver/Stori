@@ -215,6 +215,9 @@ name: "MediaPanel",
     box-sizing: border-box;
     background: #000000;
     align-content: flex-start;
+    @media (max-height: 800px) {
+      height: calc(100% - 40px);
+    }
 
     .searchBox {
       width: inherit;
@@ -222,6 +225,11 @@ name: "MediaPanel",
       margin: 10px;
       border: solid #a4a4a4 1px;
       border-radius: 10px;
+      @media (max-height: 800px) {
+        max-height: 40px;
+        margin: 8px;
+        border-radius: 8px;
+      }
 
       input {
         width: 100%;
@@ -229,6 +237,9 @@ name: "MediaPanel",
         color: #a4a4a4;
         border: none;
         outline: none;
+        @media (max-height: 800px) {
+          padding: 8px;
+        }
       }
     }
 
@@ -238,6 +249,7 @@ name: "MediaPanel",
       display: flex;
       flex-wrap: wrap;
       align-content: flex-start;
+      overflow-x: hidden;
     }
 
     * {
