@@ -213,9 +213,9 @@ name: "MediaPanel",
     overflow-y: auto;
     justify-content: flex-start;
     box-sizing: border-box;
-    background: #000000;
+    background: #1B1C1E;
     align-content: flex-start;
-    @media (max-height: 800px) {
+    @media (max-width: 1280px), (max-height: 800px) {
       height: calc(100% - 40px);
     }
 
@@ -225,7 +225,7 @@ name: "MediaPanel",
       margin: 10px;
       border: solid #a4a4a4 1px;
       border-radius: 10px;
-      @media (max-height: 800px) {
+      @media (max-width: 1280px), (max-height: 800px) {
         max-height: 40px;
         margin: 8px;
         border-radius: 8px;
@@ -237,7 +237,7 @@ name: "MediaPanel",
         color: #a4a4a4;
         border: none;
         outline: none;
-        @media (max-height: 800px) {
+        @media (max-width: 1280px), (max-height: 800px) {
           padding: 8px;
         }
       }

@@ -6,7 +6,7 @@
     <v-tab>Text</v-tab>
     <v-tab>Text Block</v-tab>
 
-    <v-tab-item style="background-color: #1B1C1E">
+    <v-tab-item>
       <div class="normalText">
         <div draggable="true" data-type="heading" @mousedown="dragText($event)" style="height: 35px">Add a heading</div>
         <div draggable="true" data-type="subheading" @mousedown="dragText($event)" style="height: 40px">Add a subheading</div>
@@ -14,7 +14,7 @@
       </div>
     </v-tab-item>
 
-    <v-tab-item style="background-color: #1B1C1E">
+    <v-tab-item>
       Coming Soon
     </v-tab-item>
 

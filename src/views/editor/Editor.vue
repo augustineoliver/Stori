@@ -456,7 +456,7 @@
 
       </div>
       <div class="editor">
-        <div class="moveableArea">
+        <div id="editorArea">
           <div class="pageNavigation">
             <div v-for="(index) in pages.length" :key="index" class="pageNav" :class="{active: currentPageNumber === (index - 1)}" @click="viewPage(index - 1)"></div>
           </div>
@@ -476,18 +476,33 @@
             <img style="width: 30px" @click="viewPage(currentPageNumber + 1)" src="../../assets/images/editor/arrow-right.svg" alt="">
           </div>
         </div>
-        <!--          <footer>-->
-        <!--            <button @click="preview()">Preview</button>-->
-        <!--            <button @click="addNewPage">Add New Page</button>-->
-        <!--            &lt;!&ndash;          <select name="" id="">&ndash;&gt;-->
-
-        <!--            &lt;!&ndash;          </select>&ndash;&gt;-->
-        <!--          </footer>-->
+        <footer>
+<!--                    <button @click="preview()">Preview</button>-->
+<!--                    <button @click="addNewPage">Add New Page</button>-->
+          <v-select
+            :items="[
+              '25%',
+              '50%',
+              '75%',
+              '100%',
+              '125%',
+              '150%',
+              '175%',
+              '200%'
+            ]"
+            @change="changeZoomLevel($event)"
+            v-model="fontFamily"
+            label="Zoom"
+            class="zoomSize"
+            outlined
+            dense
+          >
+          </v-select>
+                  </footer>
       </div>
       <aside>
         <v-expansion-panels>
           <animations
-              v-if="selectedElement.type"
               v-bind:selectedElement="selectedElement"
           ></animations>
           <image-editor
@@ -780,6 +795,39 @@ export default {
       // ev.preventDefault();
       console.log(target);
       console.log(transform);
+    },
+
+    changeZoomLevel(selectedZoomLevel) {
+      const zoomLevel = Number(selectedZoomLevel.slice(0, -1))
+      console.log('selectedZoomLevel: ', zoomLevel)
+
+      const editorArea = document.getElementById('editorArea')
+      switch (zoomLevel) {
+        case 25: editorArea.style.transform = 'scale(0.25)'; break;
+        case 50: editorArea.style.transform = 'scale(0.5)'; break;
+        case 75: editorArea.style.transform = 'scale(0.75)'; break;
+        case 100: {
+          editorArea.style.transform = 'scale(1)';
+          editorArea.style.transformOrigin = 'top'; break;
+        }
+        case 125: {
+          editorArea.style.transform = 'scale(1.25)';
+          editorArea.style.transformOrigin = 'top'; break;
+        }
+        case 150: {
+          editorArea.style.transform = 'scale(1.5)';
+          editorArea.style.transformOrigin = 'top'; break;
+        }
+        case 175: {
+          editorArea.style.transform = 'scale(1.75)';
+          editorArea.style.transformOrigin = 'top'; break;
+        }
+        case 200: {
+          editorArea.style.transform = 'scale(2)';
+          editorArea.style.transformOrigin = 'top'; break;
+
+        }
+      }
     },
 
     drag(evt) {

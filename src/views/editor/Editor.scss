@@ -19,17 +19,18 @@ main {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #000000;
+    background: #191919;
+    border-bottom: solid 1px #000000;
     box-sizing: border-box;
-    @media (max-height: 800px) {
+    @media (max-width: 1280px), (max-height: 800px) {
       padding: 8px 16px;
-      height: 56px;
+      height: 45px;
     }
 
     .leftHeader {
       display: flex;
       align-items: center;
-      @media (max-height: 800px) {
+      @media (max-width: 1280px), (max-height: 800px) {
         img {
           width: 80px;
           height: auto;
@@ -46,7 +47,7 @@ main {
         align-items: center;
         padding: 10px;
         box-sizing: border-box;
-        @media (max-height: 800px) {
+        @media (max-width: 1280px), (max-height: 800px) {
           height: 32px;
           width: 150px;
         }
@@ -72,7 +73,7 @@ main {
     .rightHeader {
       display: flex;
       align-items: center;
-      @media (max-height: 800px) {
+      @media (max-width: 1280px), (max-height: 800px) {
       }
 
       .publish {
@@ -81,7 +82,7 @@ main {
         padding: 6px 25px;
         margin: auto 10px;
         cursor: pointer;
-        @media (max-height: 800px) {
+        @media (max-width: 1280px), (max-height: 800px) {
           padding: 4.8px 20px;
           margin: auto 8px;
           font-size: 14px;
@@ -102,7 +103,7 @@ main {
         font-size: 18px;
         font-weight: 500;
         cursor: pointer;
-        @media (max-height: 800px) {
+        @media (max-width: 1280px), (max-height: 800px) {
           width: 132px;
           height: 32px;
           border-radius: 28px;
@@ -131,7 +132,7 @@ main {
           &:last-child {
             font-size: 11px;
           }
-          @media (max-height: 800px) {
+          @media (max-width: 1280px), (max-height: 800px) {
             &:first-child {
               font-size: 6.4px;
             }
@@ -159,13 +160,15 @@ main {
   }
 
   .main {
-    display: flex;
+    display: grid;
+    grid-template-columns: 400px calc(100vw - (400px + 300px)) 300px;
     height: calc(100vh - 70px);
     box-sizing: border-box;
     width: 100%;
     overflow-x: hidden;
-    @media (max-height: 800px) {
-      height: calc(100vh - 56px);
+    @media (max-width: 1280px), (max-height: 800px) {
+      height: calc(100vh - 45px);
+      grid-template-columns: 250px calc(100vw - (250px + 250px)) 250px;
     }
 
     ::-webkit-scrollbar-track {
@@ -184,27 +187,30 @@ main {
     }
 
     ::-webkit-scrollbar-thumb {
-      background-color: #FFFFFF;
+      background-color: #3e3e3e;
     }
 
     .leftPanel {
       display: flex;
-      width: 46vh;
+      width: 400px;
+      min-width: 200px;
       max-width: 400px;
       background: #000000;
-      @media (max-height: 800px) {
-        width: 36.8vh;
+      border-right: solid 1px #000000;
+      @media (max-width: 1280px), (max-height: 800px) {
+        width: 250px;
+        min-width: 200px;
         overflow-x: hidden;
       }
 
       nav {
-        background: #000000;
+        background: #191919;
         width: 80px;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        @media (max-height: 800px) {
+        @media (max-width: 1280px), (max-height: 800px) {
           width: 54px;
           gap: 10px 0;
         }
@@ -218,9 +224,10 @@ main {
           flex-direction: column;
           cursor: pointer;
           box-sizing: border-box;
-          @media (max-height: 800px) {
+          @media (max-width: 1280px), (max-height: 800px) {
             width: 55px;
             height: 2.5vh;
+            padding: 4vh 0;
           }
 
           img {
@@ -248,9 +255,9 @@ main {
         overflow-y: auto;
         justify-content: flex-start;
         box-sizing: border-box;
-        background: #000000;
+        background: #1B1C1E;
         align-content: flex-start;
-        @media (max-height: 800px) {
+        @media (max-width: 1280px), (max-height: 800px) {
           width: 256px;
           overflow-x: hidden;
         }
@@ -407,142 +414,147 @@ main {
     }
 
     .editor {
-      //background: #000000;
-      //width: calc(100% - 46vh);
-      //display: flex;
       display: block;
+      overflow-y: auto;
+      width: 100%;
+      background: #191919;
 
-        > div {
-          @media (max-height: 800px) {
-            transform: scale(0.7);
-          }
-          @media (max-height: 700px) {
-            transform: scale(0.6);
-          }
-          @media (max-height: 650px) {
-            transform: scale(0.5);
-          }
+      > div {
+        @media (max-width: 1280px), (max-height: 800px) {
+          transform: scale(0.6);
+          transform-origin: center 18vh;
+        }
+        @media (max-width: 1280px), (max-height: 700px) {
+          transform: scale(0.55);
+          transform-origin: center 17vh;
+        }
 
+        box-sizing: border-box;
+        overflow: auto;
+        transform: scale(0.9);
+        transition: transform linear 200ms;
+
+
+        .pageNavigation {
+          width: 421.641px;
+          height: 20px;
+          margin: 0 auto;
           display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          //padding: 50px;
-          //width: 621.641px;
-          box-sizing: border-box;
-          height: 100%;
-          overflow: auto;
-          //zoom: 90%;
-          //aspect-ratio: 1 / 1;
-          transform: scale(0.9);
 
-          .pageNavigation {
-            width: 421.641px;
-            height: 20px;
-            margin: 0 100px;
-            display: flex;
+          .pageNav {
+            width: 100%;
+            height: 10px;
+            border-radius: 10px;
+            background: #519EF4;
+            margin: 2px;
+            box-sizing: border-box;
+            cursor: pointer;
 
-            .pageNav {
-              width: 100%;
-              height: 10px;
-              border-radius: 10px;
-              background: #519EF4;
-              margin: 2px;
-              box-sizing: border-box;
-              cursor: pointer;
-
-              &.active {
+            &.active {
+              background: #707070;
+              &:hover {
                 background: #707070;
-                &:hover {
-                  background: #707070;
-                }
-              }
-              &:hover {
-                background: #53a5fe;
               }
             }
-          }
-
-          .page {
-            width: 421.641px;
-            height: 702.750px;
-            background: #eeeeee;
-            display: block;
-            margin: 5px 100px 10px 100px;
-            transform: scale(1, 1);
-
-            div {
-              position: absolute;
-            }
-          }
-
-          .pageBottomControl {
-            width: 421.641px;
-            height: 50px;
-            margin: 5px 100px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 20px;
-            img {
-              margin: 2px;
-              padding: 10px;
-              cursor: pointer;
-              width: 35px;
-              height: auto;
-              border-radius: 5px;
-              font-family: 'Circular Std Bold';
-
-              &:hover {
-                background: black;
-              }
+            &:hover {
+              background: #53a5fe;
             }
           }
         }
 
-        footer {
-          width: calc(100% - 687px);
+        .page {
+          width: 421.641px;
+          height: 702.750px;
+          background: #eeeeee;
+          display: block;
+          margin: 5px auto 10px auto;
+          //transform: scale(1, 1);
+
+          div {
+            position: absolute;
+          }
+        }
+
+        .pageBottomControl {
+          width: 421.641px;
           height: 50px;
-          background: black;
-          position: fixed;
-          bottom: 0;
-          border-top: 2px solid #2B2D32;
+          margin: 5px auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 20px;
+          img {
+            margin: 2px;
+            padding: 10px;
+            cursor: pointer;
+            width: 35px;
+            height: auto;
+            border-radius: 5px;
+            font-family: 'Circular Std Bold';
+
+            &:hover {
+              background: black;
+            }
+          }
         }
+      }
+
+      footer {
+        width: calc(100vw - (400px + 300px));
+        height: 50px;
+        background: #191919;
+        position: fixed;
+        bottom: 0;
+        border-top: 2px solid #2B2D32;
+        //display: flex;
+        //justify-content: space-between;
+        @media (max-width: 1280px), (max-height: 800px) {
+          width: calc(100vw - (250px + 250px));
+        }
+
+        .zoomSize {
+          width: 100px;
+        }
+      }
     }
 
     aside {
-      width: 33vh;
-      background: #000000;
+      width: 300px;
+      background: #1B1C1E;
       color: #d9d9d9;
       max-height: 100%;
       overflow-y: auto;
+      border-left: solid 1px #000000;
+      @media (max-width: 1280px), (max-height: 800px) {
+        width: 250px;
+      }
 
       .newPageButton {
         position: fixed;
-        left: 320px;
-        bottom: 100px;
+        margin-left: -60px;
+        bottom: 120px;
         width: 50px;
         height: 50px;
         box-sizing: border-box;
         border-radius: 100%;
         background: #519EF4;
         color: black;
-        @media (max-height: 800px) {
+        @media (max-width: 1280px), (max-height: 800px) {
           width: 40px;
           height: 40px;
         }
       }
       .previewButton {
-        position: fixed;
-        left: 320px;
-        bottom: 40px;
+        position: absolute;
+        margin-left: -60px;
+        bottom: 60px;
         width: 50px;
         height: 50px;
         box-sizing: border-box;
         border-radius: 100%;
         background: #519EF4;
         color: black;
-        @media (max-height: 800px) {
+        @media (max-width: 1280px), (max-height: 800px) {
           width: 40px;
           height: 40px;
         }
@@ -713,29 +725,31 @@ main {
 
 
 .tabRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
   width: 100%;
   height: 50px;
-  align-items: center;
-  justify-content: space-around;
+  position: relative;
+  //align-items: center;
+  //justify-content: space-around;
   gap: 0 10px;
-  background: #000000;
+  background: #1B1C1E;
   padding: 0;
-  @media (max-height: 800px) {
+  @media (max-width: 1280px), (max-height: 800px) {
     height: 40px;
   }
 
   div {
-    display: flex;
+    //display: inline-grid;
     //flex-grow: 1;
     align-items: center;
     text-align: center;
     height: 100%;
-    padding: 10px 20px;
+    padding: 10px 0;
     cursor: pointer;
     box-sizing: border-box;
-    @media (max-height: 800px) {
-      padding: 5px 20px;
+    @media (max-width: 1280px), (max-height: 800px) {
+      //padding: 5px 10px;
       font-size: 14px;
     }
     &:hover {
