@@ -803,29 +803,38 @@ export default {
 
       const editorArea = document.getElementById('editorArea')
       switch (zoomLevel) {
-        case 25: editorArea.style.transform = 'scale(0.25)'; break;
-        case 50: editorArea.style.transform = 'scale(0.5)'; break;
-        case 75: editorArea.style.transform = 'scale(0.75)'; break;
+        case 25: {
+          editorArea.style.transform = 'scale(0.25)';
+          editorArea.style.margin = '100px'; break;
+        }
+        case 50: {
+          editorArea.style.transform = 'scale(0.5)';
+          editorArea.style.margin = '100px'; break;
+        }
+        case 75: {
+          editorArea.style.transform = 'scale(0.75)';
+          editorArea.style.marginTop = '100px'; break;
+        }
         case 100: {
           editorArea.style.transform = 'scale(1)';
-          editorArea.style.transformOrigin = 'top'; break;
+          editorArea.style.margin = '100px'; break;
         }
+
         case 125: {
           editorArea.style.transform = 'scale(1.25)';
-          editorArea.style.transformOrigin = 'top'; break;
+          editorArea.style.margin = '100px'; break;
         }
         case 150: {
           editorArea.style.transform = 'scale(1.5)';
-          editorArea.style.transformOrigin = 'top'; break;
+          editorArea.style.margin = '100px'; break;
         }
         case 175: {
           editorArea.style.transform = 'scale(1.75)';
-          editorArea.style.transformOrigin = 'top'; break;
+          editorArea.style.margin = '100px'; break;
         }
         case 200: {
           editorArea.style.transform = 'scale(2)';
-          editorArea.style.transformOrigin = 'top'; break;
-
+          editorArea.style.margin = '100px';
         }
       }
     },
