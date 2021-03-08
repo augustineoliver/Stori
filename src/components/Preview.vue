@@ -90,6 +90,15 @@ export default {
     padding: 50px 20px;
     width: calc(100% - 250px);
 
+    @media (max-height: 1024px) {
+      transform: scale(0.9);
+      transform-origin: center 0;
+    }
+    @media (max-height: 800px) {
+      transform: scale(0.63);
+      transform-origin: center 0;
+    }
+
     .smartphone {
       position: relative;
       width: 453px;
@@ -144,6 +153,9 @@ export default {
       position: absolute;
       bottom: 0;
       right: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
       width: 250px;
       height: 500px;
       text-align: center;
@@ -151,6 +163,9 @@ export default {
       letter-spacing: 1px;
       padding: 10px;
       box-sizing: border-box;
+      @media (max-width: 1280px), (max-height: 800px) {
+        font-size: 1em;
+      }
 
       div {
         text-align: center;
@@ -171,6 +186,10 @@ export default {
           img {
             width: 150px;
             height: 150px;
+            @media (max-width: 1280px), (max-height: 800px) {
+              width: 100px;
+              height: 100px;
+            }
           }
         }
 
