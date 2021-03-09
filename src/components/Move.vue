@@ -20,6 +20,13 @@ export default {
       console.log('GGGGGGGGGGGGGGGGGG: ', this.$parent.$refs.page)
         const moveable = this.$refs[this.$props.tgt];
         setTimeout(() => {
+          this.$parent.$refs.page.addEventListener('click', (element) => {
+            console.log('element: ', element)
+            if (!element.target.classList.contains('moveable-control')) {
+              document.getElementsByClassName("moveable-control").forEach(element => { element.style.display = 'none'; });
+              document.getElementsByClassName("moveable-line").forEach(element => { element.style.display = 'none'; });
+            }
+          })
             this.$parent.selectedMovable = moveable.moveable;
             moveable.$el.style.cssText = this.elementPosition ? this.elementPosition : 'top: 50%;left: 50%;transform:translate(-50%,-50%);'
             moveable.$el.style.clipPath = 'inset(0px)';
@@ -118,6 +125,7 @@ export default {
     },
     data() {
         return {
+          isClippable: false,
             frame: {
                 translate: [0,0],
                 rotate: 0,
@@ -125,12 +133,19 @@ export default {
             moveable: {
                 target: this.$refs[this.$props.tgt],
                 container: this.$parent.$refs.page,
-                bounds: { left: this.$parent.$refs.page.offsetLeft, top: this.$parent.$refs.page.offsetTop, bottom: this.$parent.$refs.page.offsetTop + this.$parent.$refs.page.offsetHeight, right: this.$parent.$refs.page.offsetLeft + this.$parent.$refs.page.offsetWidth },
+                // bounds: { left: this.$parent.$refs.page.offsetLeft, top: this.$parent.$refs.page.offsetTop, bottom: this.$parent.$refs.page.offsetTop + this.$parent.$refs.page.offsetHeight, right: this.$parent.$refs.page.offsetLeft + this.$parent.$refs.page.offsetWidth },
                 throttleResize: 0,
                 draggable: true,
                 resizable: true,
-                keepRatio: false,
+                keepRatio: true,
                 checkInput: true,
+              clippable: true,
+              defaultClipPath: "inset",
+              customClipPath: "",
+              clipRelative: false,
+              clipArea: false,
+              dragWithClip: true,
+              clipTargetBounds: true,
                 padding: { left: 0, top: 0, right: 0, bottom: 0 },
                 scalable: false,
                 renderDirections: ["n","s","w","e","nw","ne","sw","se"],
@@ -139,7 +154,7 @@ export default {
                 snappable:true,
                 pinchable: true,
                 origin: false,
-                edge:false
+                edge:false,
             },
         }
     },
@@ -151,28 +166,56 @@ export default {
             const scale = matrix.m11;
             this.frame.translate = [matrix.m41 * scale, matrix.m42 * scale, 0];
         },
-        handleResize(e) {
-          console.log('WWWWWWWWW: ', e.dist)
+        handleResize({target, width, height, delta}) {
+          console.log('WWWWWWWWW: ', target)
+          delta[0] && (target.style.width = `${width}px`);
+          delta[1] && (target.style.height = `${height}px`);
           // if (e.direction[0] === 1 && e.direction[1] === 0) {
           //   e.target.style.display = 'flex'
           //   e.target.style.justifyContent = 'flex-start'
           //   e.target.style.alignItems = 'center'
-          // } else if (e.direction[0] === -1 && e.direction[1] === 0) {
+          //   let deltaRight
+          //   if (e.target.children[0].getAttribute('data-marginright')) {
+          //     deltaRight = Number(e.target.children[0].getAttribute('data-marginright')) + Number(e.dist[0])
+          //     if (deltaRight >= 0) {
+          //       deltaRight = 0
+          //     }
+          //   } else {
+          //     deltaRight = e.dist[0]
+          //   }
+          //   e.target.children[0].setAttribute('data-marginright', deltaRight)
+          //   console.log('marginright: ', e.target.children[0].getAttribute('data-marginright'))
+          //   e.target.firstChild.style.marginleft = Number(e.target.children[0].getAttribute('data-marginleft')) + 'px'
+          // }
+          // else if (e.direction[0] === -1 && e.direction[1] === 0) {
           //   e.target.style.display = 'flex'
           //   e.target.style.justifyContent = 'flex-end'
           //   e.target.style.alignItems = 'center'
+          //   let deltaLeft
+          //   // if (e.target.children[0].getAttribute('data-marginleft')) {
+          //   //   deltaLeft = Number(e.target.children[0].getAttribute('data-marginleft')) + Number(e.dist[0])
+          //   //   if (deltaLeft >= 0) {
+          //   //     deltaLeft = 0
+          //   //   }
+          //   // } else {
+          //     deltaLeft = e.dist[0]
+          //   // }
+          //   e.target.children[0].setAttribute('data-marginleft', deltaLeft)
+          //   console.log('marginleft: ', e.target.children[0].getAttribute('data-marginleft'))
+          //   e.target.firstChild.style.marginright = Number(e.target.children[0].getAttribute('data-marginright')) + 'px'
+          //
           // }
 
 
 
 
-            e.target.children[0].style.height = '100%';
-            e.target.children[0].style.width = 'auto';
-            const beforeTranslate = e.drag.beforeTranslate;
-            this.frame.translate = beforeTranslate;
-            e.target.style.width = `${e.width}px`;
-            e.target.style.height = `${e.height}px`;
-            e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${this.frame.rotate}deg)`;
+            // target.target.children[0].style.height = '100%';
+            // target.target.children[0].style.width = 'auto';
+            // const beforeTranslate = target.drag.beforeTranslate;
+            // this.frame.translate = beforeTranslate;
+            // target.target.style.width = `${target.width}px`;
+            // target.target.style.height = `${target.height}px`;
+            // target.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${this.frame.rotate}deg)`;
         },
         handleRotate(e) {
             this.frame.rotate = e.beforeRotate;
