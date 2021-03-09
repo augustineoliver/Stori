@@ -152,6 +152,20 @@ export default {
             this.frame.translate = [matrix.m41 * scale, matrix.m42 * scale, 0];
         },
         handleResize(e) {
+          console.log('WWWWWWWWW: ', e.dist)
+          // if (e.direction[0] === 1 && e.direction[1] === 0) {
+          //   e.target.style.display = 'flex'
+          //   e.target.style.justifyContent = 'flex-start'
+          //   e.target.style.alignItems = 'center'
+          // } else if (e.direction[0] === -1 && e.direction[1] === 0) {
+          //   e.target.style.display = 'flex'
+          //   e.target.style.justifyContent = 'flex-end'
+          //   e.target.style.alignItems = 'center'
+          // }
+
+
+
+
             e.target.children[0].style.height = '100%';
             e.target.children[0].style.width = 'auto';
             const beforeTranslate = e.drag.beforeTranslate;
