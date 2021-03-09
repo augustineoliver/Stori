@@ -17,6 +17,7 @@ export default {
     name: 'MoveView',
     props: [ 'type', 'tgt', 'dataHtml', 'elementPosition' ],
     mounted(){
+      console.log('GGGGGGGGGGGGGGGGGG: ', this.$parent.$refs.page)
         const moveable = this.$refs[this.$props.tgt];
         setTimeout(() => {
             this.$parent.selectedMovable = moveable.moveable;
@@ -124,7 +125,7 @@ export default {
             moveable: {
                 target: this.$refs[this.$props.tgt],
                 container: this.$parent.$refs.page,
-                bounds: { left: 0, top: 0, bottom: this.$parent.$refs.page.offsetHeight, right: this.$parent.$refs.page.offsetWidth },
+                bounds: { left: this.$parent.$refs.page.offsetLeft, top: this.$parent.$refs.page.offsetTop, bottom: this.$parent.$refs.page.offsetTop + this.$parent.$refs.page.offsetHeight, right: this.$parent.$refs.page.offsetLeft + this.$parent.$refs.page.offsetWidth },
                 throttleResize: 0,
                 draggable: true,
                 resizable: true,

@@ -166,9 +166,13 @@ main {
     box-sizing: border-box;
     width: 100%;
     overflow-x: hidden;
-    @media (max-width: 1280px), (max-height: 800px) {
+    @media (max-width: 1280px) {
       height: calc(100vh - 45px);
       grid-template-columns: 250px calc(100vw - (250px + 250px)) 250px;
+    }
+    @media (max-width: 1024px) {
+      height: calc(100vh - 45px);
+      grid-template-columns: 100%;
     }
 
     ::-webkit-scrollbar-track {
@@ -421,11 +425,11 @@ main {
       background: #191919;
 
       > div {
-        @media (max-width: 1280px), (max-height: 800px) {
+        @media (max-height: 800px) {
           transform: scale(0.6);
           transform-origin: center 18vh;
         }
-        @media (max-width: 1280px), (max-height: 700px) {
+        @media (max-height: 700px) {
           transform: scale(0.55);
           transform-origin: center 17vh;
         }

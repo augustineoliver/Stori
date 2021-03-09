@@ -80,7 +80,7 @@
           </label>
           <div class="mediaList">
             <img draggable="true" @mousedown="drag($event)" v-for="(video, index) in pexelsVideo" :key="index"
-                 :src="video.video_pictures[0].picture" :data-src="video.video_files[0].link" alt="">
+                 :src="video.video_pictures[0].picture" :data-src="video.video_files[0].link" alt="" style="width: 100%">
             <div v-if="pexelsVideo.length === 0" style="text-align: center; width: 320px; padding: 30px">Loading Videos</div>
           </div>
         </div>
@@ -954,7 +954,7 @@ export default {
     },
 
     drop(evt) {
-      // evt.preventDefault();
+      evt.preventDefault();
       console.log(evt)
 
       if (this.draggedElement) {
@@ -1103,12 +1103,14 @@ export default {
           //       <source src="${this.draggedElement.dataset.src}" type="video/mp4" />
           //   </amp-video>
           // </div>`;
-          video.style = 'width:400px'
+          video.width = 400;
+          video.height = 200;
+          video.removeAttribute('draggable');
           // video.ondragstart = 'this.drag($event)';
           // video.draggable = true;
           // video.controls = true;
           // video.onclick = this.resizeElement(div.children[0].id, '.resizers')
-          video.controls = true;
+          video.controls = false;
           video.poster= this.draggedElement.src;
           const source = document.createElement('source');
           source.src = this.draggedElement.dataset.src
