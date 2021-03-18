@@ -1,13 +1,13 @@
 <template>
-    <Moveable
-        :ref="tgt"
-        :class="'moveableObj ' + tgt"
-        :style="elementPosition"
-        v-bind="moveable"
-        @drag="handleDrag"
-        @resize="handleResize"
-        @rotate="handleRotate"
-    ></Moveable>
+  <Moveable
+    :ref="tgt"
+    :class="'moveableObj ' + tgt"
+    :style="elementPosition"
+    v-bind="moveable"
+    @drag="handleDrag"
+    @resize="handleResize"
+    @rotate="handleRotate"
+  ></Moveable>
 </template>
 
 <script>
@@ -16,6 +16,7 @@ import Moveable from 'vue-moveable';
 export default {
     name: 'MoveView',
     props: [ 'type', 'tgt', 'dataHtml', 'elementPosition' ],
+
     mounted(){
       console.log('GGGGGGGGGGGGGGGGGG: ', this.$parent.$refs.page)
         const moveable = this.$refs[this.$props.tgt];
@@ -34,8 +35,14 @@ export default {
                     setTimeout(() => {
                         var elementHeight = this.$props.dataHtml.getBoundingClientRect().height;
                         var elementWidth = this.$props.dataHtml.getBoundingClientRect().width;
+                        
+
+                        this.imageOriginalDimension.height = elementHeight;
+                        this.imageOriginalDimension.width = elementWidth;
+
                         moveable.$el.children[0].width = elementWidth;
                         moveable.$el.children[0].height = elementHeight;
+
                         moveable.$el.style.width = elementWidth;
                         moveable.$el.style.height = elementHeight;
                         moveable.moveable.updateTarget();
@@ -110,6 +117,8 @@ export default {
                 e.setOrigin(["%", "%"]);
                 e.dragStart && e.dragStart.set(this.frame.translate);
             }).on("resizeEnd", (e) => {
+                this.imageOriginalDimension.height = e.target.children[0].height;
+                this.imageOriginalDimension.width = e.target.children[0].width;
                 if(e.lastEvent.width && e.target.children[0].width < e.lastEvent.width){
                     e.target.style.width = `${e.target.children[0].width}px`;
                 }
@@ -138,9 +147,15 @@ export default {
                 rotatable: true,
                 snappable:true,
                 pinchable: true,
+                warpabale: true,
                 origin: false,
-                edge:false
+                edge:true,
+                baseDirection: [1,1]
             },
+            imageOriginalDimension: {
+                height: 0,
+                width: 0
+            }
         }
     },
     methods: {
@@ -151,19 +166,37 @@ export default {
             const scale = matrix.m11;
             this.frame.translate = [matrix.m41 * scale, matrix.m42 * scale, 0];
         },
+
         handleResize(e) {
-            e.target.children[0].style.height = '100%';
-            e.target.children[0].style.width = 'auto';
             const beforeTranslate = e.drag.beforeTranslate;
             this.frame.translate = beforeTranslate;
             e.target.style.width = `${e.width}px`;
             e.target.style.height = `${e.height}px`;
+
+            if(e.target.childNodes[0].nodeName == 'IMG'){
+                e.target.children[0].style.objectFit = "cover";
+                e.target.children[0].style.position = "absolute";
+
+                if(e.width > this.imageOriginalDimension.width){
+                    e.target.children[0].style.width = `${e.width}px`;
+                } 
+
+                if(e.height > this.imageOriginalDimension.height){
+                    e.target.children[0].style.height = `${e.height}px`;
+                }
+            } else {
+                e.target.children[0].style.height = '100%';
+                e.target.children[0].style.width = 'auto';
+            }
+
             e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${this.frame.rotate}deg)`;
         },
+
         handleRotate(e) {
             this.frame.rotate = e.beforeRotate;
             e.target.style.transform = `translate(${this.frame.translate[0]}px, ${this.frame.translate[1]}px) rotate(${e.beforeRotate}deg)`;
         }
+
     },
     components: {
         Moveable,
