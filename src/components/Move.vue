@@ -115,6 +115,7 @@ export default {
                 e.set(this.frame.rotate);
             }).on("resizeStart", (e) => {
                 e.setOrigin(["%", "%"]);
+                this.moveable.baseDirection
                 e.dragStart && e.dragStart.set(this.frame.translate);
             }).on("resizeEnd", (e) => {
                 this.imageOriginalDimension.height = e.target.children[0].height;
@@ -149,8 +150,7 @@ export default {
                 pinchable: true,
                 warpabale: true,
                 origin: false,
-                edge:true,
-                baseDirection: [1,1]
+                edge:false,
             },
             imageOriginalDimension: {
                 height: 0,
@@ -170,12 +170,24 @@ export default {
         handleResize(e) {
             const beforeTranslate = e.drag.beforeTranslate;
             this.frame.translate = beforeTranslate;
+
             e.target.style.width = `${e.width}px`;
             e.target.style.height = `${e.height}px`;
 
-            if(e.target.childNodes[0].nodeName == 'IMG'){
+            if(e.target.childNodes[0].nodeName == 'IMG' || e.target.childNodes[0].nodeName == 'VIDEO'){
                 e.target.children[0].style.objectFit = "cover";
-                e.target.children[0].style.position = "absolute";
+                e.target.children[0].style.position = "relative";
+
+                //Enable Cropping on the left
+                if(e.direction[0] == -1){
+                    e.target.children[0].style.transformOrigin = 'bottom right'
+                }
+
+                // console.log(e.dist[1]);
+                  //Enable Cropping on the top
+                if(e.direction[1] == -1){
+                    e.target.children[0].style.top = `${e.dist[0]}px`;
+                }
 
                 if(e.width > this.imageOriginalDimension.width){
                     e.target.children[0].style.width = `${e.width}px`;
@@ -188,7 +200,6 @@ export default {
                 e.target.children[0].style.height = '100%';
                 e.target.children[0].style.width = 'auto';
             }
-
             e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${this.frame.rotate}deg)`;
         },
 
