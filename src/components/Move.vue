@@ -115,7 +115,13 @@ export default {
                 e.set(this.frame.rotate);
             }).on("resizeStart", (e) => {
                 e.setOrigin(["%", "%"]);
-                this.moveable.baseDirection
+                
+                const style = window.getComputedStyle(e.target);
+                const cssWidth = parseFloat(style.width);
+                const cssHeight = parseFloat(style.height);
+                console.log(cssHeight, cssWidth);
+                e.set([cssWidth, cssHeight]);
+
                 e.dragStart && e.dragStart.set(this.frame.translate);
             }).on("resizeEnd", (e) => {
                 this.imageOriginalDimension.height = e.target.children[0].height;
@@ -135,7 +141,7 @@ export default {
             moveable: {
                 target: this.$refs[this.$props.tgt],
                 container: this.$parent.$refs.page,
-                bounds: { left: this.$parent.$refs.page.offsetLeft, top: this.$parent.$refs.page.offsetTop, bottom: this.$parent.$refs.page.offsetTop + this.$parent.$refs.page.offsetHeight, right: this.$parent.$refs.page.offsetLeft + this.$parent.$refs.page.offsetWidth },
+                // bounds: { left: this.$parent.$refs.page.offsetLeft, top: this.$parent.$refs.page.offsetTop, bottom: this.$parent.$refs.page.offsetTop + this.$parent.$refs.page.offsetHeight, right: this.$parent.$refs.page.offsetLeft + this.$parent.$refs.page.offsetWidth },
                 throttleResize: 0,
                 draggable: true,
                 resizable: true,
@@ -155,6 +161,11 @@ export default {
             imageOriginalDimension: {
                 height: 0,
                 width: 0
+            },
+
+            transalateCache: {
+                x: 0,
+                y: 0
             }
         }
     },
@@ -170,37 +181,37 @@ export default {
         handleResize(e) {
             const beforeTranslate = e.drag.beforeTranslate;
             this.frame.translate = beforeTranslate;
+            // console.log(e);
 
-            e.target.style.width = `${e.width}px`;
-            e.target.style.height = `${e.height}px`;
+            // var xChanged = false;
+            // var yChanged = false;
 
             if(e.target.childNodes[0].nodeName == 'IMG' || e.target.childNodes[0].nodeName == 'VIDEO'){
                 e.target.children[0].style.objectFit = "cover";
-                e.target.children[0].style.position = "relative";
-
-                //Enable Cropping on the left
-                if(e.direction[0] == -1){
-                    e.target.children[0].style.transformOrigin = 'bottom right'
-                }
-
-                // console.log(e.dist[1]);
-                  //Enable Cropping on the top
-                if(e.direction[1] == -1){
-                    e.target.children[0].style.top = `${e.dist[0]}px`;
-                }
 
                 if(e.width > this.imageOriginalDimension.width){
                     e.target.children[0].style.width = `${e.width}px`;
-                } 
+                } else if(e.direction[0] == -1){
+                    e.target.children[0].style.transform = `translate(${e.dist[0]}px, ${this.transalateCache.y}px)`
+                    this.transalateCache.x = e.dist[0];
+                    // xChanged = true;
+                }
 
                 if(e.height > this.imageOriginalDimension.height){
                     e.target.children[0].style.height = `${e.height}px`;
+                } else if(e.direction[1] == -1){
+                    e.target.children[0].style.transform = `translate(${this.transalateCache.x}px, ${e.dist[1]}px)`;
+                    this.transalateCache.y = e.dist[1];
+                    // yChanged = true;
                 }
-            } else {
-                e.target.children[0].style.height = '100%';
-                e.target.children[0].style.width = 'auto';
-            }
-            e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${this.frame.rotate}deg)`;
+
+            } 
+
+            e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`;
+            //  e.target.style.transform = `translate(${xChanged ? this.transalateCache.x : beforeTranslate[0]}px, ${ yChanged ? this.transalateCache.y : beforeTranslate[1]}px)`;
+          
+            e.target.style.width = `${e.width}px`;
+            e.target.style.height = `${e.height}px`;
         },
 
         handleRotate(e) {
