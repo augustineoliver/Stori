@@ -119,7 +119,7 @@ export default {
                 const style = window.getComputedStyle(e.target);
                 const cssWidth = parseFloat(style.width);
                 const cssHeight = parseFloat(style.height);
-                console.log(cssHeight, cssWidth);
+                
                 e.set([cssWidth, cssHeight]);
 
                 e.dragStart && e.dragStart.set(this.frame.translate);
