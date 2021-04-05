@@ -10,20 +10,18 @@
     />
     <div v-if="type != 'text'" class="contentContainer" ref="contentContainer">
       <img
-        v-if="type == 'unsplashPhotos'"
+        v-if="type == 'unsplashPhotos' || 'uploadedMedia' "
         class="content"
         style="object-fit: cover;"
-        src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__340.jpg"
         ref="imageContent"
       />
-      <!-- <video v-if="type == 'pexelVideos'" width="500" height="400" ref="content" class="content">
-        <source src="../assets/mov_bbb.mp4" type="video/mp4">
+      <video v-if="type == 'pexelsVideo'" width="500" height="400" ref="videoContent" class="content">
+        <source type="video/mp4">
         Your browser does not support HTML video.
-      </video> -->
+      </video>
     </div>
 
     <div v-if="type == 'text'" class="writeUpContainer" ref="writeUpContainer">
-      <div ref="textContent"></div>
     </div>
   </div>
 </template>
@@ -79,7 +77,6 @@ export default {
     };
 
     const dragHandler = this.$refs.dragHandler;
-
     dragHandler.moveable.on("resizeEnd", () => {
       if (this.contentType != "text") {
         const contentContainer = this.$refs.contentContainer;
@@ -89,8 +86,7 @@ export default {
     });
 
     if (
-      this.$props.type == "unsplashPhotos" ||
-      this.$props.type == "pexelVideos"
+      this.$props.type == "unsplashPhotos"
     ) {
       this.$refs.imageContent.src = this.$props.dataHtml.src;
 
@@ -138,7 +134,30 @@ export default {
         writeUpContainer.style.cssText + this.$props.dataHtml.style.cssText;
       writeUpContainer.id = this.$props.dataHtml.id;
       dragHandler.updateRect();
-    }
+    } else if(
+      this.$props.type == "pexelsVideo"){
+        this.$refs.videoContent.children[0].src = this.$props.dataHtml.children[0].src
+        
+        const elementWidth = this.$refs.videoContent.getBoundingClientRect().width;
+        const elementHeight = this.$refs.videoContent.getBoundingClientRect().height;
+        
+        dragHandler.$el.style.width = `${elementWidth}px`;
+        dragHandler.$el.style.height = `${elementHeight}px`;
+
+        moveContainer.style.width = `${elementWidth}px`;
+        moveContainer.style.height = `${elementHeight}px`;
+
+        this.visibleDimension.width = elementWidth;
+        this.visibleDimension.height = elementHeight;
+
+        this.$refs.imageContent.style.objectFit = "cover";
+        this.$refs.imageContent.style.width = `${elementWidth}px`;
+        this.$refs.imageContent.style.height = `${elementHeight}px`;
+
+        this.$refs.imageContent.id = this.$props.dataHtml.id;
+
+        dragHandler.updateRect()
+      }
   },
 
   methods: {
@@ -166,7 +185,7 @@ export default {
     },
 
     handleResize({ target, width, height, direction, drag }) {
-      const content = this.$refs.imageContent;
+      const content = this.type == 'pexelsVideo' ? this.$refs.videoContent : this.$refs.imageContent;
       const contentContainer =
         this.$props.type == "text"
           ? this.$refs.writeUpContainer
