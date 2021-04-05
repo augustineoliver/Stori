@@ -921,16 +921,16 @@ export default {
           document.getElementsByClassName("moveable-line").forEach(element => {
             element.style.display = "none";
           });
-         this.rightClickedOn.target.nextElementSibling
-            .getElementsByClassName("moveable-control")
-            .forEach(element => {
-              element.style.display = "block";
-            });
-          this.rightClickedOn.target.nextElementSibling
-            .getElementsByClassName("moveable-line")
-            .forEach(element => {
-              element.style.display = "block";
-            });
+        //  this.rightClickedOn.target.nextElementSibling
+        //     .getElementsByClassName("moveable-control")
+        //     .forEach(element => {
+        //       element.style.display = "block";
+        //     });
+        //   this.rightClickedOn.target.nextElementSibling
+        //     .getElementsByClassName("moveable-line")
+        //     .forEach(element => {
+        //       element.style.display = "block";
+        //     });
 
           this.rightClickedOn.target.parentElement.remove()
           this.rightClickedOn.target.remove()
