@@ -21,7 +21,7 @@
       </video>
     </div>
 
-    <div v-if="type == 'text'" class="writeUpContainer" ref="writeUpContainer">
+    <div v-if="type == 'text' || type == 'callToActionButtons'" class="writeUpContainer" ref="writeUpContainer">
     </div>
   </div>
 </template>
@@ -157,13 +157,29 @@ export default {
         this.$refs.imageContent.id = this.$props.dataHtml.id;
 
         dragHandler.updateRect()
+      } else {
+        const writeUpContainer = this.$refs.writeUpContainer;
+
+        const elementWidth = 100;
+        const elementHeight = 50;
+        
+        dragHandler.$el.style.width = `${elementWidth}px`;
+        dragHandler.$el.style.height = `${elementHeight}px`;
+
+        moveContainer.style.width = `${elementWidth}px`;
+        moveContainer.style.height = `${elementHeight}px`;
+
+        this.$props.dataHtml.ref = "button";
+
+        writeUpContainer.appendChild(this.$props.dataHtml)
+        dragHandler.updateRect()
       }
   },
 
   methods: {
     handleDrag({ target, transform }) {
       target.style.transform = transform;
-      if (this.$props.type == "text") {
+      if (this.$props.type == "text" || this.$props.type == "callToActionButtons") {
         const writeUpContainer = this.$refs.writeUpContainer;
         writeUpContainer.style.transform = transform;
       } else {
@@ -177,7 +193,7 @@ export default {
       //   e.target.style.transform = `translate(${this.frame.translate[0]}px, ${this.frame.translate[1]}px) rotate(${e.beforeRotate}deg)`;
       target.style.transform = transform;
       const contentContainer =
-        this.$props.type == "text"
+        this.$props.type == "text" || this.$props.type == 'callToActionButtons'
           ? this.$refs.writeUpContainer
           : this.$refs.contentContainer;
 
@@ -187,11 +203,26 @@ export default {
     handleResize({ target, width, height, direction, drag }) {
       const content = this.type == 'pexelsVideo' ? this.$refs.videoContent : this.$refs.imageContent;
       const contentContainer =
-        this.$props.type == "text"
+        this.$props.type == "text" || this.$props.type == 'callToActionButtons'
           ? this.$refs.writeUpContainer
           : this.$refs.contentContainer;
 
-      if (this.$props.type != "text") {
+      if (this.$props.type == "text" || this.$props.type == "callToActionButtons") {
+       
+        if(this.$props.type == 'callToActionButtons'){
+          const button = contentContainer.children[0];
+          if(direction[0] == 1){
+            button.style.width = `${width}px`;
+          }
+          
+          if(direction[1] == 1){
+            button.style.height = `${height}px`;
+          }
+        }
+
+        contentContainer.style.width = `${width}px`;
+        contentContainer.style.height = `${height}px`;
+      } else {
         if (direction[0] == 1) {
           if (contentContainer.clientWidth > this.visibleDimension.width) {
             content.style.width = `${width}px`;
@@ -258,22 +289,6 @@ export default {
             drag.beforeTranslate[1] +
             "px";
         }
-      } else {
-        contentContainer.style.width = `${width}px`;
-        // contentContainer.style.transform =
-        //   "translate(" +
-        //   drag.beforeTranslate[0] +
-        //   "px, " +
-        //   drag.beforeTranslate[1] +
-        //   "px";
-
-        contentContainer.style.height = `${height}px`;
-        // contentContainer.style.transform =
-        //   "translate(" +
-        //   drag.beforeTranslate[0] +
-        //   "px, " +
-        //   drag.beforeTranslate[1] +
-        //   "px";
       }
 
       target.style.width = `${width}px`;
@@ -312,7 +327,7 @@ export default {
           this.$parent.selectElement("text", text.id);
           text.contentEditable = true;
           text.style.position = "relative";
-          text.style.zIndex = "999999";
+          // text.style.zIndex = "999999";
           text.onblur = () => {
             text.contentEditable = false;
             text.style.position = "";
@@ -327,7 +342,7 @@ export default {
           this.$parent.alwaysOnTop(photo);
           break;
         case "callToActionButtons":
-          var button = target.children[0];
+          var button = this.$refs.writeUpContainer.children[0];
           this.$parent.$store.commit("setSelectedButton", {
             title: button.innerHTML.trim(),
             url: button.getAttribute("data-href").trim(),
@@ -345,17 +360,6 @@ export default {
       }
     },
 
-    onTextEdit() {
-      this.$refs.writeUpContainer.style.zIndex = 3;
-      this.$refs.dragHandler.$el.style.zIndex = 1;
-
-      console.log(this.$refs.writeUpContainer.style.zIndex);
-    },
-
-    onTextLossFocus() {
-      this.$refs.writeUpContainer.style.zIndex = 1;
-      this.$refs.dragHandler.$el.style.zIndex = 3;
-    }
   }
 };
 </script>
