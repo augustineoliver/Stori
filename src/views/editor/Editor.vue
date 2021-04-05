@@ -460,8 +460,12 @@
           <div class="pageNavigation">
             <div v-for="(index) in pages.length" :key="index" class="pageNav" :class="{active: currentPageNumber === (index - 1)}" @click="viewPage(index - 1)"></div>
           </div>
-          <div class="page" ref="page" id="page" @drop="drop($event)" :style="{background: this.isCustomGradient === false ? this.pageBackground : `${this.customGradientType}(${ this.customGradientType !== 'radial-gradient' ? this.customDegree + 'deg' : radiaShape }, ${this.customColour1} ${' ' + this.colourPercentage + '%'}, ${this.customColour2} ${' ' + 100 - this.colourPercentage + '%'})`}" @dragover.prevent @dragenter.prevent>
+          <!-- <div class="page" ref="page" id="page" @drop="drop($event)" :style="{background: this.isCustomGradient === false ? this.pageBackground : `${this.customGradientType}(${ this.customGradientType !== 'radial-gradient' ? this.customDegree + 'deg' : radiaShape }, ${this.customColour1} ${' ' + this.colourPercentage + '%'}, ${this.customColour2} ${' ' + 100 - this.colourPercentage + '%'})`}" @dragover.prevent @dragenter.prevent>
             <move-view v-for='item in pageItems' :type="item.type" :key='item.key' :ref="'main-moveable'+item.key" :tgt="'main-moveable'+item.key" :elementPosition="item.positionStyle" :data-html="item.html" />
+          </div> -->
+
+          <div class="page" ref="page" id="page" @drop="drop($event)" :style="{background: this.isCustomGradient === false ? this.pageBackground : `${this.customGradientType}(${ this.customGradientType !== 'radial-gradient' ? this.customDegree + 'deg' : radiaShape }, ${this.customColour1} ${' ' + this.colourPercentage + '%'}, ${this.customColour2} ${' ' + 100 - this.colourPercentage + '%'})`}" @dragover.prevent @dragenter.prevent>
+            <move-v2 v-for='item in pageItems' :type="item.type" :key='item.key' :ref="'main-moveable'+item.key" :tgt="'main-moveable'+item.key" :elementPosition="item.positionStyle" :data-html="item.html" />
           </div>
 
           <div class="pageBottomControl">
@@ -548,10 +552,11 @@ import ImageEditor from "@/components/ImageEditor";
 import Preview from "@/components/Preview";
 import Animations from "@/components/Animations";
 import CallToActionButtons from "@/components/CallToActionButtons";
-import Move from '@/components/Move';
+// import Move from '@/components/Move';
 import InteractivePanel from "@/components/InteractivePanel";
 import InteractiveEditor from "@/components/InteractiveEditor";
 import Publish from "@/components/Publish";
+import MoveV2 from "@/components/MoveV2";
 
 
 export default {
@@ -742,6 +747,7 @@ export default {
       menu.id = 'contextmenu';
       menu.style.left = e.offsetX + 'px';
       menu.style.top = e.offsetY + 'px';
+      menu.style.zIndex = 5;
       menu.innerHTML = menuHTMLCode;
 
       document.getElementById('page').appendChild(menu);
@@ -906,8 +912,28 @@ export default {
     deleteElement() {
       document.getElementById('deleteElement').addEventListener('click', () => {
         if (this.rightClickedOn.target.id !== 'page') {
-          this.rightClickedOn.target.parentElement.previousSibling.remove()
+
+           document
+            .getElementsByClassName("moveable-control")
+            .forEach(element => {
+              element.style.display = "none";
+            });
+          document.getElementsByClassName("moveable-line").forEach(element => {
+            element.style.display = "none";
+          });
+         this.rightClickedOn.target.nextElementSibling
+            .getElementsByClassName("moveable-control")
+            .forEach(element => {
+              element.style.display = "block";
+            });
+          this.rightClickedOn.target.nextElementSibling
+            .getElementsByClassName("moveable-line")
+            .forEach(element => {
+              element.style.display = "block";
+            });
+
           this.rightClickedOn.target.parentElement.remove()
+          this.rightClickedOn.target.remove()
           this.updatePageStructure();
         }
       });
@@ -998,11 +1024,12 @@ export default {
         }
         else if (this.activeMedia === 'unsplashPhotos' || this.activeMedia === 'uploadedMedia') {
           const photo = this.draggedElement.cloneNode(true)
+          console.log(photo.getBoundingClientRect());
           photo.id = new Date().toISOString();
           photo.removeAttribute('draggable')
           photo.style = 'width:100%';
-          //photo.style.top = (((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100) + '%';
-          //photo.style.left = (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100 )+ '%';
+          photo.style.top = (((evt.pageY - document.getElementById('page').offsetTop) / 702.75) * 100) + 'px';
+          photo.style.left = (((evt.pageX - document.getElementById('page').offsetLeft) / 421.641) * 100 )+ 'px';
           const thumbnail = photo.src;
           photo.src = photo.dataset.src;
           photo.dataset.src = thumbnail;
@@ -1499,7 +1526,8 @@ export default {
     'text-editor': TextEditor,
     'image-editor': ImageEditor,
     // 'vue-guides': Guides,
-    'move-view': Move,
+    // 'move-view': Move,
+    'move-v2': MoveV2,
     'text-panel': Text,
     'media-panel': MediaPanel,
     'stori-preview': Preview,
