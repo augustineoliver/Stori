@@ -22,6 +22,7 @@
     </div>
 
     <div v-if="type == 'text' || type == 'callToActionButtons'" class="writeUpContainer" ref="writeUpContainer">
+      <p contenteditable="true"></p>
     </div>
   </div>
 </template>
@@ -78,11 +79,15 @@ export default {
 
     const dragHandler = this.$refs.dragHandler;
     dragHandler.moveable.on("resizeEnd", () => {
-      if (this.contentType != "text") {
+      if (!(this.$props.type == "pexelsVideo" || this.$props.type == "unsplashPhotos")) {
         const contentContainer = this.$refs.contentContainer;
         this.visibleDimension.width = contentContainer.clientWidth;
         this.visibleDimension.height = contentContainer.clientHeight;
       }
+    });
+
+    dragHandler.moveable.on("dragStart", () => {
+      console.log(this.$refs.dragHandler.zIndex);
     });
 
     if (
@@ -120,19 +125,21 @@ export default {
       };
     } else if (this.$props.type == "text") {
       const dragHandler = this.$refs.dragHandler;
-      dragHandler.$el.style.width = `200px`;
-      dragHandler.$el.style.height = `100px`;
+      dragHandler.$el.style.width = `300px`;
+      dragHandler.$el.style.height = `200px`;
 
-      moveContainer.style.width = `200px`;
-      moveContainer.style.height = `100px`;
+      moveContainer.style.width = `300px`;
+      moveContainer.style.height = `200px`;
 
       const writeUpContainer = this.$refs.writeUpContainer;
-      writeUpContainer.style.width = `200px`;
-      writeUpContainer.style.height = `100px`;
-      writeUpContainer.textContent = this.$props.dataHtml.textContent;
-      writeUpContainer.style.cssText =
-        writeUpContainer.style.cssText + this.$props.dataHtml.style.cssText;
+      writeUpContainer.style.width = `300px`;
+      writeUpContainer.style.height = `200px`;
+
+      writeUpContainer.children[0].textContent = this.$props.dataHtml.textContent;
+      writeUpContainer.children[0].style.cssText =
+        writeUpContainer.children[0].style.cssText + this.$props.dataHtml.style.cssText;
       writeUpContainer.id = this.$props.dataHtml.id;
+
       dragHandler.updateRect();
     } else if(
       this.$props.type == "pexelsVideo"){
@@ -206,7 +213,6 @@ export default {
         this.$props.type == "text" || this.$props.type == 'callToActionButtons'
           ? this.$refs.writeUpContainer
           : this.$refs.contentContainer;
-
       if (this.$props.type == "text" || this.$props.type == "callToActionButtons") {
        
         if(this.$props.type == 'callToActionButtons'){
@@ -219,7 +225,7 @@ export default {
             button.style.height = `${height}px`;
           }
         }
-
+        console.log('resizing');
         contentContainer.style.width = `${width}px`;
         contentContainer.style.height = `${height}px`;
       } else {
@@ -325,13 +331,15 @@ export default {
         case "text":
           var text = target;
           this.$parent.selectElement("text", text.id);
-          text.contentEditable = true;
-          text.style.position = "relative";
+          // text.contentEditable = true;
+          // text.style.position = "relative";
           // text.style.zIndex = "999999";
+          this.$refs.dragHandler.zIndex = 1;
           text.onblur = () => {
-            text.contentEditable = false;
-            text.style.position = "";
-            text.style.zIndex = "";
+            // text.contentEditable = false;
+            // text.style.position = "";
+            // text.style.zIndex = "";
+            this.$refs.dragHandler.zIndex = 3;
           };
           break;
         case "unsplashPhotos":
